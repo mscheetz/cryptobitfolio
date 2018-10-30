@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Binance.NetCore" Version="1.5.1" />
+    <PackageReference Include="BittrexApi.NetCore" Version="1.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cryptobitfolio.Business.Contracts\Cryptobitfolio.Business.Contracts.csproj" />
+    <ProjectReference Include="..\Cryptobitfolio.Data\Cryptobitfolio.Data.csproj" />
+  </ItemGroup>
+
+</Project>
