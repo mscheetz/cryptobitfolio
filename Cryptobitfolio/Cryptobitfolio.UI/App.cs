@@ -1,13 +1,26 @@
-﻿using Cryptobitfolio.UI.Main;
+﻿using Cryptobitfolio.Business;
+using Cryptobitfolio.Business.Common;
+using Cryptobitfolio.UI.Main;
 using Xamarin.Forms;
 
 namespace Cryptobitfolio.UI
 {
     public class App : Application
     {
-        public App()
+        private static IExchangeBuilder _exchangeBldr;
+
+        public App(IExchangeBuilder exchangeBldr)
         {
+            _exchangeBldr = exchangeBldr;
             MainPage = new MainPage();
+        }
+
+        public static IExchangeBuilder ExchangeBuilder
+        {
+            get
+            {
+                return _exchangeBldr;
+            }
         }
 
         protected override void OnStart()

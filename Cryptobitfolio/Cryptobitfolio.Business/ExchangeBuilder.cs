@@ -7,10 +7,12 @@ using Binance.NetCore;
 using BittrexApi.NetCore;
 using Cryptobitfolio.Business.Entities;
 using Cryptobitfolio.Business.Contracts.Trade;
+using Cryptobitfolio.Business.Common;
+using System.Threading.Tasks;
 
 namespace Cryptobitfolio.Business
 {
-    public class ExchangeBuilder
+    public class ExchangeBuilder : IExchangeBuilder
     {
         private readonly IExchangeApiRepository _exchangeRepo;
         private BinanceApiClient binance = null;
@@ -91,6 +93,49 @@ namespace Cryptobitfolio.Business
             if (bittrex != null)
             {
                 orderList.AddRange(GetBittrexOrders());
+            }
+        }
+
+        public IEnumerable<ExchangeApi> GetExchangeApis()
+        {
+            var entities = _exchangeRepo.Get().Result;
+            var contractList = new List<ExchangeApi>();
+
+            foreach(var entity in entities)
+            {
+                var contract = ExchangeApiEntityToContract(entity);
+
+                contractList.Add(contract);
+            }
+
+            return contractList;
+        }
+
+        public async Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi)
+        {
+            var entity = ExchangeApiContractToEntity(exchangeApi);
+
+            entity = entity.Id == 0 
+                        ? await _exchangeRepo.Add(entity) 
+                        : await _exchangeRepo.Update(entity);
+
+            exchangeApi.Id = entity.Id;
+
+            return exchangeApi;
+        }
+
+        public async Task<bool> DeleteExchangeApi(ExchangeApi exchangeApi)
+        {
+            var entity = ExchangeApiContractToEntity(exchangeApi);
+
+            try
+            {
+                await _exchangeRepo.Delete(entity);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
@@ -259,5 +304,37 @@ namespace Cryptobitfolio.Business
             //}
             return orderList;
         }
+
+        #region ExchangeApi converters
+
+        private ExchangeApi ExchangeApiEntityToContract(Business.Entities.Trade.ExchangeApi entity)
+        {
+            var contract = new ExchangeApi
+            {
+                ApiExtra = entity.ApiExtra,
+                ApiKey = entity.ApiKey,
+                ApiSecret = entity.ApiSecret,
+                ExchangeName = entity.ExchangeName,
+                Id = entity.Id
+            };
+
+            return contract;
+        }
+
+        private Business.Entities.Trade.ExchangeApi ExchangeApiContractToEntity(ExchangeApi contract)
+        {
+            var entity = new Business.Entities.Trade.ExchangeApi
+            {
+                ApiExtra = contract.ApiExtra,
+                ApiKey = contract.ApiKey,
+                ApiSecret = contract.ApiSecret,
+                ExchangeName = contract.ExchangeName,
+                Id = contract.Id
+            };
+
+            return entity;
+        }
+
+        #endregion ExchangeApi converters
     }
 }

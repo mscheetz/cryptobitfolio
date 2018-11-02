@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using Cryptobitfolio.Business.Contracts.Trade;
+using Cryptobitfolio.UI.NewApi;
+using System.Collections.ObjectModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -7,33 +9,28 @@ namespace Cryptobitfolio.UI.Api
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ApiPage : ContentPage
     {
-        public ObservableCollection<string> Items { get; set; }
-
         public ApiPage()
         {
             InitializeComponent();
-
-            Items = new ObservableCollection<string>
-            {
-                "Item 1",
-                "Item 2",
-                "Item 3",
-                "Item 4",
-                "Item 5"
-            };
-
-            MyListView.ItemsSource = Items;
         }
 
-        async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)
+        async void OnItemAdded(object sender, ItemTappedEventArgs e)
         {
-            if (e.Item == null)
-                return;
+            await Navigation.PushAsync(new NewApiPageCS
+            {
+                BindingContext = new ExchangeApi()
+            });
+        }
 
-            await DisplayAlert("Item Tapped", "An item was tapped.", "OK");
-
-            //Deselect Item
-            ((ListView)sender).SelectedItem = null;
+        async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+        {
+            if(e.SelectedItem != null)
+            {
+                await Navigation.PushAsync(new NewApiPageCS
+                {
+                    BindingContext = e.SelectedItem as ExchangeApi
+                });
+            }
         }
     }
 }
