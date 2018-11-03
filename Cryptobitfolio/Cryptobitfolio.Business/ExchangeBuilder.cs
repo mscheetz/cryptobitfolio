@@ -313,6 +313,7 @@ namespace Cryptobitfolio.Business
             {
                 ApiExtra = entity.ApiExtra,
                 ApiKey = entity.ApiKey,
+                ApiKeyName = entity.ApiKeyName,
                 ApiSecret = entity.ApiSecret,
                 ExchangeName = entity.ExchangeName,
                 Id = entity.Id
@@ -327,6 +328,7 @@ namespace Cryptobitfolio.Business
             {
                 ApiExtra = contract.ApiExtra,
                 ApiKey = contract.ApiKey,
+                ApiKeyName = contract.ApiKeyName,
                 ApiSecret = contract.ApiSecret,
                 ExchangeName = contract.ExchangeName,
                 Id = contract.Id
