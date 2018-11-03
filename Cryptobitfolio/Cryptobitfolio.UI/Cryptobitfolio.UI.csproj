@@ -18,8 +18,8 @@
     <Compile Update="Bot\BotPage.xaml.cs">
       <DependentUpon>BotPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="NewApi\NewApiPage.xaml.cs">
-      <DependentUpon>NewApiPage.xaml</DependentUpon>
+    <Compile Update="NewApi\NewApiPageOG.xaml.cs">
+      <DependentUpon>NewApiPageOG.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 

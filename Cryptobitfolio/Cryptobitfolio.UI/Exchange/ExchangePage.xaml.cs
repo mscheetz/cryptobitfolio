@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Cryptobitfolio.UI.Api;
+using System.Collections.ObjectModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -23,6 +24,12 @@ namespace Cryptobitfolio.UI.Exchange
             };
 
             MyListView.ItemsSource = Items;
+        }
+
+        async void OnManageApiKeys(object sender, SelectedItemChangedEventArgs e)
+        {
+            App.Current.MainPage = new NavigationPage();
+            await App.Current.MainPage.Navigation.PushAsync(new ApiPage());
         }
 
         async void Handle_ItemTapped(object sender, ItemTappedEventArgs e)

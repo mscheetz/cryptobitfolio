@@ -16,7 +16,8 @@ namespace Cryptobitfolio.UI.Api
 
         async void OnItemAdded(object sender, ItemTappedEventArgs e)
         {
-            await Navigation.PushAsync(new NewApiPageCS
+            App.Current.MainPage = new NavigationPage();
+            await App.Current.MainPage.Navigation.PushAsync(new NewApiPageCS
             {
                 BindingContext = new ExchangeApi()
             });

@@ -7,21 +7,21 @@ namespace Cryptobitfolio.UI
 {
     public class App : Application
     {
-        private static IExchangeBuilder _exchangeBldr;
+        //private static IExchangeBuilder _exchangeBldr;
 
-        public App(IExchangeBuilder exchangeBldr)
+        public App()//IExchangeBuilder exchangeBldr)
         {
-            _exchangeBldr = exchangeBldr;
+            //_exchangeBldr = exchangeBldr;
             MainPage = new MainPage();
         }
 
-        public static IExchangeBuilder ExchangeBuilder
-        {
-            get
-            {
-                return _exchangeBldr;
-            }
-        }
+        //public static IExchangeBuilder ExchangeBuilder
+        //{
+        //    get
+        //    {
+        //        return _exchangeBldr;
+        //    }
+        //}
 
         protected override void OnStart()
         {

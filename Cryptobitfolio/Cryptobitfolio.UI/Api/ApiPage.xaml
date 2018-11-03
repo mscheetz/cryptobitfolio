@@ -2,26 +2,22 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Cryptobitfolio.UI.Api.ApiPage">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="+" Clicked="OnItemAdded">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="Android, iOS" Value="plus.png" />
-                </OnPlatform>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
-  <ListView x:Name="ExchangeView"
+    <StackLayout VerticalOptions="FillAndExpand">
+        <Button Clicked="OnItemAdded" Text="+" />
+        <Grid VerticalOptions="FillAndExpand">
+            <ListView x:Name="ExchangeView"
             ItemSelected="OnItemSelected">
-    <ListView.ItemTemplate>
-        <DataTemplate>
-                <ViewCell>
-                    <StackLayout>
-                        <Label Text="{Binding Exchange}" />
-                    </StackLayout>
-                </ViewCell>
-            </DataTemplate>
-    </ListView.ItemTemplate>
-      
-  </ListView>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout>
+                                <Label Text="{Binding Exchange}" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+        </Grid>
+    </StackLayout>
 </ContentPage>
