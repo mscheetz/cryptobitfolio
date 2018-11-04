@@ -1,5 +1,6 @@
 ﻿using Cryptobitfolio.Business.Contracts.Portfolio;
 using Cryptobitfolio.UI.Coin;
+using Cryptobitfolio.UI.WatchList;
 using System.Collections.ObjectModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -27,9 +28,14 @@ namespace Cryptobitfolio.UI.Portfolio
             coinList.ItemsSource = Items;
         }
 
+        async void OnViewWatchList(object sender, SelectedItemChangedEventArgs e)
+        {
+            await App.Current.MainPage.Navigation.PushAsync(new WatchListCS());
+        }
+
         async void OnListItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            if(e.SelectedItem != null)
+            if (e.SelectedItem != null)
             {
                 await Navigation.PushAsync(new CoinPage
                 {

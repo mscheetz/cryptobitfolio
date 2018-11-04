@@ -12,12 +12,12 @@ namespace Cryptobitfolio.UI.Main
         public MainPageCS()
         {
             var navigationPage = new NavigationPage(new PortfolioPageCS());
-            navigationPage.Icon = "portfolio.png";
+            //navigationPage.Icon = "portfolio.png";
             navigationPage.Title = "Portfoio";
 
-            Children.Add(new ExchangePageCS());
-            Children.Add(new BotPageCS());
             Children.Add(navigationPage);
+            Children.Add(new ExchangePage());
+            Children.Add(new BotPage());
             Children.Add(new SettingsPage());
         }
     }

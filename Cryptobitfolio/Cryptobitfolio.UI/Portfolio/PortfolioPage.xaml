@@ -60,40 +60,24 @@
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <ListView x:Name="coinList"
+    <StackLayout VerticalOptions="FillAndExpand">
+        <Button Clicked="OnViewWatchList" Text="WatchList" />
+        <Grid VerticalOptions="FillAndExpand">
+            <ListView x:Name="coinList"
               Margin="20"
               ItemSelected="OnListItemSelected">
-
-        <!--Built in Cells-->
-    <ListView.ItemTemplate>
-            <DataTemplate>
-                <ViewCell>
-                    <FlexLayout >
-                        <Label Text="{Binding Currency.Symbol}" Style="{ StaticResource SymbolStyle }" />
-                        <Label Text="{Binding AverageBuy}" Style="{ StaticResource AvgBuyStyle }" />
-                        <Label Text="{Binding PercentDiff }" Style="{StaticResource DigitStyle }" />
-                    </FlexLayout>
-                </ViewCell>
-            </DataTemplate>
-        <!--<DataTemplate>
-            <TextCell Text="{Binding Coin.Symbol}" />
-        </DataTemplate>-->
-    </ListView.ItemTemplate>
-    
-    <!--Custom View Cells-->
-    <!--
-    <ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <StackLayout>
-            <Label Text="{Binding Text}" 
-                   Style="{DynamicResource ListItemTextStyle}" />
-            <Label Text="{Binding Detail}" 
-                   Style="{DynamicResource ListItemDetailTextStyle}"/>
-          </StackLayout>
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-    -->
-  </ListView>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <FlexLayout >
+                                <Label Text="{Binding Currency.Symbol}" Style="{ StaticResource SymbolStyle }" />
+                                <Label Text="{Binding AverageBuy}" Style="{ StaticResource AvgBuyStyle }" />
+                                <Label Text="{Binding PercentDiff }" Style="{StaticResource DigitStyle }" />
+                            </FlexLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </StackLayout>
 </ContentPage>

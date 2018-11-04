@@ -12,7 +12,7 @@ namespace Cryptobitfolio.UI
         public App()//IExchangeBuilder exchangeBldr)
         {
             //_exchangeBldr = exchangeBldr;
-            MainPage = new MainPage();
+            MainPage = new MainPageCS();
         }
 
         //public static IExchangeBuilder ExchangeBuilder

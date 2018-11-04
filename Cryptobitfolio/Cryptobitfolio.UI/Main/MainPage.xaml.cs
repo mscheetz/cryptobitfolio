@@ -10,9 +10,10 @@ namespace Cryptobitfolio.UI.Main
     {
         public MainPage()
         {
-            On<Android>().SetToolbarPlacement(ToolbarPlacement.Bottom)
-                .SetBarItemColor(Color.Black)
-                .SetBarSelectedItemColor(Color.Green);
+            On<Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
+                //.SetBarItemColor(Color.Black)
+                //.SetBarSelectedItemColor(Color.Green);
+
             InitializeComponent();
         }
     }
