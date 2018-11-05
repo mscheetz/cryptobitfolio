@@ -5,11 +5,20 @@ using System.Text;
 
 namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
-    public class WatchListCoin : Coin
+    public class WatchListCoin : Currency
     {
-        public int WatchListId { get; set; }
-        public DateTime DateAdded { get; set; }
-        public decimal WatchPrice { get; set; }
-        public Exchange Exchange { get; set; }
+        public WatchListCoin()
+        {
+        }
+
+        public WatchListCoin(Currency currency)
+        {
+            this.Id = currency.Id;
+            this.Image = currency.Image;
+            this.Name = currency.Name;
+            this.Symbol = currency.Symbol;
+        }
+
+        public Watcher[] Watchers { get; set; }
     }
 }
