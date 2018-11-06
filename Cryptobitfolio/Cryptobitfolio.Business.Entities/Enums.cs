@@ -14,4 +14,10 @@
         buy,
         sell
     }
+
+    public enum CoinType
+    {
+        Portfolio,
+        WatchList
+    }
 }
