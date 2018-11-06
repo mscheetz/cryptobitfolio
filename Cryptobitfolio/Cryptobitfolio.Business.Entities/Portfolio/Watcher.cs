@@ -8,6 +8,7 @@ namespace Cryptobitfolio.Business.Entities.Portfolio
     {
         public int WatchListId { get; set; }
         public int CurrencyId { get; set; }
+        public bool Enabled { get; set; }
         public DateTime DateAdded { get; set; }
         public decimal WatchPrice { get; set; }
         public Exchange Exchange { get; set; }
