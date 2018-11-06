@@ -1,30 +1,91 @@
-﻿using Xamarin.Forms;
+﻿using Cryptobitfolio.Business.Contracts.Portfolio;
+using Cryptobitfolio.Business.Contracts.Trade;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Xamarin.Forms;
 
 namespace Cryptobitfolio.UI.Coin
 {
     public class CoinPageCS : ContentPage
     {
+        public Business.Contracts.Portfolio.Coin _coin;
+        public ListView coinLowerListView = new ListView
+        {
+            SeparatorVisibility = SeparatorVisibility.Default,
+            BackgroundColor = Color.White,
+            SeparatorColor = Color.Blue
+        };
+
+        //public CoinPageCS(Business.Contracts.Portfolio.Coin thisCoin) : this()
+        //{
+        //    _coin = thisCoin;
+        //}
+
         public CoinPageCS()
         {
             Title = "Coin Info";
 
-            var nameEntry = new Entry();
-            nameEntry.SetBinding(Entry.TextProperty, "Name");
+            var nameEntry = new Label
+            {
+                FontSize = 4
+            };
+            nameEntry.SetBinding(Label.TextProperty, "Currency.Name");
 
-            var symbolEntry = new Entry();
-            symbolEntry.SetBinding(Entry.TextProperty, "Symbol");
+            var symbolEntry = new Label
+            {
+                FontSize = 4
+            };
+            symbolEntry.SetBinding(Label.TextProperty, "Currency.Symbol");
 
-            var qtyEntry = new Entry();
-            qtyEntry.SetBinding(Entry.TextProperty, "Quanity");
+            var qtyEntry = new Label
+            {
+                FontSize = 4
+            };
+            qtyEntry.SetBinding(Label.TextProperty, "Quantity");
 
-            var avBuyEntry = new Entry();
-            avBuyEntry.SetBinding(Entry.TextProperty, "Avg Buy");
+            var avBuyEntry = new Label
+            {
+                FontSize = 4
+            };
+            avBuyEntry.SetBinding(Label.TextProperty, "AverageBuy");
 
             var cancelButton = new Button { Text = "Cancel" };
             cancelButton.Clicked += async (sender, e) =>
                         {
                             await Navigation.PopAsync();
                         };
+            
+            var trxButton = new Button
+            {
+                Text = "Txns",
+                BackgroundColor = Color.White,
+                TextColor = Color.Blue,
+                WidthRequest = 110
+            };
+            trxButton.Clicked += (sender, e) =>
+            {
+                OnShowTransactions();
+            };
+
+            var watchListButton = new Button
+            {
+                Text = "Watch List",
+                BackgroundColor = Color.Blue,
+                TextColor = Color.White,
+                WidthRequest = 110
+            };
+            watchListButton.Clicked += (sender, e) =>
+            {
+                OnShowWatchList();
+            };
+
+            StackLayout btn = new StackLayout()
+            {
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                Orientation = StackOrientation.Horizontal,
+                Children = { trxButton, watchListButton }
+            };
 
             Content = new StackLayout
             {
@@ -32,17 +93,126 @@ namespace Cryptobitfolio.UI.Coin
                 VerticalOptions = LayoutOptions.StartAndExpand,
                 Children =
                 {
-                    new Label { Text = "Name" },
+                    new Label { Text = "Name", FontSize = 4 },
                     nameEntry,
-                    new Label { Text = "Symbol" },
+                    new Label { Text = "Symbol", FontSize = 4 },
                     symbolEntry,
-                    new Label { Text = "Quanity" },
+                    new Label { Text = "Quanity", FontSize = 4 },
                     qtyEntry,
-                    new Label { Text = "Avg Buy" },
+                    new Label { Text = "Avg Buy", FontSize = 4 },
                     avBuyEntry,
+                    new Label { Text= "WatchList", FontSize = 4 },
+                    btn,
+                    this.coinLowerListView,
                     cancelButton,
                 }
             };
+        }
+
+        async protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            this._coin = (Business.Contracts.Portfolio.Coin)this.BindingContext;
+            OnShowTransactions();
+        }
+
+        private void OnShowTransactions()
+        {
+            var transactionList = new List<ExchangeTransaction>
+            {
+                new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Bitcoin", Symbol = "BTC" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-2), Pair = "BTCUSDT", Price = 6700, Quantity = .01M, Side = Business.Entities.Side.buy, TransactionId = "1232144" },             
+            };
+
+            var transactions = transactionList.Where(w => w.Currency.Symbol.Equals(_coin.Currency.Symbol));
+
+            var transactionDT = new DataTemplate(() =>
+            {
+                Grid grid = new Grid();
+                var exchange = new Label
+                {
+                    FontSize = 6
+                };
+                exchange.SetBinding(Label.TextProperty, "Exchange");
+                var pair = new Label
+                {
+                    FontSize = 6
+                };
+                pair.SetBinding(Label.TextProperty, "Pair");
+                var price = new Label
+                {
+                    FontSize = 6
+                };
+                price.SetBinding(Label.TextProperty, "Price");
+                var quantity = new Label
+                {
+                    FontSize = 6
+                };
+                quantity.SetBinding(Label.TextProperty, "Quantity");
+                var date = new Label
+                {
+                    FontSize = 6
+                };
+                date.SetBinding(Label.TextProperty, "FillDate");
+
+                grid.Children.Add(exchange);
+                grid.Children.Add(pair, 1, 0);
+                grid.Children.Add(price, 2, 0);
+                grid.Children.Add(quantity, 3, 0);
+                grid.Children.Add(date, 4, 0);
+
+                return new ViewCell { View = grid };
+            });
+
+            this.coinLowerListView.ItemsSource = transactions;
+            this.coinLowerListView.ItemTemplate = transactionDT;
+        }
+
+        private void OnShowWatchList()
+        {
+            var watchList = new List<WatchListCoin>
+            {
+                new WatchListCoin { Id = 1, Name = "Bitcoin", Symbol = "BTC", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 1, WatchPrice = 6199.0M, Pair = "BTCUSDT" } }},
+                new WatchListCoin { Id = 2, Name = "Ethereum", Symbol = "ETH", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 2, WatchPrice = 185.0M, Pair = "ETHUSDT" } }},
+                new WatchListCoin { Id = 3, Name = "Stellar", Symbol = "XLM", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-4), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 3, WatchPrice = 0.00002900M, Pair = "XLMBTC", WatchHit = DateTime.UtcNow.AddHours(-20) } }},
+                new WatchListCoin { Id = 4, Name = "NEO", Symbol = "NEO", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-2), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 4, WatchPrice = 0.001999M, Pair = "NEOBTC" } }},
+            };
+
+            var watchers = watchList.Where(w => w.Symbol.Equals(_coin.Currency.Symbol)).Select(w => w.Watchers).FirstOrDefault();
+
+            var watchListDT = new DataTemplate(() =>
+            {
+                Grid grid = new Grid();
+                var exchange = new Label
+                {
+                    FontSize = 6
+                };
+                exchange.SetBinding(Label.TextProperty, "Exchange");
+                var pair = new Label
+                {
+                    FontSize = 6
+                };
+                pair.SetBinding(Label.TextProperty, "Pair");
+                var price = new Label
+                {
+                    FontSize = 6
+                };
+                price.SetBinding(Label.TextProperty, "WatchPrice");
+                var watchHit = new Label
+                {
+                    FontSize = 6
+                };
+                watchHit.SetBinding(Label.TextProperty, "WatchHit");
+
+                grid.Children.Add(exchange);
+                grid.Children.Add(pair, 1, 0);
+                grid.Children.Add(price, 2, 0);
+                grid.Children.Add(watchHit, 3, 0);
+
+                return new ViewCell { View = grid };
+            });
+
+            this.coinLowerListView.ItemsSource = watchers;
+            this.coinLowerListView.ItemTemplate = watchListDT;
         }
     }
 }

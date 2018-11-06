@@ -188,12 +188,12 @@ namespace Cryptobitfolio.Business
                 Enum.TryParse(transaction.side.ToLower(), out side);
                 var trxn = new ExchangeTransaction
                 {
-                    transactionId = transaction.orderId.ToString(),
-                    pair = transaction.symbol,
-                    price = decimal.Parse(transaction.price),
-                    quantity = decimal.Parse(transaction.executedQty),
-                    side = side,
-                    exchange = Exchange.Binance
+                    TransactionId = transaction.orderId.ToString(),
+                    Pair = transaction.symbol,
+                    Price = decimal.Parse(transaction.price),
+                    Quantity = decimal.Parse(transaction.executedQty),
+                    Side = side,
+                    Exchange = Exchange.Binance
                 };
 
                 trxnList.Add(trxn);
@@ -263,12 +263,12 @@ namespace Cryptobitfolio.Business
                 Enum.TryParse(transaction.orderType.ToLower(), out side);
                 var trxn = new ExchangeTransaction
                 {
-                    transactionId = transaction.orderId.ToString(),
-                    pair = transaction.pair,
-                    price = transaction.price,
-                    quantity = transaction.quantity,
-                    side = side,
-                    exchange = Exchange.Bittrex
+                    TransactionId = transaction.orderId.ToString(),
+                    Pair = transaction.pair,
+                    Price = transaction.price,
+                    Quantity = transaction.quantity,
+                    Side = side,
+                    Exchange = Exchange.Bittrex
                 };
 
                 trxnList.Add(trxn);

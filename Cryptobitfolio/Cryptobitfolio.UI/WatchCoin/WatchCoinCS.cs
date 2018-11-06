@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cryptobitfolio.Business.Contracts.Portfolio;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
@@ -9,6 +10,7 @@ namespace Cryptobitfolio.UI.WatchCoin
     {
         public WatchCoinCS()
         {
+            BindingContext = new WatchListCoin();
             Title = "Watch Coin Info";
 
             var nameEntry = new Entry();

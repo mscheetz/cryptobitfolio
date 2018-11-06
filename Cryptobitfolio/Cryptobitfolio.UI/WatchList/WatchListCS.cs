@@ -45,13 +45,13 @@ namespace Cryptobitfolio.UI.WatchList
 
             var coins = new List<WatchListCoin>
             {
-                new WatchListCoin { Id = 1, Name = "Bitcoin", Symbol = "BTC", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Exchange = Business.Entities.Exchange.Binance, WatchListId = 1, WatchPrice = 6199.0M, Pair = "BTCUSDT" } }},
-                new WatchListCoin { Id = 2, Name = "Ethereum", Symbol = "ETH", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Exchange = Business.Entities.Exchange.Binance, WatchListId = 2, WatchPrice = 185.0M, Pair = "ETHUSDT" } }},
-                new WatchListCoin { Id = 3, Name = "Stellar", Symbol = "XLM", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-4), Exchange = Business.Entities.Exchange.Binance, WatchListId = 3, WatchPrice = 0.00002900M, Pair = "XLMBTC", WatchHit = DateTime.UtcNow.AddHours(-20) } }},
-                new WatchListCoin { Id = 4, Name = "NEO", Symbol = "NEO", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-2), Exchange = Business.Entities.Exchange.Binance, WatchListId = 4, WatchPrice = 0.001999M, Pair = "NEOBTC" } }},
+                new WatchListCoin { Id = 1, Name = "Bitcoin", Symbol = "BTC", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 1, WatchPrice = 6199.0M, Pair = "BTCUSDT" } }},
+                new WatchListCoin { Id = 2, Name = "Ethereum", Symbol = "ETH", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 2, WatchPrice = 185.0M, Pair = "ETHUSDT" } }},
+                new WatchListCoin { Id = 3, Name = "Stellar", Symbol = "XLM", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-4), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 3, WatchPrice = 0.00002900M, Pair = "XLMBTC", WatchHit = DateTime.UtcNow.AddHours(-20) } }},
+                new WatchListCoin { Id = 4, Name = "NEO", Symbol = "NEO", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-2), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatchListId = 4, WatchPrice = 0.001999M, Pair = "NEOBTC" } }},
             };
 
-            if(thisSymbol != null)
+            if (thisSymbol != null)
             {
                 coins = coins.Where(c => c.Symbol.Equals(thisSymbol)).ToList();
             }

@@ -19,7 +19,7 @@ namespace Cryptobitfolio.UI.Portfolio
                 Text = "Portfolio",
                 BackgroundColor = Color.White,
                 TextColor = Color.Blue,
-                WidthRequest = 110
+                WidthRequest = 110,                
             };
             var watchListButton = new Button
             {
@@ -90,7 +90,7 @@ namespace Cryptobitfolio.UI.Portfolio
         {
             if (e.SelectedItem != null)
             {
-                await Navigation.PushAsync(new CoinPage
+                await Navigation.PushAsync(new CoinPageCS(/*(Business.Contracts.Portfolio.Coin)e.SelectedItem*/)
                 {
                     BindingContext = e.SelectedItem as Business.Contracts.Portfolio.Coin
                 });
