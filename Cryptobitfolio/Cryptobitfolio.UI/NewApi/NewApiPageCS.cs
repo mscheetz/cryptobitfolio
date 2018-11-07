@@ -9,7 +9,7 @@ namespace Cryptobitfolio.UI.NewApi
         public NewApiPageCS()
         {
             var picker = new Picker { Title = "Exchange" };
-            picker.FontSize = 8;
+            picker.FontSize = 6;
             var exchanges = Enum.GetValues(typeof(Business.Entities.Exchange));
             foreach (var exchange in exchanges)
             {
@@ -17,16 +17,16 @@ namespace Cryptobitfolio.UI.NewApi
             }
 
             var apiKeyName = new Entry();
-            apiKeyName.FontSize = 8;
+            apiKeyName.FontSize = 6;
             apiKeyName.SetBinding(Entry.TextProperty, "ApiKeyName");
             var apiKey = new Entry();
-            apiKeyName.FontSize = 8;
+            apiKey.FontSize = 6;
             apiKey.SetBinding(Entry.TextProperty, "ApiKey");
             var apiSecret = new Entry();
-            apiKeyName.FontSize = 8;
+            apiSecret.FontSize = 6;
             apiSecret.SetBinding(Entry.TextProperty, "ApiSecret");
             var extraValue = new Entry();
-            apiKeyName.FontSize = 8;
+            extraValue.FontSize = 6;
             extraValue.SetBinding(Entry.TextProperty, "ExtraValue");
 
             var saveButton = new Button { Text = "Save" };
@@ -49,15 +49,15 @@ namespace Cryptobitfolio.UI.NewApi
             Content = new StackLayout
             {
                 Children = {
-                    new Label { Text = "Exchange:", FontSize = 8 },
+                    new Label { Text = "Exchange:", FontSize = 6 },
                     picker,
-                    new Label { Text = "Api Key Name:", FontSize = 8 },
+                    new Label { Text = "Api Key Name:", FontSize = 6 },
                     apiKeyName,
-                    new Label { Text = "Api Key:", FontSize = 8 },
+                    new Label { Text = "Api Key:", FontSize = 6 },
                     apiKey,
-                    new Label { Text = "Api Secret:", FontSize = 8 },
+                    new Label { Text = "Api Secret:", FontSize = 6 },
                     apiSecret,
-                    new Label {Text = "Extra Value:", FontSize = 8 },
+                    new Label {Text = "Extra Value:", FontSize = 6 },
                     extraValue,
                     saveButton,
                     deleteButton
