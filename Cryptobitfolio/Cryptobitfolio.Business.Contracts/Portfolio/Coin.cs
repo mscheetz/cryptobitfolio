@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Cryptobitfolio.Business.Contracts.Portfolio
@@ -8,9 +9,9 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
     {
         public int Id { get; set; }
         public Currency Currency { get; set; }
-        public decimal Quantity { get; set; }
-        public decimal AverageBuy { get; set; }
-        public List<ExchangeCoin> CoinList { get; set; }
+        public decimal Quantity => ExchangeCoinList.Count == 0 ? 0.0M : ExchangeCoinList.Sum(c => c.Quantity);
+        public decimal AverageBuy => ExchangeCoinList.Count == 0 ? 0.0M : ExchangeCoinList.Average(c => c.AverageBuy);
+        public List<ExchangeCoin> ExchangeCoinList { get; set; }
         public string QtyLabel => string.Format($"Qty: {Quantity}");
         public string AvgBuyLabel => string.Format($"Avg Buy: {AverageBuy}");
         public decimal CurrentPrice { get; set; }

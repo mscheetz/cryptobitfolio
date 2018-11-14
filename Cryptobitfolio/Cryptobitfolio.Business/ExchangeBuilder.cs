@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cryptobitfolio.Data.Interfaces;
 using Cryptobitfolio.Business.Contracts.Portfolio;
-using Binance.NetCore;
-using BittrexApi.NetCore;
 using Cryptobitfolio.Business.Entities;
 using Cryptobitfolio.Business.Contracts.Trade;
 using Cryptobitfolio.Business.Common;
@@ -15,9 +13,15 @@ namespace Cryptobitfolio.Business
     public class ExchangeBuilder : IExchangeBuilder
     {
         private readonly IExchangeApiRepository _exchangeRepo;
-        private BinanceApiClient binance = null;
-        private BittrexClient bittrex = null;
+        private ExchangeHub.ExchangeHub currentHub = null;
+        private ExchangeHub.ExchangeHub binanceHub = null;
+        private ExchangeHub.ExchangeHub bittrexHub = null;
+        private ExchangeHub.ExchangeHub kucoinHub = null;
+        private List<ExchangeHub.ExchangeHub> exchangeHubs;
+        private List<string> currentHubMarkets;
+        private HashSet<string> coinSet;
         private List<Coin> coinList;
+        private List<ExchangeCoin> exchangeCoinList;
         private List<ExchangeOrder> orderList;
         private List<ExchangeTransaction> transactionList;
 
@@ -25,20 +29,29 @@ namespace Cryptobitfolio.Business
         {
             _exchangeRepo = exhangeApiRepo;
             var exchangeApis = _exchangeRepo.Get().Result;
+            exchangeHubs = new List<ExchangeHub.ExchangeHub>();
+            coinSet = new HashSet<string>();
+            exchangeCoinList = new List<ExchangeCoin>();
             foreach(var api in exchangeApis)
             {
                 if (api.ExchangeName == Exchange.Binance)
                 {
-                    binance = new BinanceApiClient(api.ApiKey, api.ApiSecret);
+                    binanceHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret);
+                    exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret));
                 }
                 if (api.ExchangeName == Exchange.Bittrex)
                 {
-                    bittrex = new BittrexClient(api.ApiKey, api.ApiSecret);
+                    bittrexHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret);
+                    exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret));
+                }
+                if (api.ExchangeName == Exchange.KuCoin)
+                {
+                    kucoinHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret);
+                    exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
                 }
             }
             BuildCoins();
             BuildOrders();
-            BuildTransactions();
         }
 
         public void LoadExchange(Exchange exchange)
@@ -46,53 +59,40 @@ namespace Cryptobitfolio.Business
             var api = _exchangeRepo.Get(exchange.ToString()).Result;
             if (exchange == Exchange.Binance)
             {
-                binance = new BinanceApiClient(api.ApiKey, api.ApiSecret);
+                binanceHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret);
             }
             if (exchange == Exchange.Bittrex)
             {
-                bittrex = new BittrexClient(api.ApiKey, api.ApiSecret);
+                binanceHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret);
+            }
+            if (exchange == Exchange.KuCoin)
+            {
+                kucoinHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret);
             }
             BuildCoins();
             BuildOrders();
-            BuildTransactions();
         }
 
         public void BuildCoins()
         {
             coinList = new List<Coin>();
-            if(binance != null)
+            foreach(var hub in exchangeHubs)
             {
-                coinList.AddRange(GetBinanceCoins());
-            }
-            if (bittrex != null)
-            {
-                coinList.AddRange(GetBittrexCoins());
-            }
-        }
-
-        public void BuildTransactions()
-        {
-            transactionList = new List<ExchangeTransaction>();
-            if (binance != null)
-            {
-                transactionList.AddRange(GetBinanceTransactions());
-            }
-            if (bittrex != null)
-            {
-                transactionList.AddRange(GetBittrexTransactions());
+                currentHub = hub;
+                currentHub.SetMarketsAsync();
+                currentHubMarkets = currentHub.GetMarkets().ToList();
+                coinList.AddRange(GetExchangeCoins());
             }
         }
 
         public void BuildOrders()
         {
             orderList = new List<ExchangeOrder>();
-            if (binance != null)
+            foreach (var hub in exchangeHubs)
             {
-                orderList.AddRange(GetBinanceOrders());
-            }
-            if (bittrex != null)
-            {
-                orderList.AddRange(GetBittrexOrders());
+                currentHub = hub;
+                currentHub.SetMarketsAsync();
+                currentHubMarkets = currentHub.GetMarkets().ToList();
             }
         }
 
@@ -148,162 +148,164 @@ namespace Cryptobitfolio.Business
         {
             return orderList;
         }
-
-        public List<ExchangeTransaction> GetTransactions()
-        {
-            return transactionList;
-        }
-
-        private List<Coin> GetBinanceCoins()
+        
+        private List<Coin> GetExchangeCoins()
         {
             var currencyList = new List<Currency>();
             var coinList = new List<Coin>();
 
-            var binanceBalance = binance.GetBalanceAsync().Result;
+            var balances = currentHub.GetBalanceAsync().Result;
 
-            foreach(var bCoin in binanceBalance.balances)
+            foreach(var bal in balances)
             {
-                var currency = currencyList.Where(c => c.Symbol.Equals(bCoin.asset)).FirstOrDefault();
-                var coin = new Coin
-                {
-                    Quantity = bCoin.free + bCoin.locked,
-                    Currency = currency
-                };
-                
-                coinList.Add(coin);
+                var currency = currencyList.Where(c => c.Symbol.Equals(bal.Symbol)).FirstOrDefault();
+                var coin = GetExchangeCoin(bal, currentHub.GetExchange());
+                coin.CoinBuyList = GetRelevantBuys(coin.Symbol, coin.Quantity);
+                coin.OpenOrderList = GetOpenOrdersForASymbol(coin.Symbol);
+
+                exchangeCoinList.Add(coin);
+                coinSet.Add(bal.Symbol);
             }
 
             return coinList;
         }
 
-        private List<ExchangeTransaction> GetBinanceTransactions()
+        private async Task<IEnumerable<string>> GetMarketsForACoin(string symbol)
         {
-            var trxnList = new List<ExchangeTransaction>();
+            var pairs = await currentHub.GetMarketsAsync();
 
-            var transactions = binance.GetTransactionsAsync().Result;
+            pairs = pairs.Where(p => p.Contains(symbol));
 
-            foreach (var transaction in transactions)
+            return pairs;
+        }
+
+        private async Task<IEnumerable<ExchangeHub.Contracts.OrderResponse>> GetExchangeOrders(IEnumerable<string> pairs)
+        {
+            var orders = new List<ExchangeHub.Contracts.OrderResponse>();
+
+            foreach (var pair in pairs)
             {
-                Side side;
-                Enum.TryParse(transaction.side.ToLower(), out side);
-                var trxn = new ExchangeTransaction
-                {
-                    TransactionId = transaction.orderId.ToString(),
-                    Pair = transaction.symbol,
-                    Price = decimal.Parse(transaction.price),
-                    Quantity = decimal.Parse(transaction.executedQty),
-                    Side = side,
-                    Exchange = Exchange.Binance
-                };
+                var pairOrders = await currentHub.GetOrdersAsync(pair);
 
-                trxnList.Add(trxn);
+                orders.AddRange(pairOrders);
             }
 
-            return trxnList;
+            return orders;
         }
 
-        private List<ExchangeOrder> GetBinanceOrders()
+        private async Task<IEnumerable<ExchangeHub.Contracts.OrderResponse>> GetExchangeOpenOrdersByPairs(IEnumerable<string> pairs)
         {
-            var orderList = new List<ExchangeOrder>();
+            var orders = new List<ExchangeHub.Contracts.OrderResponse>();
 
-            //foreach (var coin in coinList.Where(c => c.CoinList.Exchange == Exchange.Binance))
-            //{
-            //    var orders = binance.GetOpenOrdersAsync(coin.Symbol).Result;
-
-            //    foreach (var order in orders)
-            //    {
-            //        Side side;
-            //        Enum.TryParse(order.side.ToString().ToLower(), out side);
-            //        var openOrder = new ExchangeOrder
-            //        {
-            //            orderId = order.orderId.ToString(),
-            //            pair = order.symbol,
-            //            price = order.price,
-            //            quantity = order.executedQty,
-            //            side = side,
-            //            exchange = Exchange.Binance
-            //        };
-
-            //        orderList.Add(openOrder);
-            //    }
-            //}
-            return orderList;
-        }
-
-        private List<Coin> GetBittrexCoins()
-        {
-            var coinList = new List<Coin>();
-
-            var bittrexBalance = bittrex.GetBalancesAsync().Result;
-
-            //foreach (var bCoin in bittrexBalance)
-            //{
-            //    var coin = new ExchangeCoin
-            //    {
-            //        Symbol = bCoin.symbol,
-            //        Quantity = bCoin.balance,
-            //        Exchange = Exchange.Bittrex
-            //    };
-
-            //    coinList.Add(coin);
-            //}
-
-            return coinList;
-        }
-
-        private List<ExchangeTransaction> GetBittrexTransactions()
-        {
-            var trxnList = new List<ExchangeTransaction>();
-
-            var transactions = bittrex.GetOrderHistoryAsync().Result;
-
-            foreach (var transaction in transactions)
+            foreach (var pair in pairs)
             {
-                Side side;
-                Enum.TryParse(transaction.orderType.ToLower(), out side);
-                var trxn = new ExchangeTransaction
-                {
-                    TransactionId = transaction.orderId.ToString(),
-                    Pair = transaction.pair,
-                    Price = transaction.price,
-                    Quantity = transaction.quantity,
-                    Side = side,
-                    Exchange = Exchange.Bittrex
-                };
+                var pairOrders = await currentHub.GetOpenOrdersAsync(pair);
 
-                trxnList.Add(trxn);
+                orders.AddRange(pairOrders);
             }
 
-            return trxnList;
+            return orders;
         }
 
-        private List<ExchangeOrder> GetBittrexOrders()
+        private List<CoinBuy> GetRelevantBuys(string symbol, decimal quantity)
+        {
+            var pairs = GetMarketsForACoin(symbol).Result;
+            var orders = GetExchangeOrders(pairs).Result.OrderByDescending(o => o.TransactTime);
+            var coinBuyList = new List<CoinBuy>();
+
+            foreach (var order in orders)
+            {
+                var coinBuy = GetCoinBuy(order, currentHub.GetExchange());
+                coinBuyList.Add(coinBuy);
+
+                quantity -= coinBuy.Quantity;
+
+                if (quantity <= 0)
+                {
+                    break;
+                }
+            }
+
+            return coinBuyList;
+        }
+
+        private List<ExchangeOrder> GetExchangeOpenOrders()
         {
             var orderList = new List<ExchangeOrder>();
+            var exchange = currentHub.GetExchange();
+            var exchangeCoins = coinList.Where(c => c.ExchangeCoinList.Any(e => e.Exchange == (Exchange)exchange));
 
-            //foreach (var coin in coinList.Where(c => c.Exchange == Exchange.Bittrex))
-            //{
-            //    var orders = bittrex.GetOpenOrdersAsync(coin.Symbol).Result;
+            foreach (var coin in exchangeCoins)
+            {
+                orderList.AddRange(GetOpenOrdersForASymbol(coin.Currency.Symbol));
+            }
 
-            //    foreach (var order in orders)
-            //    {
-            //        Side side;
-            //        Enum.TryParse(order.orderType.ToLower(), out side);
-            //        var openOrder = new ExchangeOrder
-            //        {
-            //            orderId = order.orderId.ToString(),
-            //            pair = order.pair,
-            //            price = order.price,
-            //            quantity = order.quantity,
-            //            side = side,
-            //            exchange = Exchange.Bittrex
-            //        };
-
-            //        orderList.Add(openOrder);
-            //    }
-            //}
             return orderList;
         }
+        
+        private List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol)
+        {
+            var pairs = GetMarketsForACoin(symbol).Result;
+            var orders = GetExchangeOpenOrdersByPairs(pairs).Result;
+            var exchangeOrderList = new List<ExchangeOrder>();
+
+            foreach (var order in orders)
+            {
+                var exchaneOrder = GetExchangeOrder(order, currentHub.GetExchange());
+                exchangeOrderList.Add(exchaneOrder);
+            }
+
+            return exchangeOrderList;
+        }
+
+
+        #region Converters
+
+        private ExchangeCoin GetExchangeCoin(ExchangeHub.Contracts.Balance balance, ExchangeHub.Contracts.Exchange exchange)
+        {
+            var exchangeCoin = new ExchangeCoin
+            {
+                Quantity = balance.Available + balance.Frozen,
+                Symbol = balance.Symbol,
+                Exchange = (Exchange)exchange
+            };
+
+            return exchangeCoin;
+        }
+
+        private CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse, ExchangeHub.Contracts.Exchange exchange)
+        {
+            var coinBuy = new CoinBuy
+            {
+                ExchangeName = (Exchange)exchange,
+                Id = orderResponse.OrderId,
+                Pair = orderResponse.Pair,
+                Price = orderResponse.Price,
+                Quantity = orderResponse.FilledQuantity,
+                TransactionDate = orderResponse.TransactTime
+            };
+
+            return coinBuy;
+        }
+
+        private ExchangeOrder GetExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse, ExchangeHub.Contracts.Exchange exchange)
+        {
+            var exchangeOrder = new ExchangeOrder
+            {
+                Exchange = (Exchange)exchange,
+                FilledQuantity = orderResponse.FilledQuantity,
+                OrderId = orderResponse.OrderId,
+                Pair = orderResponse.Pair,
+                PlaceDate = orderResponse.TransactTime,
+                Price = orderResponse.Price,
+                Quantity = orderResponse.OrderQuantity,
+                Side = (Side)orderResponse.Side
+            };
+
+            return exchangeOrder;
+        }
+
+        #endregion Converters
 
         #region ExchangeApi converters
 

@@ -13,9 +13,7 @@ namespace Cryptobitfolio.Business.Common
         void LoadExchange(Exchange exchange);
 
         void BuildCoins();
-
-        void BuildTransactions();
-
+        
         void BuildOrders();
 
         IEnumerable<ExchangeApi> GetExchangeApis();
@@ -27,7 +25,5 @@ namespace Cryptobitfolio.Business.Common
         List<Coin> GetCoins();
 
         List<ExchangeOrder> GetOpenOrders();
-
-        List<ExchangeTransaction> GetTransactions();
     }
 }

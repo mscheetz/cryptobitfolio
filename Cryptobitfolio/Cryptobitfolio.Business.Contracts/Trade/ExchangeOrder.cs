@@ -5,12 +5,13 @@ namespace Cryptobitfolio.Business.Contracts.Trade
 {
     public class ExchangeOrder
     {
-        public string orderId { get; set; }
-        public string pair { get; set; }
-        public decimal quantity { get; set; }
-        public decimal price { get; set; }
-        public Side side { get; set; }
-        public DateTime placeDate { get; set; }
-        public Exchange exchange { get; set; }
+        public string OrderId { get; set; }
+        public string Pair { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal FilledQuantity { get; set; }
+        public decimal Price { get; set; }
+        public Side Side { get; set; }
+        public DateTime PlaceDate { get; set; }
+        public Exchange Exchange { get; set; }
     }
 }
