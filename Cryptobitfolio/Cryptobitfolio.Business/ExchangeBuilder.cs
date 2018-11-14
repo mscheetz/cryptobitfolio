@@ -14,9 +14,7 @@ namespace Cryptobitfolio.Business
     {
         private readonly IExchangeApiRepository _exchangeRepo;
         private ExchangeHub.ExchangeHub currentHub = null;
-        private ExchangeHub.ExchangeHub binanceHub = null;
-        private ExchangeHub.ExchangeHub bittrexHub = null;
-        private ExchangeHub.ExchangeHub kucoinHub = null;
+        private DateTime lastUpdated;
         private List<ExchangeHub.ExchangeHub> exchangeHubs;
         private List<string> currentHubMarkets;
         private HashSet<string> coinSet;
@@ -25,52 +23,60 @@ namespace Cryptobitfolio.Business
         private List<ExchangeOrder> orderList;
         private List<ExchangeTransaction> transactionList;
 
-        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo)
+        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, DateTime? updated)
         {
             _exchangeRepo = exhangeApiRepo;
             var exchangeApis = _exchangeRepo.Get().Result;
             exchangeHubs = new List<ExchangeHub.ExchangeHub>();
             coinSet = new HashSet<string>();
             exchangeCoinList = new List<ExchangeCoin>();
+            
+            lastUpdated = updated == null ? DateTime.UtcNow.AddYears(-2) : (DateTime)updated;
+
             foreach(var api in exchangeApis)
             {
                 if (api.ExchangeName == Exchange.Binance)
                 {
-                    binanceHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret);
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret));
                 }
                 if (api.ExchangeName == Exchange.Bittrex)
                 {
-                    bittrexHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret);
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret));
                 }
                 if (api.ExchangeName == Exchange.KuCoin)
                 {
-                    kucoinHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret);
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
                 }
             }
+        }
+
+        public void LoadExchange(ExchangeApi exchangeApi)
+        {
+            if (exchangeApi.ExchangeName == Exchange.CoinbasePro)
+            {
+                currentHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret, exchangeApi.ApiExtra);
+            }
+            else if (exchangeApi.ExchangeName == Exchange.Switcheo)
+            {
+                currentHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.WIF);
+            }
+            else
+            {
+                currentHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret);
+            }
+            exchangeHubs.Add(currentHub);
+
             BuildCoins();
             BuildOrders();
         }
 
-        public void LoadExchange(Exchange exchange)
+        public DateTime UpdatePortfolio()
         {
-            var api = _exchangeRepo.Get(exchange.ToString()).Result;
-            if (exchange == Exchange.Binance)
-            {
-                binanceHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret);
-            }
-            if (exchange == Exchange.Bittrex)
-            {
-                binanceHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret);
-            }
-            if (exchange == Exchange.KuCoin)
-            {
-                kucoinHub = new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret);
-            }
-            BuildCoins();
-            BuildOrders();
+
+
+            this.lastUpdated = DateTime.UtcNow;
+
+            return lastUpdated;
         }
 
         public void BuildCoins()

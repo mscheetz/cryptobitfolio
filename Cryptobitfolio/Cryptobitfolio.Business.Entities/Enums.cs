@@ -6,7 +6,9 @@
         Binance,
         Bittrex,
         CoinbasePro,
-        KuCoin
+        CoinEx,
+        KuCoin,
+        Switcheo
     }
 
     public enum Side

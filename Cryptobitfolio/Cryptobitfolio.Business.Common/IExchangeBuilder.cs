@@ -10,7 +10,7 @@ namespace Cryptobitfolio.Business.Common
 {
     public interface IExchangeBuilder
     {
-        void LoadExchange(Exchange exchange);
+        void LoadExchange(ExchangeApi exchangeApi);
 
         void BuildCoins();
         

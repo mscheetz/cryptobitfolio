@@ -13,5 +13,6 @@ namespace Cryptobitfolio.Business.Contracts.Trade
         public string ApiKey { get; set; }
         public string ApiSecret { get; set; }
         public string ApiExtra { get; set; }
+        public string WIF { get; set; }
     }
 }
