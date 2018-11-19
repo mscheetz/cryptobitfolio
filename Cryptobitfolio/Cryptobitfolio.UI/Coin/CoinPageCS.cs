@@ -48,7 +48,7 @@ namespace Cryptobitfolio.UI.Coin
             {
                 FontSize = 4
             };
-            avBuyEntry.SetBinding(Label.TextProperty, "AverageBuy");
+            avBuyEntry.SetBinding(Label.TextProperty, "AverageBuyString");
 
             var cancelButton = new Button { Text = "Cancel" };
             cancelButton.Clicked += async (sender, e) =>

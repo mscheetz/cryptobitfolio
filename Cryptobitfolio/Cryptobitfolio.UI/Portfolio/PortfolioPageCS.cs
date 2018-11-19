@@ -42,15 +42,38 @@ namespace Cryptobitfolio.UI.Portfolio
             };
 
             var coins = App.GetCoins().Result;
-            
-            var dt = new DataTemplate(() =>
+
+            var headers = new DataTemplate(() =>
             {
                 Grid grid = new Grid();
                 var symbol = new Label();
+                symbol.Text = "Coin";
+                var avgPrice = new Label();
+                avgPrice.Text = "Avg Price";
+                var percentDiff = new Label();
+                percentDiff.Text = "% Change";
+
+                grid.Children.Add(symbol);
+                grid.Children.Add(avgPrice, 1, 0);
+                grid.Children.Add(percentDiff, 2, 0);
+
+                return new ViewCell { View = grid };
+            });
+
+            var headerView = new ListView();
+            headerView.ItemTemplate = headers;
+
+            var listViewTemplate = new DataTemplate(() =>
+            {
+                Grid grid = new Grid();
+                var symbol = new Label();
+                symbol.FontSize = 11;
                 symbol.SetBinding(Label.TextProperty, "Currency.Symbol");
                 var avgPrice = new Label();
-                avgPrice.SetBinding(Label.TextProperty, "AverageBuy");
+                avgPrice.FontSize = 11;
+                avgPrice.SetBinding(Label.TextProperty, "AverageBuyString");
                 var percentDiff = new Label();
+                percentDiff.FontSize = 11;
                 percentDiff.SetBinding(Label.TextProperty, "PercentDiff");
 
                 grid.Children.Add(symbol);
@@ -62,12 +85,13 @@ namespace Cryptobitfolio.UI.Portfolio
 
             var listView = new ListView
             {
+                RowHeight = 14,
                 SeparatorVisibility = SeparatorVisibility.Default,
                 BackgroundColor = Color.White,
                 SeparatorColor = Color.Blue
             };
             listView.ItemsSource = coins;
-            listView.ItemTemplate = dt;
+            listView.ItemTemplate = listViewTemplate;
             listView.ItemSelected += OnListItemSelected;
 
             var stack = new StackLayout()

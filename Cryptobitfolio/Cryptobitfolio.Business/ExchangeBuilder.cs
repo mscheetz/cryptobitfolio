@@ -39,13 +39,17 @@ namespace Cryptobitfolio.Business
                 {
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret));
                 }
-                if (api.ExchangeName == Exchange.Bittrex)
+                else if (api.ExchangeName == Exchange.Bittrex)
                 {
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret));
                 }
-                if (api.ExchangeName == Exchange.KuCoin)
+                else if (api.ExchangeName == Exchange.KuCoin)
                 {
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
+                }
+                else if (api.ExchangeName == Exchange.CoinbasePro)
+                {
+                    exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.CoinbasePro, api.ApiKey, api.ApiSecret, api.ApiExtra));
                 }
             }
         }
@@ -72,8 +76,6 @@ namespace Cryptobitfolio.Business
 
         public DateTime UpdatePortfolio()
         {
-
-
             this.lastUpdated = DateTime.UtcNow;
 
             return lastUpdated;

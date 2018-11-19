@@ -12,7 +12,7 @@
             <local1:PortfolioPageCS />
         </x:Arguments>
     </NavigationPage>
-    <local:ExchangePage />
-    <local3:BotPage />
-    <local2:SettingsPage />
+    <local:ExchangePageCS />
+    <local3:BotPageCS />
+    <local2:SettingsPageCS />
 </TabbedPage>
