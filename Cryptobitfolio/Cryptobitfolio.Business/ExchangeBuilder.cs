@@ -13,8 +13,10 @@ namespace Cryptobitfolio.Business
     public class ExchangeBuilder : IExchangeBuilder
     {
         private readonly IExchangeApiRepository _exchangeRepo;
+        private readonly IExchangeUpdateRepository _exchangeUpdateRepo;
         private ExchangeHub.ExchangeHub currentHub = null;
         private DateTime lastUpdated;
+        private List<Entities.Trade.ExchangeApi> _exchangeApis;
         private List<ExchangeHub.ExchangeHub> exchangeHubs;
         private List<string> currentHubMarkets;
         private HashSet<string> coinSet;
@@ -23,17 +25,16 @@ namespace Cryptobitfolio.Business
         private List<ExchangeOrder> orderList;
         private List<ExchangeTransaction> transactionList;
 
-        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, DateTime? updated)
+        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, IExchangeUpdateRepository exchangeUpateRepo)
         {
             _exchangeRepo = exhangeApiRepo;
-            var exchangeApis = _exchangeRepo.Get().Result;
+            _exchangeUpdateRepo = exchangeUpateRepo;
+            _exchangeApis = _exchangeRepo.Get().Result;
             exchangeHubs = new List<ExchangeHub.ExchangeHub>();
             coinSet = new HashSet<string>();
             exchangeCoinList = new List<ExchangeCoin>();
-            
-            lastUpdated = updated == null ? DateTime.UtcNow.AddYears(-2) : (DateTime)updated;
 
-            foreach(var api in exchangeApis)
+            foreach (var api in _exchangeApis)
             {
                 if (api.ExchangeName == Exchange.Binance)
                 {
@@ -52,31 +53,43 @@ namespace Cryptobitfolio.Business
                     exchangeHubs.Add(new ExchangeHub.ExchangeHub(ExchangeHub.Contracts.Exchange.CoinbasePro, api.ApiKey, api.ApiSecret, api.ApiExtra));
                 }
             }
+
+            UpdatePortfolio();
         }
 
         public void LoadExchange(ExchangeApi exchangeApi)
         {
+            ExchangeHub.ExchangeHub loadedHub = null;
             if (exchangeApi.ExchangeName == Exchange.CoinbasePro)
             {
-                currentHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret, exchangeApi.ApiExtra);
+                loadedHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret, exchangeApi.ApiExtra);
             }
             else if (exchangeApi.ExchangeName == Exchange.Switcheo)
             {
-                currentHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.WIF);
+                loadedHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.WIF);
             }
             else
             {
-                currentHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret);
+                loadedHub = new ExchangeHub.ExchangeHub((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret);
             }
             exchangeHubs.Add(currentHub);
 
-            BuildCoins();
-            BuildOrders();
+            OnBuildCoins(loadedHub);
+            OnBuildOrders(loadedHub);
         }
 
         public DateTime UpdatePortfolio()
         {
+            BuildCoins();
+            BuildOrders();
             this.lastUpdated = DateTime.UtcNow;
+
+            var exchanges = _exchangeApis.Select(e => e.ExchangeName).ToList();
+            foreach(var exchange in exchanges)
+            {
+                var exchg = new Entities.Trade.ExchangeUpdate { Exchange = exchange, UpdateAt = lastUpdated };
+                _exchangeUpdateRepo.Add(exchg);
+            }
 
             return lastUpdated;
         }
@@ -86,11 +99,16 @@ namespace Cryptobitfolio.Business
             coinList = new List<Coin>();
             foreach(var hub in exchangeHubs)
             {
-                currentHub = hub;
-                currentHub.SetMarketsAsync();
-                currentHubMarkets = currentHub.GetMarkets().ToList();
-                coinList.AddRange(GetExchangeCoins());
+                OnBuildCoins(hub);
             }
+        }
+
+        private void OnBuildCoins(ExchangeHub.ExchangeHub hub)
+        {
+            currentHub = hub;
+            currentHub.SetMarketsAsync();
+            currentHubMarkets = currentHub.GetMarkets().ToList();
+            coinList.AddRange(GetExchangeCoins());
         }
 
         public void BuildOrders()
@@ -98,15 +116,21 @@ namespace Cryptobitfolio.Business
             orderList = new List<ExchangeOrder>();
             foreach (var hub in exchangeHubs)
             {
-                currentHub = hub;
-                currentHub.SetMarketsAsync();
-                currentHubMarkets = currentHub.GetMarkets().ToList();
+                OnBuildOrders(hub);
             }
         }
 
-        public IEnumerable<ExchangeApi> GetExchangeApis()
+        private void OnBuildOrders(ExchangeHub.ExchangeHub hub)
         {
-            var entities = _exchangeRepo.Get().Result;
+            currentHub = hub;
+            currentHub.SetMarketsAsync();
+            currentHubMarkets = currentHub.GetMarkets().ToList();
+
+        }
+
+        public async Task<IEnumerable<ExchangeApi>> GetExchangeApis()
+        {
+            var entities = await _exchangeRepo.Get();
             var contractList = new List<ExchangeApi>();
 
             foreach(var entity in entities)

@@ -12,11 +12,13 @@ namespace Cryptobitfolio.Business.Common
     {
         void LoadExchange(ExchangeApi exchangeApi);
 
+        DateTime UpdatePortfolio();
+
         void BuildCoins();
         
         void BuildOrders();
 
-        IEnumerable<ExchangeApi> GetExchangeApis();
+        Task<IEnumerable<ExchangeApi>> GetExchangeApis();
 
         Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi);
 

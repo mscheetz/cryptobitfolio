@@ -1,27 +1,39 @@
-﻿using Cryptobitfolio.Business;
+﻿using CommonServiceLocator;
+using Cryptobitfolio.Business;
 using Cryptobitfolio.Business.Common;
 using Cryptobitfolio.Business.Contracts.Portfolio;
 using Cryptobitfolio.Business.Contracts.Trade;
+using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Repositories;
 using Cryptobitfolio.UI.Main;
+using Cryptobitfolio.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity;
+using Unity.ServiceLocation;
 using Xamarin.Forms;
 
 namespace Cryptobitfolio.UI
 {
     public class App : Application
     {
-        //private static IExchangeBuilder _exchangeBldr;
         private static List<Business.Contracts.Portfolio.Coin> coinList;
         private static List<WatchListCoin> watchListCoins;
         private static List<ExchangeTransaction> transactions;
-        //private IExchangeBuilder _exchangeBldr;
 
-        public App()//IExchangeBuilder exchangeBldr)
+        public App()
         {
-            //_exchangeBldr = exchangeBldr;
+            var unityContainer = new UnityContainer();
+
+            unityContainer.RegisterType<IExchangeApiRepository, ExchangeApiRepository>();
+            unityContainer.RegisterType<IExchangeBuilder, ExchangeBuilder>();
+            unityContainer.RegisterInstance(typeof(ExchangeViewModel));
+
+            var unityServiceLocator = new UnityServiceLocator(unityContainer);
+            ServiceLocator.SetLocatorProvider(() => unityServiceLocator);
+            
             MainPage = new MainPage();
         }
 
