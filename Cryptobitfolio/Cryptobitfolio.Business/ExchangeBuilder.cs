@@ -180,7 +180,36 @@ namespace Cryptobitfolio.Business
         {
             return orderList;
         }
-        
+       
+        public List<string> GetInternalArbitrage(string symbol, Exchange exchange)
+        {
+            var strings = new List<string>();
+            var hub = this.exchangeHubs.Where(e => e.GetExchange().ToString().Equals(exchange.ToString())).FirstOrDefault();
+            var path1 = new string[] { $"{symbol}BTC", $"BTCUSDT", $"{symbol}USDT" };
+            var path2 = new string[] { $"{symbol}USDT", $"BTCUSDT", $"{symbol}BTC" };
+            var path3 = new string[] { $"{symbol}ETH", $"ETHUSDT", $"{symbol}USDT" };
+            var path4 = new string[] { $"{symbol}ETH", $"ETHUSDT", $"BTCUSDT", $"{symbol}BTC" };
+            // TODO: THIS PART
+            //var ticker = hub.
+            var arbiragePairs1 = new Dictionary<string, decimal>();
+            arbiragePairs1.Add($"{symbol}BTC", hub.Get24hrStats($"{symbol}BTC").LastPrice);
+            arbiragePairs1.Add($"{symbol}ETH", hub.Get24hrStats($"{symbol}ETH").LastPrice);
+            arbiragePairs1.Add($"{symbol}USDT", hub.Get24hrStats($"{symbol}USDT").LastPrice);
+            arbiragePairs1.Add($"BTCUSDT", hub.Get24hrStats($"BTCUSDT").LastPrice);
+            arbiragePairs1.Add($"ETHUSDT", hub.Get24hrStats($"ETHUSDT").LastPrice);
+            arbiragePairs1.Add($"ETHBTC", hub.Get24hrStats($"ETHBTC").LastPrice);
+
+            if (hub != null)
+            {
+                currentHub = hub;
+                var pairs = currentHub.GetMarkets();
+
+                pairs = pairs.Where(p => p.Contains(symbol)).ToList();
+
+            }
+            return strings;
+        }
+
         private List<Coin> GetExchangeCoins()
         {
             var currencyList = new List<Currency>();
