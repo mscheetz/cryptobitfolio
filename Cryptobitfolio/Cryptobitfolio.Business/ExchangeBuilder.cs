@@ -181,33 +181,61 @@ namespace Cryptobitfolio.Business
             return orderList;
         }
        
-        public List<string> GetInternalArbitrage(string symbol, Exchange exchange)
+        public IEnumerable<ArbitrageLoop> GetInternalArbitrage(string symbol, decimal quantity, Exchange exchange)
         {
             var strings = new List<string>();
             var hub = this.exchangeHubs.Where(e => e.GetExchange().ToString().Equals(exchange.ToString())).FirstOrDefault();
             var path1 = new string[] { $"{symbol}BTC", $"BTCUSDT", $"{symbol}USDT" };
             var path2 = new string[] { $"{symbol}USDT", $"BTCUSDT", $"{symbol}BTC" };
             var path3 = new string[] { $"{symbol}ETH", $"ETHUSDT", $"{symbol}USDT" };
-            var path4 = new string[] { $"{symbol}ETH", $"ETHUSDT", $"BTCUSDT", $"{symbol}BTC" };
+            var path4 = new string[] { $"{symbol}USDT", $"ETHUSDT", $"{symbol}ETH" };
+            var path5 = new string[] { $"{symbol}BTC", $"BTCUSDT", $"ETHUSDT", $"{symbol}ETH" };
+            var path6 = new string[] { $"{symbol}ETH", $"ETHUSDT", $"BTCUSDT", $"{symbol}BTC" };
+            var paths = new List<ArbitrageLoop>();
+            paths.Add(new ArbitrageLoop(path1, quantity));
+            paths.Add(new ArbitrageLoop(path2, quantity));
+            paths.Add(new ArbitrageLoop(path3, quantity));
+            paths.Add(new ArbitrageLoop(path4, quantity));
+            paths.Add(new ArbitrageLoop(path5, quantity));
+            paths.Add(new ArbitrageLoop(path6, quantity));
+            var pathPairs = path1.Union(path2).ToArray();
+            pathPairs = pathPairs.Union(path3).ToArray();
+            pathPairs = pathPairs.Union(path4).ToArray();
+            pathPairs = pathPairs.Union(path5).ToArray();
+            pathPairs = pathPairs.Union(path6).ToArray();
             // TODO: THIS PART
-            //var ticker = hub.
-            var arbiragePairs1 = new Dictionary<string, decimal>();
-            arbiragePairs1.Add($"{symbol}BTC", hub.Get24hrStats($"{symbol}BTC").LastPrice);
-            arbiragePairs1.Add($"{symbol}ETH", hub.Get24hrStats($"{symbol}ETH").LastPrice);
-            arbiragePairs1.Add($"{symbol}USDT", hub.Get24hrStats($"{symbol}USDT").LastPrice);
-            arbiragePairs1.Add($"BTCUSDT", hub.Get24hrStats($"BTCUSDT").LastPrice);
-            arbiragePairs1.Add($"ETHUSDT", hub.Get24hrStats($"ETHUSDT").LastPrice);
-            arbiragePairs1.Add($"ETHBTC", hub.Get24hrStats($"ETHBTC").LastPrice);
-
-            if (hub != null)
+            var tickers = GetLatestPrices(hub).Result;
+            var arbitragePairs = new Dictionary<string, decimal>();
+            for (var i = 0; i < pathPairs.Length; i++)
             {
-                currentHub = hub;
-                var pairs = currentHub.GetMarkets();
-
-                pairs = pairs.Where(p => p.Contains(symbol)).ToList();
-
+                var price = tickers.Where(t => t.Pair.Equals(pathPairs[i])).Select(t => t.Price).FirstOrDefault();
+                arbitragePairs.Add(pathPairs[i], price);
             }
-            return strings;
+
+            for (var i = 0; i < paths.Count(); i++)
+            {
+                paths[i].FinalQuantity = ArbitrageCalculator(arbitragePairs, paths[i].Path, paths[i].StartingQuantity);
+            }
+
+            return paths;
+        }
+
+        private async Task<IEnumerable<ExchangeHub.Contracts.PairPrice>> GetLatestPrices(ExchangeHub.ExchangeHub hub)
+        {
+            return await hub.GetLatestPricesAsync();
+        }
+
+        public decimal ArbitrageCalculator(Dictionary<string, decimal> arbiPairs, string[] path, decimal quantity)
+        {
+            var currentQuantity = quantity;
+
+            for (var i = 0; i < path.Length; i++)
+            {
+                var pairPrice = arbiPairs[path[i]];
+                currentQuantity = currentQuantity * pairPrice;
+            }
+
+            return currentQuantity;
         }
 
         private List<Coin> GetExchangeCoins()
