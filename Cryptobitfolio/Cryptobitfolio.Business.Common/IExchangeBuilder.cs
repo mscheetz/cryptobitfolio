@@ -27,5 +27,7 @@ namespace Cryptobitfolio.Business.Common
         List<Coin> GetCoins();
 
         List<ExchangeOrder> GetOpenOrders();
+
+        IEnumerable<ArbitrageLoop> GetInternalArbitrages(string symbol, decimal quantity, Exchange exchange);
     }
 }

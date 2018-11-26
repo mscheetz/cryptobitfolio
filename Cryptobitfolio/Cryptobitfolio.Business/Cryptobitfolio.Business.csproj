@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ExchangeHub" Version="0.1.7" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Cryptobitfolio.Business.Common\Cryptobitfolio.Business.Common.csproj" />
     <ProjectReference Include="..\Cryptobitfolio.Business.Contracts\Cryptobitfolio.Business.Contracts.csproj" />
     <ProjectReference Include="..\Cryptobitfolio.Data\Cryptobitfolio.Data.csproj" />
