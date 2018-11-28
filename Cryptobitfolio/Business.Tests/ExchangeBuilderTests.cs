@@ -30,7 +30,6 @@ namespace Business.Tests
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         [Fact]
