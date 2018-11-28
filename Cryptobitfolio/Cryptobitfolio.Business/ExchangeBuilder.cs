@@ -217,7 +217,7 @@ namespace Cryptobitfolio.Business
 
             var balances = currentHub.GetBalances().Result;
 
-            foreach(var bal in balances)
+            foreach(var bal in balances.Where(b => b.Available + b.Frozen > 0))
             {
                 var currency = currencyList.Where(c => c.Symbol.Equals(bal.Symbol)).FirstOrDefault();
                 var coin = GetExchangeCoin(bal, currentHub.GetExchange());
@@ -235,7 +235,7 @@ namespace Cryptobitfolio.Business
         {
             var pairs = await currentHub.GetMarkets();
 
-            pairs = pairs.Where(p => p.Contains(symbol));
+            pairs = pairs.Where(p => p.StartsWith(symbol));
 
             return pairs;
         }
