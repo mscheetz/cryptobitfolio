@@ -27,7 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptobitfolio.Business.Ent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptobitfolio.Business.Contracts", "Cryptobitfolio.Business.Contracts\Cryptobitfolio.Business.Contracts.csproj", "{8F1DFEE1-F48C-42D6-9F91-F08B00AF79C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptobitfolio.Business.Common", "Cryptobitfolio.Business.Common\Cryptobitfolio.Business.Common.csproj", "{B34436FE-BAF6-4E3C-935D-468A16C2AD44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptobitfolio.Business.Common", "Cryptobitfolio.Business.Common\Cryptobitfolio.Business.Common.csproj", "{B34436FE-BAF6-4E3C-935D-468A16C2AD44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3D52BA67-C6FA-4F85-B014-C669AE0D7568}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business Tests", "Business Tests", "{973DE8BD-91E8-41FC-98F9-DFF4CD5E4642}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business.Tests", "Business.Tests\Business.Tests.csproj", "{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,6 +267,30 @@ Global
 		{B34436FE-BAF6-4E3C-935D-468A16C2AD44}.Release|iPhone.Build.0 = Release|Any CPU
 		{B34436FE-BAF6-4E3C-935D-468A16C2AD44}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{B34436FE-BAF6-4E3C-935D-468A16C2AD44}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Release|iPhone.Build.0 = Release|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -274,6 +304,8 @@ Global
 		{2F86EC2F-891A-4795-B165-6B1EAC046708} = {741EDA25-1C34-4805-B2B6-85963BA4314D}
 		{8F1DFEE1-F48C-42D6-9F91-F08B00AF79C6} = {741EDA25-1C34-4805-B2B6-85963BA4314D}
 		{B34436FE-BAF6-4E3C-935D-468A16C2AD44} = {741EDA25-1C34-4805-B2B6-85963BA4314D}
+		{973DE8BD-91E8-41FC-98F9-DFF4CD5E4642} = {3D52BA67-C6FA-4F85-B014-C669AE0D7568}
+		{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C} = {973DE8BD-91E8-41FC-98F9-DFF4CD5E4642}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F48778E-1A8D-4F87-9725-81185584088E}
