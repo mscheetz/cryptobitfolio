@@ -13,7 +13,7 @@ namespace Cryptobitfolio.Business
 {
     public class ExchangeBuilder : IExchangeBuilder
     {
-        private readonly IExchangeApiRepository _exchangeRepo;
+        private readonly IExchangeApiRepository _exchangeApiRepo;
         private readonly IExchangeUpdateRepository _exchangeUpdateRepo;
         private readonly IArbitragePathRepository _arbitragePathRepo;
         private readonly IArbitrageBuilder _arbitrageBldr;
@@ -31,15 +31,20 @@ namespace Cryptobitfolio.Business
         private List<ExchangeTransaction> transactionList;
 
         public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, 
-                               IExchangeUpdateRepository exchangeUpateRepo,
+                               IExchangeUpdateRepository exchangeUpdateRepo,
                                IArbitragePathRepository arbitragePathRepo,
                                IArbitrageBuilder arbitrageBuilder)
         {
-            _exchangeRepo = exhangeApiRepo;
-            _exchangeUpdateRepo = exchangeUpateRepo;
+            _exchangeApiRepo = exhangeApiRepo;
+            _exchangeUpdateRepo = exchangeUpdateRepo;
             _arbitragePathRepo = arbitragePathRepo;
             _arbitrageBldr = arbitrageBuilder;
-            _exchangeApis = _exchangeRepo.Get().Result;
+            LoadBuilder();
+        }
+
+        public void LoadBuilder()
+        {
+            _exchangeApis = _exchangeApiRepo.Get().Result;
             //exchangeHubs = new List<ExchangeHub.ExchangeHub>();
             exchangeHubs = new List<IExchangeHubRepository>();
             coinSet = new HashSet<string>();
@@ -64,8 +69,6 @@ namespace Cryptobitfolio.Business
                     exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
                 }
             }
-
-            UpdatePortfolio();
         }
 
         public void LoadExchange(ExchangeApi exchangeApi)
@@ -146,7 +149,7 @@ namespace Cryptobitfolio.Business
 
         public async Task<IEnumerable<ExchangeApi>> GetExchangeApis()
         {
-            var entities = await _exchangeRepo.Get();
+            var entities = await _exchangeApiRepo.Get();
             var contractList = new List<ExchangeApi>();
 
             foreach(var entity in entities)
@@ -164,8 +167,8 @@ namespace Cryptobitfolio.Business
             var entity = ExchangeApiContractToEntity(exchangeApi);
 
             entity = entity.Id == 0 
-                        ? await _exchangeRepo.Add(entity) 
-                        : await _exchangeRepo.Update(entity);
+                        ? await _exchangeApiRepo.Add(entity) 
+                        : await _exchangeApiRepo.Update(entity);
 
             exchangeApi.Id = entity.Id;
 
@@ -178,7 +181,7 @@ namespace Cryptobitfolio.Business
 
             try
             {
-                await _exchangeRepo.Delete(entity);
+                await _exchangeApiRepo.Delete(entity);
                 return true;
             }
             catch(Exception ex)
@@ -189,6 +192,10 @@ namespace Cryptobitfolio.Business
 
         public List<Coin> GetCoins()
         {
+            if(coinList == null || coinList.Count == 0)
+            {
+                BuildCoins();
+            }
             return coinList;
         }
 
