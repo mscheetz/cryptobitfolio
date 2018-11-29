@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cryptobitfolio.Business\Cryptobitfolio.Business.csproj" />
+    <ProjectReference Include="..\Cryptobitfolio.Tests.Common\Cryptobitfolio.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

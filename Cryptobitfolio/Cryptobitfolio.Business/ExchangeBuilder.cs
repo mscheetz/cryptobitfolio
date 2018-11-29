@@ -19,6 +19,7 @@ namespace Cryptobitfolio.Business
         private readonly IArbitrageBuilder _arbitrageBldr;
         //private ExchangeHub.ExchangeHub currentHub = null;
         private IExchangeHubRepository currentHub = null;
+        private string currentExchange = string.Empty;
         private DateTime lastUpdated;
         private List<Entities.Trade.ExchangeApi> _exchangeApis;
         //private List<ExchangeHub.ExchangeHub> exchangeHubs;
@@ -30,6 +31,13 @@ namespace Cryptobitfolio.Business
         private List<ExchangeOrder> orderList;
         private List<ExchangeTransaction> transactionList;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="exhangeApiRepo">Exchange Api repository</param>
+        /// <param name="exchangeUpdateRepo">Exchange Update repository</param>
+        /// <param name="arbitragePathRepo">Arbitrage Path repository</param>
+        /// <param name="arbitrageBuilder">Arbitrage builder</param>
         public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, 
                                IExchangeUpdateRepository exchangeUpdateRepo,
                                IArbitragePathRepository arbitragePathRepo,
@@ -42,7 +50,30 @@ namespace Cryptobitfolio.Business
             LoadBuilder();
         }
 
-        public void LoadBuilder()
+        /// <summary>
+        /// Constructor for unit tests
+        /// </summary>
+        /// <param name="exhangeApiRepo">Exchange Api repository</param>
+        /// <param name="exchangeUpdateRepo">Exchange Update repository</param>
+        /// <param name="arbitragePathRepo">Arbitrage Path repository</param>
+        /// <param name="arbitrageBuilder">Arbitrage builder</param>
+        /// <param name="exchangeHubRepo">Exchange Hub repository</param>
+        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo,
+                               IExchangeUpdateRepository exchangeUpdateRepo,
+                               IArbitragePathRepository arbitragePathRepo,
+                               IArbitrageBuilder arbitrageBuilder,
+                               IExchangeHubRepository exchangeHubRepo)
+        {
+            _exchangeApiRepo = exhangeApiRepo;
+            _exchangeUpdateRepo = exchangeUpdateRepo;
+            _arbitragePathRepo = arbitragePathRepo;
+            _arbitrageBldr = arbitrageBuilder;
+            currentHub = exchangeHubRepo;
+            currentExchange = "Binance";
+            LoadBuilder(true);
+        }
+
+        public void LoadBuilder(bool test = false)
         {
             _exchangeApis = _exchangeApiRepo.Get().Result;
             //exchangeHubs = new List<ExchangeHub.ExchangeHub>();
@@ -50,23 +81,31 @@ namespace Cryptobitfolio.Business
             coinSet = new HashSet<string>();
             exchangeCoinList = new List<ExchangeCoin>();
 
-            foreach (var api in _exchangeApis)
+            if (!test)
             {
-                if (api.ExchangeName == Exchange.Binance)
+                foreach (var api in _exchangeApis)
                 {
-                    exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret));
+                    if (api.ExchangeName == Exchange.Binance)
+                    {
+                        exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret));
+                    }
+                    else if (api.ExchangeName == Exchange.Bittrex)
+                    {
+                        exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret));
+                    }
+                    else if (api.ExchangeName == Exchange.CoinbasePro)
+                    {
+                        exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.CoinbasePro, api.ApiKey, api.ApiSecret, api.ApiExtra));
+                    }
+                    else if (api.ExchangeName == Exchange.KuCoin)
+                    {
+                        exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
+                    }
                 }
-                else if (api.ExchangeName == Exchange.Bittrex)
+                if(currentHub == null)
                 {
-                    exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret));
-                }
-                else if (api.ExchangeName == Exchange.CoinbasePro)
-                {
-                    exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.CoinbasePro, api.ApiKey, api.ApiSecret, api.ApiExtra));
-                }
-                else if (api.ExchangeName == Exchange.KuCoin)
-                {
-                    exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
+                    currentHub = exchangeHubs[0];
+                    currentExchange = currentHub.GetExchange();
                 }
             }
         }
@@ -207,10 +246,11 @@ namespace Cryptobitfolio.Business
         public IEnumerable<ArbitrageLoop> GetInternalArbitrages(string symbol, decimal quantity, Exchange exchange)
         {
             currentHub = exchangeHubs.Where(e => e.GetExchange().Equals(exchange.ToString())).FirstOrDefault();
+            currentExchange = exchange.ToString();
             return _arbitrageBldr.GetInternalArbitrage(symbol, quantity, currentHub);
         }
 
-        private List<Coin> GetExchangeCoins()
+        public List<Coin> GetExchangeCoins()
         {
             var currencyList = new List<Currency>();
             var coinList = new List<Coin>();
@@ -220,7 +260,7 @@ namespace Cryptobitfolio.Business
             foreach(var bal in balances.Where(b => b.Available + b.Frozen > 0))
             {
                 var currency = currencyList.Where(c => c.Symbol.Equals(bal.Symbol)).FirstOrDefault();
-                var coin = GetExchangeCoin(bal, currentHub.GetExchange());
+                var coin = GetExchangeCoin(bal);
                 coin.CoinBuyList = GetRelevantBuys(coin.Symbol, coin.Quantity);
                 coin.OpenOrderList = GetOpenOrdersForASymbol(coin.Symbol);
 
@@ -231,16 +271,63 @@ namespace Cryptobitfolio.Business
             return coinList;
         }
 
-        private async Task<IEnumerable<string>> GetMarketsForACoin(string symbol)
+        /// <summary>
+        /// Get buys for a given coin that fulfill the a given quantity
+        /// </summary>
+        /// <param name="symbol">Symbol of coin</param>
+        /// <param name="quantity">Quantity of coin</param>
+        /// <returns>Collection of CoinBuy objects</returns>
+        public List<CoinBuy> GetRelevantBuys(string symbol, decimal quantity)
         {
-            var pairs = await currentHub.GetMarkets();
+            var pairs = GetMarketsForACoin(symbol);
+            var orders = GetExchangeOrders(pairs).Result.OrderByDescending(o => o.TransactTime);
+            var coinBuyList = new List<CoinBuy>();
+
+            foreach (var order in orders)
+            {
+                var coinBuy = GetCoinBuy(order);
+                coinBuyList.Add(coinBuy);
+
+                quantity -= coinBuy.Quantity;
+
+                if (quantity <= 0)
+                {
+                    break;
+                }
+            }
+
+            return coinBuyList;
+        }
+
+        /// <summary>
+        /// Get all markets for a given coin
+        /// </summary>
+        /// <param name="symbol">Symbol of currency</param>
+        /// <returns>Collection of trading pairs</returns>
+        public IEnumerable<string> GetMarketsForACoin(string symbol)
+        {
+            var pairs = GetMarkets().Result;
 
             pairs = pairs.Where(p => p.StartsWith(symbol));
 
             return pairs;
         }
 
-        private async Task<IEnumerable<ExchangeHub.Contracts.OrderResponse>> GetExchangeOrders(IEnumerable<string> pairs)
+        /// <summary>
+        /// Get all markets for the current hub
+        /// </summary>
+        /// <returns>Collection of Markets</returns>
+        public async Task<IEnumerable<string>> GetMarkets()
+        {
+            return await currentHub.GetMarkets();
+        }
+
+        /// <summary>
+        /// Get orders for a collection of trading pairs
+        /// </summary>
+        /// <param name="pairs">Trading pairs</param>
+        /// <returns>Collection of OrderResponses</returns>
+        public async Task<IEnumerable<ExchangeHub.Contracts.OrderResponse>> GetExchangeOrders(IEnumerable<string> pairs)
         {
             var orders = new List<ExchangeHub.Contracts.OrderResponse>();
 
@@ -268,28 +355,6 @@ namespace Cryptobitfolio.Business
             return orders;
         }
 
-        private List<CoinBuy> GetRelevantBuys(string symbol, decimal quantity)
-        {
-            var pairs = GetMarketsForACoin(symbol).Result;
-            var orders = GetExchangeOrders(pairs).Result.OrderByDescending(o => o.TransactTime);
-            var coinBuyList = new List<CoinBuy>();
-
-            foreach (var order in orders)
-            {
-                var coinBuy = GetCoinBuy(order, currentHub.GetExchange());
-                coinBuyList.Add(coinBuy);
-
-                quantity -= coinBuy.Quantity;
-
-                if (quantity <= 0)
-                {
-                    break;
-                }
-            }
-
-            return coinBuyList;
-        }
-
         private List<ExchangeOrder> GetExchangeOpenOrders()
         {
             var orderList = new List<ExchangeOrder>();
@@ -306,13 +371,13 @@ namespace Cryptobitfolio.Business
         
         private List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol)
         {
-            var pairs = GetMarketsForACoin(symbol).Result;
+            var pairs = GetMarketsForACoin(symbol);
             var orders = GetExchangeOpenOrdersByPairs(pairs).Result;
             var exchangeOrderList = new List<ExchangeOrder>();
 
             foreach (var order in orders)
             {
-                var exchaneOrder = GetExchangeOrder(order, currentHub.GetExchange());
+                var exchaneOrder = GetExchangeOrder(order);
                 exchangeOrderList.Add(exchaneOrder);
             }
 
@@ -338,23 +403,36 @@ namespace Cryptobitfolio.Business
             return hubExchange;
         }
 
-        private ExchangeCoin GetExchangeCoin(ExchangeHub.Contracts.Balance balance, string exchange)
+        /// <summary>
+        /// Create an exchange coin from a ExchangeHub Balance object
+        /// </summary>
+        /// <param name="balance">Balance object to convert</param>
+        /// <returns>new ExchangeCoin object</returns>
+        public ExchangeCoin GetExchangeCoin(ExchangeHub.Contracts.Balance balance)
         {
             var exchangeCoin = new ExchangeCoin
             {
                 Quantity = balance.Available + balance.Frozen,
                 Symbol = balance.Symbol,
-                Exchange = StringToExchange(exchange)
+                Exchange = StringToExchange(currentExchange),
+                CoinBuyList = new List<CoinBuy>(),
+                Id = 0,
+                OpenOrderList = new List<ExchangeOrder>()
             };
 
             return exchangeCoin;
         }
 
-        private CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse, string exchange)
+        /// <summary>
+        /// Create a CoinBuy from an ExchangeHub OrderResponse
+        /// </summary>
+        /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <returns>new CoinBuy object</returns>
+        public CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse)
         {
             var coinBuy = new CoinBuy
             {
-                ExchangeName = StringToExchange(exchange),
+                ExchangeName = StringToExchange(currentExchange),
                 Id = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
@@ -365,11 +443,11 @@ namespace Cryptobitfolio.Business
             return coinBuy;
         }
 
-        private ExchangeOrder GetExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse, string exchange)
+        public ExchangeOrder GetExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse)
         {
             var exchangeOrder = new ExchangeOrder
             {
-                Exchange = StringToExchange(exchange),
+                Exchange = StringToExchange(currentExchange),
                 FilledQuantity = orderResponse.FilledQuantity,
                 OrderId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
