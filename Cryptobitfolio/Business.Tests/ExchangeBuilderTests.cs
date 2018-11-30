@@ -33,12 +33,29 @@ namespace Business.Tests
             var exchangeHubRepo = new Mock<IExchangeHubRepository>();
             exchangeHubRepo.Setup(m => m.GetBalances())
                 .Returns(Task.FromResult(testObjs.GetExchangeHubBalances()));
-            exchangeHubRepo.Setup(m => m.GetOrders(It.IsAny<string>()))
-                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("BTCUSDT"))));
+            exchangeHubRepo.SetupSequence(m => m.GetOrders(It.IsAny<string>()))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("BTCUSDT"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("ETHUSDT"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("ETHBTC"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("XLMBTC"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("XLMETH"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("XLMUSDT"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("NANOBTC"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("NANOETH"))));
             exchangeHubRepo.Setup(m => m.GetExchange())
                 .Returns(testObjs.GetExchangeHubExchange());
             exchangeHubRepo.Setup(m => m.GetMarkets())
                 .Returns(Task.FromResult(testObjs.GetExchangeHubMarkets()));
+            exchangeHubRepo.SetupSequence(m => m.GetOpenOrders(It.IsAny<string>()))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("BTCUSDT"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("ETHUSDT"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("ETHBTC"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("XLMBTC"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("XLMETH"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("XLMUSDT"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("NANOBTC"))))
+                .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("NANOETH"))));
+
             exchangeBuilder = new ExchangeBuilder(exchangeApiRepoMock.Object, exchangeUpdateRepoMock.Object, arbitrageRepoMock.Object, arbitrageBldrMock.Object, exchangeHubRepo.Object);
         }
 
@@ -100,17 +117,18 @@ namespace Business.Tests
         public void GetCoinBuyTest()
         {
             var orderResponse = testObjs.GetExchangeHubOrders().Where(o => o.Pair.Equals("BTCUSDT")).FirstOrDefault();
+            var quantity = 0.03M;
             var expected = new CoinBuy
             {
                 ExchangeName = Cryptobitfolio.Business.Entities.Exchange.Binance,
                 Id = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
-                Quantity = orderResponse.FilledQuantity,
+                Quantity = quantity,
                 TransactionDate = orderResponse.TransactTime
             };
 
-            var coinBuy = exchangeBuilder.GetCoinBuy(orderResponse);
+            var coinBuy = exchangeBuilder.GetCoinBuy(orderResponse, quantity);
 
             Assert.Equal(expected.Id, coinBuy.Id);
             Assert.Equal(expected.Pair, coinBuy.Pair);
@@ -123,12 +141,47 @@ namespace Business.Tests
         {
             var symbol = "BTC";
             var quantity = 0.01M;
+            var expected = testObjs.GetContractCoinBuyList();
+
             var buys = exchangeBuilder.GetRelevantBuys(symbol, quantity);
 
             Assert.NotNull(buys);
+            Assert.Equal(expected.Count, buys.Count);
+            Assert.Equal(expected[0].Price, buys[0].Price);
         }
 
-        
+        [Fact]
+        public void GetOpenOrdersForASymbolTest()
+        {
+            var symbol = "BTC";
+            var expected = testObjs.GetContractExchangeOrderList();
+
+            var orders = exchangeBuilder.GetOpenOrdersForASymbol(symbol);
+
+            Assert.NotNull(orders);
+            Assert.Equal(expected.Count, orders.Count);
+            Assert.Equal(expected[0].Price, orders[0].Price);
+            Assert.Equal(expected[1].FilledQuantity, orders[1].FilledQuantity);
+        }
+
+        [Fact]
+        public void GetExchangeCoinsTest()
+        {
+            var exchangeCoins = exchangeBuilder.GetExchangeCoins();
+            var exhangeCoinList = exchangeCoins.ToList();
+
+            Assert.NotNull(exchangeCoins);
+            Assert.Equal("BTC", exhangeCoinList[0].Symbol);
+            Assert.Equal(2, exhangeCoinList[0].CoinBuyList.Count);
+            Assert.Equal("ETH", exhangeCoinList[1].Symbol);
+            Assert.Single(exhangeCoinList[1].CoinBuyList);
+            Assert.Equal("XLM", exhangeCoinList[2].Symbol);
+            Assert.Equal(3, exhangeCoinList[2].CoinBuyList.Count);
+            Assert.Equal("NANO", exhangeCoinList[3].Symbol);
+            Assert.Equal(3, exhangeCoinList[3].CoinBuyList.Count);
+            Assert.Equal("RVN", exhangeCoinList[4].Symbol);
+            Assert.Empty(exhangeCoinList[4].CoinBuyList);
+        }
 
         [Fact]
         public void GetCoinsTest_NoCoins()
