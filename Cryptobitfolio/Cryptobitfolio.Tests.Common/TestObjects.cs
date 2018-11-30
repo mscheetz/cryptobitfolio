@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cryptobitfolio.Business;
+using System;
 using System.Collections.Generic;
 
 namespace Cryptobitfolio.Tests.Common
@@ -9,6 +10,8 @@ namespace Cryptobitfolio.Tests.Common
         public TestObjects()
         {
         }
+
+        #region ExchangeHub Objects
 
         public string GetExchangeHubExchange()
         {
@@ -42,6 +45,12 @@ namespace Cryptobitfolio.Tests.Common
                 Available = 250M,
                 Frozen = 0M,
                 Symbol = "NANO"
+            });
+            balances.Add(new ExchangeHub.Contracts.Balance
+            {
+                Available = 10250M,
+                Frozen = 0M,
+                Symbol = "RVN"
             });
 
             return balances;
@@ -116,6 +125,18 @@ namespace Cryptobitfolio.Tests.Common
             });
             orders.Add(new ExchangeHub.Contracts.OrderResponse
             {
+                FilledQuantity = 0.75M,
+                OrderId = "19",
+                OrderQuantity = 0.75M,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Filled,
+                Pair = "ETHBTC",
+                Price = 0.0451M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-122)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
                 FilledQuantity = 250M,
                 OrderId = "5",
                 OrderQuantity = 250M,
@@ -177,5 +198,181 @@ namespace Cryptobitfolio.Tests.Common
 
             return orders;
         }
+
+        public IEnumerable<ExchangeHub.Contracts.OrderResponse> GetExchangeHubOpenOrders()
+        {
+            var orders = new List<ExchangeHub.Contracts.OrderResponse>();
+
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0,
+                OrderId = "10",
+                OrderQuantity = 0.15M,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Open,
+                Pair = "BTCUSDT",
+                Price = 6400.00M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-56)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0.011M,
+                OrderId = "11",
+                OrderQuantity = 0.21M,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.PartialFill,
+                Pair = "BTCUSDT",
+                Price = 5724.00M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-124)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0,
+                OrderId = "12",
+                OrderQuantity = 500M,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Open,
+                Pair = "XLMBTC",
+                Price = 0.00002950M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-5)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0.6M,
+                OrderId = "13",
+                OrderQuantity = 1.5M,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.PartialFill,
+                Pair = "ETHUSDT",
+                Price = 215.7M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-22)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0,
+                OrderId = "14",
+                OrderQuantity = 750M,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Open,
+                Pair = "XLMBTC",
+                Price = 0.00003248M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-201)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0,
+                OrderId = "15",
+                OrderQuantity = 1000,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Open,
+                Pair = "XLMBTC",
+                Price = 0.00001997M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-271)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0,
+                OrderId = "16",
+                OrderQuantity = 200,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Open,
+                Pair = "NANOBTC",
+                Price = 0.0001991M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-21)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 0,
+                OrderId = "17",
+                OrderQuantity = 3000,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.Open,
+                Pair = "NANOBTC",
+                Price = 0.0001744M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-145)
+            });
+            orders.Add(new ExchangeHub.Contracts.OrderResponse
+            {
+                FilledQuantity = 55,
+                OrderId = "18",
+                OrderQuantity = 125,
+                OrderStatus = ExchangeHub.Contracts.OrderStatus.PartialFill,
+                Pair = "NANOBTC",
+                Price = 0.0004247M,
+                Side = ExchangeHub.Contracts.Side.Buy,
+                StopPrice = 0.0M,
+                TransactTime = DateTime.UtcNow.AddHours(-122)
+            });
+
+            return orders;
+        }
+
+        #endregion ExchangeHub Objects
+
+        #region Contract Objects
+
+        public List<Business.Contracts.Portfolio.CoinBuy> GetContractCoinBuyList()
+        {
+            var list = new List<Business.Contracts.Portfolio.CoinBuy>
+            {
+                new Business.Contracts.Portfolio.CoinBuy
+                {
+                    ExchangeName = Business.Entities.Exchange.Binance,
+                    Id = "1",
+                    Pair = "BTCUSDT",
+                    Price = 4100.00M,
+                    Quantity = 0.005M
+                },
+                new Business.Contracts.Portfolio.CoinBuy
+                {
+                    ExchangeName = Business.Entities.Exchange.Binance,
+                    Id = "2",
+                    Pair = "BTCUSDT",
+                    Price = 7423.00M,
+                    Quantity = 0.005M
+                }
+            };
+
+            return list;
+        }
+
+        public List<Business.Contracts.Trade.ExchangeOrder> GetContractExchangeOrderList()
+        {
+            var list = new List<Business.Contracts.Trade.ExchangeOrder>
+            {
+                new Business.Contracts.Trade.ExchangeOrder
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    FilledQuantity = 0,
+                    OrderId = "10",
+                    Pair = "BTCUSTD",
+                    Price = 6400.00M,
+                    Side = Business.Entities.Side.buy,
+                    Quantity = 0.15M
+                },
+                new Business.Contracts.Trade.ExchangeOrder
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    FilledQuantity = 0.011M,
+                    OrderId = "11",
+                    Pair = "BTCUSTD",
+                    Price = 5724.00M,
+                    Side = Business.Entities.Side.buy,
+                    Quantity = 0.21M
+                }
+            };
+
+            return list;
+        }
+
+        #endregion Contract Objects
     }
 }
