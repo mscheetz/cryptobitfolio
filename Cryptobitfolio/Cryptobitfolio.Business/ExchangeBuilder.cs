@@ -166,7 +166,7 @@ namespace Cryptobitfolio.Business
             currentHub = hub;
             //currentHub.SetMarketsAsync();
             currentHubMarkets = currentHub.GetMarkets().Result.ToList();
-            coinList.AddRange(GetExchangeCoins());
+            //coinList.AddRange(GetExchangeCoins());
         }
 
         public void BuildOrders()
@@ -250,10 +250,15 @@ namespace Cryptobitfolio.Business
             return _arbitrageBldr.GetInternalArbitrage(symbol, quantity, currentHub);
         }
 
-        public List<Coin> GetExchangeCoins()
+        /// <summary>
+        /// Get all ExchangeCoins for an exchange
+        /// </summary>
+        /// <returns>Collection of ExchangeCoins</returns>
+        public IEnumerable<ExchangeCoin> GetExchangeCoins()
         {
             var currencyList = new List<Currency>();
             var coinList = new List<Coin>();
+            var exCoinList = new List<ExchangeCoin>();
 
             var balances = currentHub.GetBalances().Result;
 
@@ -264,11 +269,11 @@ namespace Cryptobitfolio.Business
                 coin.CoinBuyList = GetRelevantBuys(coin.Symbol, coin.Quantity);
                 coin.OpenOrderList = GetOpenOrdersForASymbol(coin.Symbol);
 
-                exchangeCoinList.Add(coin);
+                exCoinList.Add(coin);
                 coinSet.Add(bal.Symbol);
             }
 
-            return coinList;
+            return exCoinList;
         }
 
         /// <summary>
@@ -285,10 +290,14 @@ namespace Cryptobitfolio.Business
 
             foreach (var order in orders)
             {
-                var coinBuy = GetCoinBuy(order);
-                coinBuyList.Add(coinBuy);
+                var quantityApplied = quantity >= order.FilledQuantity
+                    ? order.FilledQuantity
+                    : quantity;
 
-                quantity -= coinBuy.Quantity;
+                quantity -= order.FilledQuantity;
+
+                var coinBuy = GetCoinBuy(order, quantityApplied);
+                coinBuyList.Add(coinBuy);
 
                 if (quantity <= 0)
                 {
@@ -369,7 +378,12 @@ namespace Cryptobitfolio.Business
             return orderList;
         }
         
-        private List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol)
+        /// <summary>
+        /// Get Open orders for a currency symbol
+        /// </summary>
+        /// <param name="symbol">String of symbol</param>
+        /// <returns>Collection of ExchangeOrders</returns>
+        public List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol)
         {
             var pairs = GetMarketsForACoin(symbol);
             var orders = GetExchangeOpenOrdersByPairs(pairs).Result;
@@ -427,16 +441,18 @@ namespace Cryptobitfolio.Business
         /// Create a CoinBuy from an ExchangeHub OrderResponse
         /// </summary>
         /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <param name="quantityApplied">Quantity to apply to this order</param>
         /// <returns>new CoinBuy object</returns>
-        public CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse)
+        public CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse, decimal quantityApplied)
         {
             var coinBuy = new CoinBuy
             {
+                BTCPrice = orderResponse.Pair.EndsWith("BTC") ? orderResponse.Price : 0,
                 ExchangeName = StringToExchange(currentExchange),
                 Id = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
-                Quantity = orderResponse.FilledQuantity,
+                Quantity = quantityApplied,
                 TransactionDate = orderResponse.TransactTime
             };
 

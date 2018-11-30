@@ -28,7 +28,11 @@ namespace Cryptobitfolio.Business.Common
 
         List<ExchangeOrder> GetOpenOrders();
 
-        List<Coin> GetExchangeCoins();
+        /// <summary>
+        /// Get all ExchangeCoins for an exchange
+        /// </summary>
+        /// <returns>Collection of ExchangeCoins</returns>
+        IEnumerable<ExchangeCoin> GetExchangeCoins();
 
         IEnumerable<ArbitrageLoop> GetInternalArbitrages(string symbol, decimal quantity, Exchange exchange);
 
@@ -43,8 +47,9 @@ namespace Cryptobitfolio.Business.Common
         /// Create a CoinBuy from an ExchangeHub OrderResponse
         /// </summary>
         /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <param name="quantityApplied">Quantity to apply to this order</param>
         /// <returns>new CoinBuy object</returns>
-        CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse);
+        CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse, decimal quantityApplied);
 
         ExchangeOrder GetExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse);
 
@@ -75,5 +80,12 @@ namespace Cryptobitfolio.Business.Common
         /// <param name="pairs">Trading pairs</param>
         /// <returns>Collection of OrderResponses</returns>
         Task<IEnumerable<ExchangeHub.Contracts.OrderResponse>> GetExchangeOrders(IEnumerable<string> pairs);
+
+        /// <summary>
+        /// Get Open orders for a currency symbol
+        /// </summary>
+        /// <param name="symbol">String of symbol</param>
+        /// <returns>Collection of ExchangeOrders</returns>
+        List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol);
     }
 }
