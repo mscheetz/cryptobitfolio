@@ -14,8 +14,19 @@ namespace Cryptobitfolio.Business.Common
 
         DateTime UpdatePortfolio();
 
-        void BuildCoins();
-        
+        /// <summary>
+        /// Build Coins in portfolio from exchange data
+        /// </summary>
+        void BuildCoinsFromExchanges();
+
+        /// <summary>
+        /// Create Coins for portfolio
+        /// </summary>
+        /// <param name="exchangeCoins">Exchange coins to add to Coins</param>
+        /// <returns>Collection of Coins</returns>
+        IEnumerable<Coin> CreateCoins(IEnumerable<ExchangeCoin> exchangeCoins);
+
+
         void BuildOrders();
 
         Task<IEnumerable<ExchangeApi>> GetExchangeApis();

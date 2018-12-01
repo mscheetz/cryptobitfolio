@@ -17,6 +17,7 @@ namespace Cryptobitfolio.Business
         private readonly IExchangeUpdateRepository _exchangeUpdateRepo;
         private readonly IArbitragePathRepository _arbitragePathRepo;
         private readonly IArbitrageBuilder _arbitrageBldr;
+        private readonly ICMCBuilder _cmcBldr;
         //private ExchangeHub.ExchangeHub currentHub = null;
         private IExchangeHubRepository currentHub = null;
         private string currentExchange = string.Empty;
@@ -38,15 +39,18 @@ namespace Cryptobitfolio.Business
         /// <param name="exchangeUpdateRepo">Exchange Update repository</param>
         /// <param name="arbitragePathRepo">Arbitrage Path repository</param>
         /// <param name="arbitrageBuilder">Arbitrage builder</param>
+        /// <param name="cmcBuilder">CMC builder</param>
         public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, 
                                IExchangeUpdateRepository exchangeUpdateRepo,
                                IArbitragePathRepository arbitragePathRepo,
-                               IArbitrageBuilder arbitrageBuilder)
+                               IArbitrageBuilder arbitrageBuilder,
+                               ICMCBuilder cmcBuilder)
         {
             _exchangeApiRepo = exhangeApiRepo;
             _exchangeUpdateRepo = exchangeUpdateRepo;
             _arbitragePathRepo = arbitragePathRepo;
             _arbitrageBldr = arbitrageBuilder;
+            _cmcBldr = cmcBuilder;
             LoadBuilder();
         }
 
@@ -58,17 +62,20 @@ namespace Cryptobitfolio.Business
         /// <param name="arbitragePathRepo">Arbitrage Path repository</param>
         /// <param name="arbitrageBuilder">Arbitrage builder</param>
         /// <param name="exchangeHubRepo">Exchange Hub repository</param>
+        /// <param name="cmcBuilder">CMC builder</param>
         public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo,
                                IExchangeUpdateRepository exchangeUpdateRepo,
                                IArbitragePathRepository arbitragePathRepo,
                                IArbitrageBuilder arbitrageBuilder,
-                               IExchangeHubRepository exchangeHubRepo)
+                               IExchangeHubRepository exchangeHubRepo,
+                               ICMCBuilder cmcBuilder)
         {
             _exchangeApiRepo = exhangeApiRepo;
             _exchangeUpdateRepo = exchangeUpdateRepo;
             _arbitragePathRepo = arbitragePathRepo;
             _arbitrageBldr = arbitrageBuilder;
             currentHub = exchangeHubRepo;
+            _cmcBldr = cmcBuilder;
             currentExchange = "Binance";
             LoadBuilder(true);
         }
@@ -127,13 +134,13 @@ namespace Cryptobitfolio.Business
             }
             exchangeHubs.Add(currentHub);
 
-            OnBuildCoins(loadedHub);
+            OnBuildExchangeCoins(loadedHub);
             OnBuildOrders(loadedHub);
         }
 
         public DateTime UpdatePortfolio()
         {
-            BuildCoins();
+            BuildCoinsFromExchanges();
             BuildOrders();
             this.lastUpdated = DateTime.UtcNow;
 
@@ -152,21 +159,57 @@ namespace Cryptobitfolio.Business
             return exchangeHubs;
         }
 
-        public void BuildCoins()
+        /// <summary>
+        /// Build Coins in portfolio from exchange data
+        /// </summary>
+        public void BuildCoinsFromExchanges()
         {
-            coinList = new List<Coin>();
+            if(coinList == null || coinList.Count == 0)
+                coinList = new List<Coin>();
+
+            var exchangeCoins = new List<ExchangeCoin>();
+
             foreach(var hub in exchangeHubs)
             {
-                OnBuildCoins(hub);
+                exchangeCoins.AddRange(OnBuildExchangeCoins(hub));
             }
+
+            CreateCoins(exchangeCoins);
         }
 
-        private void OnBuildCoins(IExchangeHubRepository hub)
+        /// <summary>
+        /// Build Coins
+        /// </summary>
+        /// <param name="hub">ExchangeHub for current exchange</param>
+        /// <returns>Collection of ExchangeCoins</returns>
+        private IEnumerable<ExchangeCoin> OnBuildExchangeCoins(IExchangeHubRepository hub)
         {
             currentHub = hub;
-            //currentHub.SetMarketsAsync();
             currentHubMarkets = currentHub.GetMarkets().Result.ToList();
-            //coinList.AddRange(GetExchangeCoins());
+            return GetExchangeCoins();
+        }
+
+        /// <summary>
+        /// Create Coins for portfolio
+        /// </summary>
+        /// <param name="exchangeCoins">Exchange coins to add to Coins</param>
+        /// <returns>Collection of Coins</returns>
+        public IEnumerable<Coin> CreateCoins(IEnumerable<ExchangeCoin> exchangeCoins)
+        {
+            var currencies = GetCurrencies(coinSet.ToList());
+
+            foreach(var symbol in coinSet)
+            {
+                var coin = new Coin
+                {
+                    Currency = currencies.Where(c => c.Symbol.Equals(symbol)).FirstOrDefault(),
+                    ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals(symbol)).ToList(),
+                };
+
+                coinList.Add(coin);
+            }
+
+            return coinList;
         }
 
         public void BuildOrders()
@@ -233,7 +276,7 @@ namespace Cryptobitfolio.Business
         {
             if(coinList == null || coinList.Count == 0)
             {
-                BuildCoins();
+                BuildCoinsFromExchanges();
             }
             return coinList;
         }
@@ -256,13 +299,14 @@ namespace Cryptobitfolio.Business
         /// <returns>Collection of ExchangeCoins</returns>
         public IEnumerable<ExchangeCoin> GetExchangeCoins()
         {
-            var currencyList = new List<Currency>();
             var coinList = new List<Coin>();
             var exCoinList = new List<ExchangeCoin>();
 
-            var balances = currentHub.GetBalances().Result;
+            var balances = currentHub.GetBalances().Result.Where(b => b.Available + b.Frozen > 0);
 
-            foreach(var bal in balances.Where(b => b.Available + b.Frozen > 0))
+            var currencyList = GetCurrencies(balances.Select(b => b.Symbol).ToList());
+
+            foreach(var bal in balances)
             {
                 var currency = currencyList.Where(c => c.Symbol.Equals(bal.Symbol)).FirstOrDefault();
                 var coin = GetExchangeCoin(bal);
@@ -274,6 +318,18 @@ namespace Cryptobitfolio.Business
             }
 
             return exCoinList;
+        }
+
+        /// <summary>
+        /// Get currencies
+        /// </summary>
+        /// <param name="symbols">Symbols to find</param>
+        /// <returns>Collection of Currencies</returns>
+        public List<Currency> GetCurrencies(List<string> symbols)
+        {
+            var currencies = _cmcBldr.GetCurrencies(symbols).Result;
+
+            return currencies.ToList();
         }
 
         /// <summary>
