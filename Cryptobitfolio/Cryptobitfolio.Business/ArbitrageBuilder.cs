@@ -78,7 +78,7 @@ namespace Cryptobitfolio.Business
             var arbitragePaths = _arbitragePathRepo.Get().Result;
             for (var i = 0; i < arbitragePaths.Count; i++)
             {
-                paths.Add(new ArbitrageLoop(arbitragePaths[i].Path, quantity));
+                paths.Add(new ArbitrageLoop(arbitragePaths[i].Path.Split(','), quantity));
             }
 
             return paths;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cryptobitfolio.Business.Entities.Trade;
 using Cryptobitfolio.Data.Interfaces;
@@ -25,12 +26,34 @@ namespace Cryptobitfolio.Data.Repositories
 
         public async Task<ExchangeApi> Get(int Id)
         {
-            return await db.Table<ExchangeApi>().Where(c => c.Id == Id).FirstAsync();
+            ExchangeApi entity;
+
+            try
+            {
+                entity = await db.Table<ExchangeApi>().Where(e => e.Id == Id).FirstAsync();
+            }
+            catch
+            {
+                entity = null;
+            }
+
+            return entity;
         }
 
         public async Task<ExchangeApi> Get(string exchangeName)
         {
-            return await db.Table<ExchangeApi>().Where(c => c.ExchangeName.Equals(exchangeName)).FirstAsync();
+            ExchangeApi entity;
+
+            try
+            {
+                entity = await db.Table<ExchangeApi>().Where(e => e.Exchange.Equals(exchangeName)).FirstAsync();
+            }
+            catch
+            {
+                entity = null;
+            }
+
+            return entity;
         }
 
         public async Task<ExchangeApi> Add(ExchangeApi entity)
@@ -61,9 +84,38 @@ namespace Cryptobitfolio.Data.Repositories
             return entityList;
         }
 
-        public async Task Delete(ExchangeApi entity)
+        public async Task<bool> Delete(ExchangeApi entity)
         {
-            await db.DeleteAsync(entity);
+            try
+            {
+                await db.DeleteAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAll()
+        {
+            try
+            {
+                await db.DeleteAllAsync<ExchangeApi>();
+                await ResetAutoIncrement();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return true;
+        }
+
+        private async Task ResetAutoIncrement()
+        {
+            await db.ExecuteScalarAsync<ExchangeApi>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(ExchangeApi).Name}'");
         }
     }
 }

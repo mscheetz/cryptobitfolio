@@ -18,6 +18,8 @@ namespace Cryptobitfolio.Data.Interfaces
 
         Task<List<ArbitragePath>> UpdateAll(List<ArbitragePath> entityList);
 
-        Task Delete(ArbitragePath entity);
+        Task<bool> Delete(ArbitragePath entity);
+
+        Task<bool> DeleteAll();
     }
 }

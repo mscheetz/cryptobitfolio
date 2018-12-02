@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cryptobitfolio.Business.Entities.Portfolio;
 using Cryptobitfolio.Data.Interfaces;
@@ -25,7 +26,18 @@ namespace Cryptobitfolio.Data.Repositories
 
         public async Task<CoinBuy> Get(int Id)
         {
-            return await db.Table<CoinBuy>().Where(c => c.Id == Id).FirstAsync();
+            CoinBuy entity;
+
+            try
+            {
+                entity = await db.Table<CoinBuy>().Where(e => e.Id == Id).FirstAsync();
+            }
+            catch
+            {
+                entity = null;
+            }
+
+            return entity;
         }
 
         public async Task<CoinBuy> Add(CoinBuy entity)
@@ -56,9 +68,38 @@ namespace Cryptobitfolio.Data.Repositories
             return entityList;
         }
 
-        public async Task Delete(Coin entity)
+        public async Task<bool> Delete(CoinBuy entity)
         {
-            await db.DeleteAsync(entity);
+            try
+            {
+                await db.DeleteAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAll()
+        {
+            try
+            {
+                await db.DeleteAllAsync<CoinBuy>();
+                await ResetAutoIncrement();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return true;
+        }
+
+        private async Task ResetAutoIncrement()
+        {
+            await db.ExecuteScalarAsync<ArbitragePath>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(CoinBuy).Name}'");
         }
     }
 }

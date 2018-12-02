@@ -317,6 +317,53 @@ namespace Cryptobitfolio.Tests.Common
 
         #endregion ExchangeHub Objects
 
+        #region CoinMarketCap Objects
+
+        public Dictionary<string, CoinMarketCap.Net.Contracts.Metadata> GetCoinMarketCapMetaData()
+        {
+            var dictionary = new Dictionary<string, CoinMarketCap.Net.Contracts.Metadata>();
+            dictionary.Add("BTC",
+                new CoinMarketCap.Net.Contracts.Metadata
+                {
+                    Id = 1,
+                    Logo = "link",
+                    Name = "Bitcoin",
+                    Slug = "bitcoin",
+                    Symbol = "BTC"
+                });
+            dictionary.Add("ETH",
+                new CoinMarketCap.Net.Contracts.Metadata
+                {
+                    Id = 2,
+                    Logo = "link",
+                    Name = "Ethereum",
+                    Slug = "ethereum",
+                    Symbol = "ETH"
+                });
+            dictionary.Add("XLM",
+                new CoinMarketCap.Net.Contracts.Metadata
+                {
+                    Id = 3,
+                    Logo = "link",
+                    Name = "Stellar",
+                    Slug = "stellar",
+                    Symbol = "XLM"
+                });
+            dictionary.Add("NANO",
+                new CoinMarketCap.Net.Contracts.Metadata
+                {
+                    Id = 4,
+                    Logo = "link",
+                    Name = "Nano",
+                    Slug = "nano",
+                    Symbol = "NANO"
+                });
+
+            return dictionary;
+        }
+
+        #endregion CoinMarketCap Objects
+
         #region Contract Objects
 
         public List<Business.Contracts.Portfolio.CoinBuy> GetContractCoinBuyList()
@@ -371,6 +418,43 @@ namespace Cryptobitfolio.Tests.Common
             };
 
             return list;
+        }
+
+        public IEnumerable<Business.Contracts.Portfolio.Currency> GetCurrencies()
+        {
+            var currencies = new List<Business.Contracts.Portfolio.Currency>()
+            {
+                new Business.Contracts.Portfolio.Currency
+                {
+                    Id = 1,
+                    Image = "image.jpg",
+                    Name = "Bitcoin",
+                    Symbol = "BTC"
+                },
+                new Business.Contracts.Portfolio.Currency
+                {
+                    Id = 2,
+                    Image = "image.jpg",
+                    Name = "Ethereum",
+                    Symbol = "ETH"
+                },
+                new Business.Contracts.Portfolio.Currency
+                {
+                    Id = 3,
+                    Image = "image.jpg",
+                    Name = "Stellar",
+                    Symbol = "XLM"
+                },
+                new Business.Contracts.Portfolio.Currency
+                {
+                    Id = 4,
+                    Image = "image.jpg",
+                    Name = "Nano",
+                    Symbol = "NANO"
+                }
+            };
+
+            return currencies;
         }
 
         #endregion Contract Objects

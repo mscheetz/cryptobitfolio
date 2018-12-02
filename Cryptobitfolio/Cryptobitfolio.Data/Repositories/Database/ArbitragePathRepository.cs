@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cryptobitfolio.Business.Entities.Portfolio;
 using Cryptobitfolio.Data.Interfaces;
@@ -13,7 +14,7 @@ namespace Cryptobitfolio.Data.Repositories
         public ArbitragePathRepository()
         {
             var context = new SqliteContext();
-            db = context.GetConnection<Coin>();
+            db = context.GetConnection<ArbitragePath>();
 
             db.CreateTableAsync<ArbitragePath>();
         }
@@ -25,7 +26,18 @@ namespace Cryptobitfolio.Data.Repositories
 
         public async Task<ArbitragePath> Get(int Id)
         {
-            return await db.Table<ArbitragePath>().Where(c => c.Id == Id).FirstAsync();
+            ArbitragePath entity;
+
+            try
+            {
+                entity = await db.Table<ArbitragePath>().Where(e => e.Id == Id).FirstAsync();
+            }
+            catch
+            {
+                entity = null;
+            }
+
+            return entity;
         }
 
         public async Task<ArbitragePath> Add(ArbitragePath entity)
@@ -56,9 +68,38 @@ namespace Cryptobitfolio.Data.Repositories
             return entityList;
         }
 
-        public async Task Delete(ArbitragePath entity)
+        public async Task<bool> Delete(ArbitragePath entity)
         {
-            await db.DeleteAsync(entity);
+            try
+            {
+                await db.DeleteAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAll()
+        {
+            try
+            {
+                await db.DeleteAllAsync<ArbitragePath>();
+                await ResetAutoIncrement();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            return true;
+        }
+
+        private async Task ResetAutoIncrement()
+        {
+            await db.ExecuteScalarAsync<ArbitragePath>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(ArbitragePath).Name}'");
         }
     }
 }

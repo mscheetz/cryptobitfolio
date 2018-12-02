@@ -18,6 +18,8 @@ namespace Cryptobitfolio.Data.Interfaces
 
         Task<List<Coin>> UpdateAll(List<Coin> entityList);
 
-        Task Delete(Coin entity);
+        Task<bool> Delete(Coin entity);
+
+        Task<bool> DeleteAll();
     }
 }

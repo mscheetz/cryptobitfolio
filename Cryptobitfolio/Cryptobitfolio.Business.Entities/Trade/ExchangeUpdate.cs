@@ -7,6 +7,7 @@
 
 namespace Cryptobitfolio.Business.Entities.Trade
 {
+    using SQLite;
     #region Usings
 
     using System;
@@ -20,6 +21,10 @@ namespace Cryptobitfolio.Business.Entities.Trade
 
         #region Properties
 
+        [PrimaryKey]
+        [NotNull]
+        [AutoIncrement]
+        public int Id { get; set; }
         public DateTime UpdateAt { get; set; }
         public Exchange Exchange { get; set; }
 

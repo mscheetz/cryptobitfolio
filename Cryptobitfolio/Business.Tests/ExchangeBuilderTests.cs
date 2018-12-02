@@ -31,6 +31,7 @@ namespace Business.Tests
             var arbitrageRepoMock = new Mock<IArbitragePathRepository>();
             var arbitrageBldrMock = new Mock<IArbitrageBuilder>();
             var exchangeHubRepo = new Mock<IExchangeHubRepository>();
+            var cmcBldr = new Mock<ICMCBuilder>();
             exchangeHubRepo.Setup(m => m.GetBalances())
                 .Returns(Task.FromResult(testObjs.GetExchangeHubBalances()));
             exchangeHubRepo.SetupSequence(m => m.GetOrders(It.IsAny<string>()))
@@ -55,8 +56,10 @@ namespace Business.Tests
                 .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("XLMUSDT"))))
                 .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("NANOBTC"))))
                 .Returns(Task.FromResult(testObjs.GetExchangeHubOpenOrders().Where(o => o.Pair.Equals("NANOETH"))));
+            cmcBldr.Setup(m => m.GetCurrencies(It.IsAny<List<string>>()))
+                .Returns(Task.FromResult(testObjs.GetCurrencies()));
 
-            exchangeBuilder = new ExchangeBuilder(exchangeApiRepoMock.Object, exchangeUpdateRepoMock.Object, arbitrageRepoMock.Object, arbitrageBldrMock.Object, exchangeHubRepo.Object);
+            exchangeBuilder = new ExchangeBuilder(exchangeApiRepoMock.Object, exchangeUpdateRepoMock.Object, arbitrageRepoMock.Object, arbitrageBldrMock.Object, exchangeHubRepo.Object, cmcBldr.Object);
         }
 
         public void Dispose()

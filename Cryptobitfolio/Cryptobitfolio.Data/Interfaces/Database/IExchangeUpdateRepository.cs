@@ -9,7 +9,9 @@ namespace Cryptobitfolio.Data.Interfaces
     {
         Task<IEnumerable<ExchangeUpdate>> Get();
 
-        Task<IEnumerable<ExchangeUpdate>> Get(Exchange exchange);
+        Task<ExchangeUpdate> Get(int id);
+
+        Task<ExchangeUpdate> Get(Exchange exchange);
 
         Task<ExchangeUpdate> Add(ExchangeUpdate entity);
 
@@ -19,8 +21,8 @@ namespace Cryptobitfolio.Data.Interfaces
 
         Task<List<ExchangeUpdate>> UpdateAll(List<ExchangeUpdate> entityList);
 
-        Task<int> Delete(ExchangeUpdate entity);
+        Task<bool> Delete(ExchangeUpdate entity);
 
-        Task<int> DeleteAll();
+        Task<bool> DeleteAll();
     }
 }

@@ -20,6 +20,8 @@ namespace Cryptobitfolio.Data.Interfaces
 
         Task<List<ExchangeApi>> UpdateAll(List<ExchangeApi> entityList);
 
-        Task Delete(ExchangeApi entity);
+        Task<bool> Delete(ExchangeApi entity);
+
+        Task<bool> DeleteAll();
     }
 }

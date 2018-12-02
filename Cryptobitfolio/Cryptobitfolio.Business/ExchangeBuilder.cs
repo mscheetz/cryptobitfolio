@@ -92,19 +92,19 @@ namespace Cryptobitfolio.Business
             {
                 foreach (var api in _exchangeApis)
                 {
-                    if (api.ExchangeName == Exchange.Binance)
+                    if (api.Exchange == Exchange.Binance)
                     {
                         exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.Binance, api.ApiKey, api.ApiSecret));
                     }
-                    else if (api.ExchangeName == Exchange.Bittrex)
+                    else if (api.Exchange == Exchange.Bittrex)
                     {
                         exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.Bittrex, api.ApiKey, api.ApiSecret));
                     }
-                    else if (api.ExchangeName == Exchange.CoinbasePro)
+                    else if (api.Exchange == Exchange.CoinbasePro)
                     {
                         exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.CoinbasePro, api.ApiKey, api.ApiSecret, api.ApiExtra));
                     }
-                    else if (api.ExchangeName == Exchange.KuCoin)
+                    else if (api.Exchange == Exchange.KuCoin)
                     {
                         exchangeHubs.Add(new ExchangeHubRepository(ExchangeHub.Contracts.Exchange.KuCoin, api.ApiKey, api.ApiSecret));
                     }
@@ -144,7 +144,7 @@ namespace Cryptobitfolio.Business
             BuildOrders();
             this.lastUpdated = DateTime.UtcNow;
 
-            var exchanges = _exchangeApis.Select(e => e.ExchangeName).ToList();
+            var exchanges = _exchangeApis.Select(e => e.Exchange).ToList();
             foreach(var exchange in exchanges)
             {
                 var exchg = new Entities.Trade.ExchangeUpdate { Exchange = exchange, UpdateAt = lastUpdated };
@@ -544,7 +544,7 @@ namespace Cryptobitfolio.Business
                 ApiKey = entity.ApiKey,
                 ApiKeyName = entity.ApiKeyName,
                 ApiSecret = entity.ApiSecret,
-                ExchangeName = entity.ExchangeName,
+                ExchangeName = entity.Exchange,
                 Id = entity.Id
             };
 
@@ -559,7 +559,7 @@ namespace Cryptobitfolio.Business
                 ApiKey = contract.ApiKey,
                 ApiKeyName = contract.ApiKeyName,
                 ApiSecret = contract.ApiSecret,
-                ExchangeName = contract.ExchangeName,
+                Exchange = contract.ExchangeName,
                 Id = contract.Id
             };
 

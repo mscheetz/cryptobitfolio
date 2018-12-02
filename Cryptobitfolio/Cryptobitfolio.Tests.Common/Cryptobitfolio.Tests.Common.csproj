@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CoinMarketCap.Net" Version="0.0.1" />
     <PackageReference Include="ExchangeHub" Version="0.1.8" />
   </ItemGroup>
 

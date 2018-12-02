@@ -7,6 +7,7 @@
 
 namespace Cryptobitfolio.Business.Entities.Portfolio
 {
+    using SQLite;
     #region Usings
 
     using System;
@@ -19,9 +20,12 @@ namespace Cryptobitfolio.Business.Entities.Portfolio
     {
         #region Properties
 
+        [PrimaryKey]
+        [NotNull]
+        [AutoIncrement]
         public int Id { get; set; }
         public DateTime Created { get; set; }
-        public string[] Path { get; set; }
+        public string Path { get; set; }
 
         #endregion Properties
     }
