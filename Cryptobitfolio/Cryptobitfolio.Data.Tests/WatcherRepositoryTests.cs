@@ -9,32 +9,40 @@ using Xunit;
 
 namespace Cryptobitfolio.Data.Tests
 {
-    public class ArbitragePathRepositoryTests : IDisposable
+    public class WatcherRepositoryTests : IDisposable
     {
-        private readonly IDatabaseRepository<ArbitragePath> _repo;
-        private List<ArbitragePath> datas = new List<ArbitragePath>();
+        private readonly IDatabaseRepository<Watcher> _repo;
+        private List<Watcher> datas = new List<Watcher>();
 
-        public ArbitragePathRepositoryTests()
+        public WatcherRepositoryTests()
         {
-            _repo = new ArbitragePathRepository();
-            
+            _repo = new WatcherRepository();
+
             // first clear out the table
             var deleted = _repo.DeleteAll().Result;
 
             // then add some data for testing
             datas.Add(
-                new ArbitragePath
+                new Watcher
                 {
-                    Id = 0,
-                    Created = DateTime.UtcNow,
-                    Path = "Pair 1,Pair 2,Pair 3"
+                    CurrencyId = 1,
+                    DateAdded = DateTime.UtcNow,
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Pair = "BTCUSDT",
+                    WatchHit = null,
+                    WatchPrice = 3678.00M
                 });
             datas.Add(
-                new ArbitragePath
+                new Watcher
                 {
-                    Id = 0,
-                    Created = DateTime.UtcNow,
-                    Path = "Pair 1,Pair 3,Pair 4" 
+                    CurrencyId = 2,
+                    DateAdded = DateTime.UtcNow.AddMonths(-2),
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Pair = "ETHBTC",
+                    WatchHit = DateTime.UtcNow.AddDays(-2),
+                    WatchPrice = 0.0201M
                 });
 
             var addedEntites = _repo.AddAll(datas).Result;
@@ -87,51 +95,52 @@ namespace Cryptobitfolio.Data.Tests
         public void UpdateOne_Test()
         {
             var id = 1;
-            var newProperty = "a new path";
+            var newProperty = 3900.00M;
             var entity = _repo.Get(id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
 
-            entity.Path = newProperty;
+            entity.WatchPrice = newProperty;
 
             var updatedEntity = _repo.Update(entity).Result;
 
-            Assert.Equal(entity.Path, updatedEntity.Path);
+            Assert.Equal(entity.WatchPrice, updatedEntity.WatchPrice);
 
             var entityFetch = _repo.Get(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
-            Assert.Equal(newProperty, entityFetch.Path);
+            Assert.Equal(newProperty, entityFetch.WatchPrice);
         }
 
         [Fact]
         public void UpdateAll_Test()
         {
-            var newProperties = new List<string> { "new path 1", "new path 2" };
+            var newProperties = new List<decimal> { 3900.00M, 0.05M };
             var entities = _repo.Get().Result;
-            var entityList = entities.ToList();
 
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            entityList[0].Path = newProperties[0];
-            entityList[1].Path = newProperties[1];
+            var entityList = entities.ToList();
+
+            entityList[0].WatchPrice = newProperties[0];
+            entityList[1].WatchPrice = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
             var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entityList[0].Path, updatedList[0].Path);
-            Assert.Equal(entityList[1].Path, updatedList[1].Path);
+            Assert.Equal(entityList[0].WatchPrice, updatedList[0].WatchPrice);
+            Assert.Equal(entityList[1].WatchPrice, updatedList[1].WatchPrice);
 
             var entitiesFetch = _repo.Get().Result;
             var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], fetchList[0].Path);
-            Assert.Equal(newProperties[1], fetchList[1].Path);
+            Assert.Equal(newProperties[0], fetchList[0].WatchPrice);
+            Assert.Equal(newProperties[1], fetchList[1].WatchPrice);
         }
 
         [Fact]

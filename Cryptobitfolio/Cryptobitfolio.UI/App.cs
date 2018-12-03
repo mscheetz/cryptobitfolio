@@ -276,11 +276,11 @@ namespace Cryptobitfolio.UI
             {
                 var transactionList = new List<ExchangeTransaction>
                 {
-                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Bitcoin", Symbol = "BTC" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-2), Pair = "BTCUSDT", Price = 6700, Quantity = .01M, Side = Business.Entities.Side.buy, TransactionId = "1" },
-                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Bitcoin", Symbol = "BTC" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "BTCUSDT", Price = 6500, Quantity = .01M, Side = Business.Entities.Side.buy, TransactionId = "2" },
-                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Ethereum", Symbol = "ETH" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "ETHUSDT", Price = 199.0M, Quantity = 1, Side = Business.Entities.Side.buy, TransactionId = "3" },
-                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Stellar", Symbol = "XLM" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "XLMBTC", Price = 0.00002570M, Quantity = 500M, Side = Business.Entities.Side.buy, TransactionId = "4" },
-                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Stellar", Symbol = "XLM" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "XLMBTC", Price = 0.00001957M, Quantity = 1000M, Side = Business.Entities.Side.buy, TransactionId = "5" },
+                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Bitcoin", Symbol = "BTC" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-2), Pair = "BTCUSDT", Price = 6700, Quantity = .01M, Side = Business.Entities.Side.Buy, TransactionId = "1" },
+                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Bitcoin", Symbol = "BTC" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "BTCUSDT", Price = 6500, Quantity = .01M, Side = Business.Entities.Side.Buy, TransactionId = "2" },
+                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Ethereum", Symbol = "ETH" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "ETHUSDT", Price = 199.0M, Quantity = 1, Side = Business.Entities.Side.Buy, TransactionId = "3" },
+                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Stellar", Symbol = "XLM" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "XLMBTC", Price = 0.00002570M, Quantity = 500M, Side = Business.Entities.Side.Buy, TransactionId = "4" },
+                    new ExchangeTransaction { Currency = new Currency{ Id = 1, Name = "Stellar", Symbol = "XLM" }, Exchange = Business.Entities.Exchange.Binance, FillDate = DateTime.UtcNow.AddDays(-1), Pair = "XLMBTC", Price = 0.00001957M, Quantity = 1000M, Side = Business.Entities.Side.Buy, TransactionId = "5" },
                 };
                 transactions = transactionList;
             }

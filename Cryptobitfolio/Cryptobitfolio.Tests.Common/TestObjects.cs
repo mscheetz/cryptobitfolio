@@ -402,7 +402,7 @@ namespace Cryptobitfolio.Tests.Common
                     OrderId = "10",
                     Pair = "BTCUSTD",
                     Price = 6400.00M,
-                    Side = Business.Entities.Side.buy,
+                    Side = Business.Entities.Side.Buy,
                     Quantity = 0.15M
                 },
                 new Business.Contracts.Trade.ExchangeOrder
@@ -412,7 +412,7 @@ namespace Cryptobitfolio.Tests.Common
                     OrderId = "11",
                     Pair = "BTCUSTD",
                     Price = 5724.00M,
-                    Side = Business.Entities.Side.buy,
+                    Side = Business.Entities.Side.Buy,
                     Quantity = 0.21M
                 }
             };

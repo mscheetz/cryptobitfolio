@@ -1,4 +1,4 @@
-using Cryptobitfolio.Business.Entities.Portfolio;
+using Cryptobitfolio.Business.Entities.Trade;
 using Cryptobitfolio.Data.Interfaces;
 using Cryptobitfolio.Data.Interfaces.Database;
 using Cryptobitfolio.Data.Repositories;
@@ -9,32 +9,42 @@ using Xunit;
 
 namespace Cryptobitfolio.Data.Tests
 {
-    public class ArbitragePathRepositoryTests : IDisposable
+    public class ExchangeOrderRepositoryTests : IDisposable
     {
-        private readonly IDatabaseRepository<ArbitragePath> _repo;
-        private List<ArbitragePath> datas = new List<ArbitragePath>();
+        private readonly IDatabaseRepository<ExchangeOrder> _repo;
+        private List<ExchangeOrder> datas = new List<ExchangeOrder>();
 
-        public ArbitragePathRepositoryTests()
+        public ExchangeOrderRepositoryTests()
         {
-            _repo = new ArbitragePathRepository();
+            _repo = new ExchangeOrderRepository();
             
             // first clear out the table
             var deleted = _repo.DeleteAll().Result;
 
             // then add some data for testing
             datas.Add(
-                new ArbitragePath
+                new ExchangeOrder
                 {
-                    Id = 0,
-                    Created = DateTime.UtcNow,
-                    Path = "Pair 1,Pair 2,Pair 3"
+                    Created = DateTime.UtcNow.AddDays(-4),
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Filled = null,
+                    Price = 3489.23M,
+                    Quantity = 0.25M,
+                    Status = Business.Entities.TradeStatus.Open,
+                    TradeSide = Business.Entities.Side.Buy,
+                    TradingPair = "BTCUSDT"
                 });
             datas.Add(
-                new ArbitragePath
+                new ExchangeOrder
                 {
-                    Id = 0,
-                    Created = DateTime.UtcNow,
-                    Path = "Pair 1,Pair 3,Pair 4" 
+                    Created = DateTime.UtcNow.AddDays(-10),
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Filled = DateTime.UtcNow.AddDays(-10),
+                    Price = 0.021M,
+                    Quantity = 4.5M,
+                    Status = Business.Entities.TradeStatus.Filled,
+                    TradeSide = Business.Entities.Side.Buy,
+                    TradingPair = "ETHBTC"
                 });
 
             var addedEntites = _repo.AddAll(datas).Result;
@@ -87,51 +97,51 @@ namespace Cryptobitfolio.Data.Tests
         public void UpdateOne_Test()
         {
             var id = 1;
-            var newProperty = "a new path";
+            var newProperty = DateTime.UtcNow;
             var entity = _repo.Get(id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
 
-            entity.Path = newProperty;
+            entity.Filled = newProperty;
 
             var updatedEntity = _repo.Update(entity).Result;
 
-            Assert.Equal(entity.Path, updatedEntity.Path);
+            Assert.Equal(entity.Filled, updatedEntity.Filled);
 
             var entityFetch = _repo.Get(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
-            Assert.Equal(newProperty, entityFetch.Path);
+            Assert.Equal(newProperty, entityFetch.Filled);
         }
 
         [Fact]
         public void UpdateAll_Test()
         {
-            var newProperties = new List<string> { "new path 1", "new path 2" };
+            var newProperties = new List<DateTime> { DateTime.UtcNow.AddMonths(-5), DateTime.UtcNow.AddMonths(-1) };
             var entities = _repo.Get().Result;
             var entityList = entities.ToList();
 
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            entityList[0].Path = newProperties[0];
-            entityList[1].Path = newProperties[1];
+            entityList[0].Filled = newProperties[0];
+            entityList[1].Filled = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
             var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entityList[0].Path, updatedList[0].Path);
-            Assert.Equal(entityList[1].Path, updatedList[1].Path);
+            Assert.Equal(entityList[0].Filled, updatedList[0].Filled);
+            Assert.Equal(entityList[1].Filled, updatedList[1].Filled);
 
             var entitiesFetch = _repo.Get().Result;
             var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], fetchList[0].Path);
-            Assert.Equal(newProperties[1], fetchList[1].Path);
+            Assert.Equal(newProperties[0], fetchList[0].Filled);
+            Assert.Equal(newProperties[1], fetchList[1].Filled);
         }
 
         [Fact]

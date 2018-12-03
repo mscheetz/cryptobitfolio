@@ -2,7 +2,7 @@
 {
     public enum Exchange
     {
-        none,
+        None,
         Binance,
         Bittrex,
         CoinbasePro,
@@ -13,13 +13,20 @@
 
     public enum Side
     {
-        buy,
-        sell
+        Buy,
+        Sell
     }
 
     public enum CoinType
     {
         Portfolio,
         WatchList
+    }
+
+    public enum TradeStatus
+    {
+        Open,
+        Filled,
+        Canceled,
     }
 }

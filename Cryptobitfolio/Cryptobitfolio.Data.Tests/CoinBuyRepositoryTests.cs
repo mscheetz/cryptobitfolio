@@ -1,15 +1,17 @@
 using Cryptobitfolio.Business.Entities.Portfolio;
 using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Interfaces.Database;
 using Cryptobitfolio.Data.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Cryptobitfolio.Data.Tests
 {
     public class CoinBuyRepositoryTests : IDisposable
     {
-        private readonly ICoinBuyRepository _repo;
+        private readonly IDatabaseRepository<CoinBuy> _repo;
         private List<CoinBuy> datas = new List<CoinBuy>();
 
         public CoinBuyRepositoryTests()
@@ -63,10 +65,11 @@ namespace Cryptobitfolio.Data.Tests
             var entities = datas;
 
             var addedEntites = _repo.AddAll(entities).Result;
+            var entityList = addedEntites.ToList();
 
             Assert.NotNull(addedEntites);
-            Assert.True(addedEntites[0].Id > 0);
-            Assert.True(addedEntites[1].Id > 0);
+            Assert.True(entityList[0].Id > 0);
+            Assert.True(entityList[1].Id > 0);
         }
 
         [Fact]
@@ -75,7 +78,7 @@ namespace Cryptobitfolio.Data.Tests
             var entityList = _repo.Get().Result;
 
             Assert.NotNull(entityList);
-            Assert.True(entityList.Count > 0);
+            Assert.NotEmpty(entityList);
         }
 
         [Fact]
@@ -120,27 +123,31 @@ namespace Cryptobitfolio.Data.Tests
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            entities[0].Price = newProperties[0];
-            entities[1].Price = newProperties[1];
+            var entityList = entities.ToList();
+
+            entityList[0].Price = newProperties[0];
+            entityList[1].Price = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
+            var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entities[0].Price, updatedEntities[0].Price);
-            Assert.Equal(entities[1].Price, updatedEntities[1].Price);
+            Assert.Equal(entityList[0].Price, updatedList[0].Price);
+            Assert.Equal(entityList[1].Price, updatedList[1].Price);
 
             var entitiesFetch = _repo.Get().Result;
+            var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], entitiesFetch[0].Price);
-            Assert.Equal(newProperties[1], entitiesFetch[1].Price);
+            Assert.Equal(newProperties[0], fetchList[0].Price);
+            Assert.Equal(newProperties[1], fetchList[1].Price);
         }
 
         [Fact]
         public void Delete_Test()
         {
             var entityList = _repo.Get().Result;
-            var entityToDelete = entityList[0];
+            var entityToDelete = entityList.FirstOrDefault();
 
             var delete = _repo.Delete(entityToDelete).Result;
             
@@ -154,7 +161,7 @@ namespace Cryptobitfolio.Data.Tests
         {
             var entityList = _repo.Get().Result;
 
-            Assert.True(entityList.Count > 0);
+            Assert.NotEmpty(entityList);
 
             var delete = _repo.DeleteAll().Result;
             var entityListRecheck = _repo.Get().Result;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,10 @@ namespace Cryptobitfolio.Business.Entities.Portfolio
 {
     public class Watcher
     {
-        public int WatchListId { get; set; }
+        [PrimaryKey]
+        [NotNull]
+        [AutoIncrement]
+        public int Id { get; set; }
         public int CurrencyId { get; set; }
         public bool Enabled { get; set; }
         public DateTime DateAdded { get; set; }

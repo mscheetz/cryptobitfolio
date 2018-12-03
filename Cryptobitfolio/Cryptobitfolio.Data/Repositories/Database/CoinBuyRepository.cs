@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cryptobitfolio.Business.Entities.Portfolio;
 using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Interfaces.Database;
 using SQLite;
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    public class CoinBuyRepository : ICoinBuyRepository
+    public class CoinBuyRepository : IDatabaseRepository<CoinBuy>
     {
         private SQLiteAsyncConnection db;
 
@@ -19,9 +20,14 @@ namespace Cryptobitfolio.Data.Repositories
             db.CreateTableAsync<CoinBuy>();
         }
 
-        public async Task<List<CoinBuy>> Get()
+        public async Task<IEnumerable<CoinBuy>> Get()
         {
             return await db.Table<CoinBuy>().ToListAsync();
+        }
+
+        public async Task<IEnumerable<CoinBuy>> Get(List<int> ids)
+        {
+            return await db.Table<CoinBuy>().Where(e => ids.Contains(e.CurrencyId)).ToListAsync();
         }
 
         public async Task<CoinBuy> Get(int Id)
@@ -47,7 +53,7 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<List<CoinBuy>> AddAll(List<CoinBuy> entityList)
+        public async Task<IEnumerable<CoinBuy>> AddAll(IEnumerable<CoinBuy> entityList)
         {
             await db.InsertAllAsync(entityList);
 
@@ -61,7 +67,7 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<List<CoinBuy>> UpdateAll(List<CoinBuy> entityList)
+        public async Task<IEnumerable<CoinBuy>> UpdateAll(IEnumerable<CoinBuy> entityList)
         {
             await db.UpdateAllAsync(entityList);
 

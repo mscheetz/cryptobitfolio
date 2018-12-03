@@ -93,7 +93,7 @@ namespace Business.Tests
                 Exchange = Cryptobitfolio.Business.Entities.Exchange.Binance,
                 CoinBuyList = new List<CoinBuy>(),
                 Id = 0,
-                OpenOrderList = new List<ExchangeOrder>()
+                OpenOrderList = new List<Cryptobitfolio.Business.Contracts.Trade.ExchangeOrder>()
             };
             var exchangeCoin = exchangeBuilder.GetExchangeCoin(balance);
 

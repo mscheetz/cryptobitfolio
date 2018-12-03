@@ -1,5 +1,6 @@
 using Cryptobitfolio.Business.Entities.Trade;
 using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Interfaces.Database;
 using Cryptobitfolio.Data.Repositories;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Cryptobitfolio.Data.Tests
 {
     public class ExchangeUpdateRepositoryTests : IDisposable
     {
-        private readonly IExchangeUpdateRepository _repo;
+        private readonly IDatabaseRepository<ExchangeUpdate> _repo;
         private List<ExchangeUpdate> datas = new List<ExchangeUpdate>();
 
         public ExchangeUpdateRepositoryTests()
@@ -56,10 +57,11 @@ namespace Cryptobitfolio.Data.Tests
             var entities = datas;
 
             var addedEntites = _repo.AddAll(entities).Result;
+            var entityList = addedEntites.ToList();
 
             Assert.NotNull(addedEntites);
-            Assert.True(addedEntites[0].Id > 0);
-            Assert.True(addedEntites[1].Id > 0);
+            Assert.True(entityList[0].Id > 0);
+            Assert.True(entityList[1].Id > 0);
         }
 
         [Fact]
@@ -108,35 +110,38 @@ namespace Cryptobitfolio.Data.Tests
         public void UpdateAll_Test()
         {
             var newProperties = new List<DateTime> { DateTime.UtcNow.AddMonths(-5), DateTime.UtcNow.AddMonths(-1) };
-            var entities = _repo.Get().Result.ToList();
+            var entities = _repo.Get().Result;
+            var entityList = entities.ToList();
 
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            entities[0].UpdateAt = newProperties[0];
-            entities[1].UpdateAt = newProperties[1];
+            entityList[0].UpdateAt = newProperties[0];
+            entityList[1].UpdateAt = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
+            var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entities[0].UpdateAt, updatedEntities[0].UpdateAt);
-            Assert.Equal(entities[1].UpdateAt, updatedEntities[1].UpdateAt);
+            Assert.Equal(entityList[0].UpdateAt, updatedList[0].UpdateAt);
+            Assert.Equal(entityList[1].UpdateAt, updatedList[1].UpdateAt);
 
-            var entitiesFetch = _repo.Get().Result.ToList();
+            var entitiesFetch = _repo.Get().Result;
+            var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], entitiesFetch[0].UpdateAt);
-            Assert.Equal(newProperties[1], entitiesFetch[1].UpdateAt);
+            Assert.Equal(newProperties[0], fetchList[0].UpdateAt);
+            Assert.Equal(newProperties[1], fetchList[1].UpdateAt);
         }
 
         [Fact]
         public void Delete_Test()
         {
-            var entityList = _repo.Get().Result.ToList();
-            var entityToDelete = entityList[0];
+            var entityList = _repo.Get().Result;
+            var entityToDelete = entityList.FirstOrDefault();
 
             var delete = _repo.Delete(entityToDelete).Result;
-            
+
             var entityFetch = _repo.Get(entityToDelete.Id).Result;
 
             Assert.Null(entityFetch);

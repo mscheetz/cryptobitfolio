@@ -8,35 +8,35 @@ using SQLite;
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    public class ArbitragePathRepository : IDatabaseRepository<ArbitragePath>
+    public class ExchangeCoinRepository : IDatabaseRepository<ExchangeCoin>
     {
         private SQLiteAsyncConnection db;
 
-        public ArbitragePathRepository()
+        public ExchangeCoinRepository()
         {
             var context = new SqliteContext();
-            db = context.GetConnection<ArbitragePath>();
+            db = context.GetConnection<ExchangeCoin>();
 
-            db.CreateTableAsync<ArbitragePath>();
+            db.CreateTableAsync<ExchangeCoin>();
         }
 
-        public async Task<IEnumerable<ArbitragePath>> Get()
+        public async Task<IEnumerable<ExchangeCoin>> Get()
         {
-            return await db.Table<ArbitragePath>().ToListAsync();
+            return await db.Table<ExchangeCoin>().ToListAsync();
         }
 
-        public async Task<IEnumerable<ArbitragePath>> Get(List<int> ids)
+        public async Task<IEnumerable<ExchangeCoin>> Get(List<int> ids)
         {
-            return await db.Table<ArbitragePath>().Where(e => ids.Contains(e.Id)).ToListAsync();
+            return await db.Table<ExchangeCoin>().Where(e => ids.Contains(e.CurrencyId)).ToListAsync();
         }
 
-        public async Task<ArbitragePath> Get(int Id)
+        public async Task<ExchangeCoin> Get(int Id)
         {
-            ArbitragePath entity;
+            ExchangeCoin entity;
 
             try
             {
-                entity = await db.Table<ArbitragePath>().Where(e => e.Id == Id).FirstAsync();
+                entity = await db.Table<ExchangeCoin>().Where(e => e.Id == Id).FirstAsync();
             }
             catch
             {
@@ -46,35 +46,35 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<ArbitragePath> Add(ArbitragePath entity)
+        public async Task<ExchangeCoin> Add(ExchangeCoin entity)
         {
             entity.Id = await db.InsertAsync(entity);
 
             return entity;
         }
 
-        public async Task<IEnumerable<ArbitragePath>> AddAll(IEnumerable<ArbitragePath> entityList)
+        public async Task<IEnumerable<ExchangeCoin>> AddAll(IEnumerable<ExchangeCoin> entityList)
         {
             await db.InsertAllAsync(entityList);
 
             return entityList;
         }
 
-        public async Task<ArbitragePath> Update(ArbitragePath entity)
+        public async Task<ExchangeCoin> Update(ExchangeCoin entity)
         {
             await db.UpdateAsync(entity);
 
             return entity;
         }
 
-        public async Task<IEnumerable<ArbitragePath>> UpdateAll(IEnumerable<ArbitragePath> entityList)
+        public async Task<IEnumerable<ExchangeCoin>> UpdateAll(IEnumerable<ExchangeCoin> entityList)
         {
             await db.UpdateAllAsync(entityList);
 
             return entityList;
         }
 
-        public async Task<bool> Delete(ArbitragePath entity)
+        public async Task<bool> Delete(ExchangeCoin entity)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Cryptobitfolio.Data.Repositories
         {
             try
             {
-                await db.DeleteAllAsync<ArbitragePath>();
+                await db.DeleteAllAsync<ExchangeCoin>();
                 await ResetAutoIncrement();
             }
             catch (Exception ex)
@@ -105,7 +105,7 @@ namespace Cryptobitfolio.Data.Repositories
 
         private async Task ResetAutoIncrement()
         {
-            await db.ExecuteScalarAsync<ArbitragePath>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(ArbitragePath).Name}'");
+            await db.ExecuteScalarAsync<ExchangeCoin>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(ExchangeCoin).Name}'");
         }
     }
 }

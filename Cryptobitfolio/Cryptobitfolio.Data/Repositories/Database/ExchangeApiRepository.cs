@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cryptobitfolio.Business.Entities.Trade;
 using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Interfaces.Database;
 using SQLite;
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    public class ExchangeApiRepository : IExchangeApiRepository
+    public class ExchangeApiRepository : IDatabaseRepository<ExchangeApi>
     {
         private SQLiteAsyncConnection db;
 
@@ -19,9 +20,14 @@ namespace Cryptobitfolio.Data.Repositories
             db.CreateTableAsync<ExchangeApi>();
         }
 
-        public async Task<List<ExchangeApi>> Get()
+        public async Task<IEnumerable<ExchangeApi>> Get()
         {
             return await db.Table<ExchangeApi>().ToListAsync();
+        }
+
+        public async Task<IEnumerable<ExchangeApi>> Get(List<int> ids)
+        {
+            return await db.Table<ExchangeApi>().Where(e => ids.Contains(e.Id)).ToListAsync();
         }
 
         public async Task<ExchangeApi> Get(int Id)
@@ -40,22 +46,6 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<ExchangeApi> Get(string exchangeName)
-        {
-            ExchangeApi entity;
-
-            try
-            {
-                entity = await db.Table<ExchangeApi>().Where(e => e.Exchange.Equals(exchangeName)).FirstAsync();
-            }
-            catch
-            {
-                entity = null;
-            }
-
-            return entity;
-        }
-
         public async Task<ExchangeApi> Add(ExchangeApi entity)
         {
             entity.Id = await db.InsertAsync(entity);
@@ -63,7 +53,7 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<List<ExchangeApi>> AddAll(List<ExchangeApi> entityList)
+        public async Task<IEnumerable<ExchangeApi>> AddAll(IEnumerable<ExchangeApi> entityList)
         {
             await db.InsertAllAsync(entityList);
 
@@ -77,7 +67,7 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<List<ExchangeApi>> UpdateAll(List<ExchangeApi> entityList)
+        public async Task<IEnumerable<ExchangeApi>> UpdateAll(IEnumerable<ExchangeApi> entityList)
         {
             await db.UpdateAllAsync(entityList);
 

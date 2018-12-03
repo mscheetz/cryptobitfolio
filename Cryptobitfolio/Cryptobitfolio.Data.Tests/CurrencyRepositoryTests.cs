@@ -9,32 +9,32 @@ using Xunit;
 
 namespace Cryptobitfolio.Data.Tests
 {
-    public class ArbitragePathRepositoryTests : IDisposable
+    public class CurrencyRepositoryTests : IDisposable
     {
-        private readonly IDatabaseRepository<ArbitragePath> _repo;
-        private List<ArbitragePath> datas = new List<ArbitragePath>();
+        private readonly IDatabaseRepository<Currency> _repo;
+        private List<Currency> datas = new List<Currency>();
 
-        public ArbitragePathRepositoryTests()
+        public CurrencyRepositoryTests()
         {
-            _repo = new ArbitragePathRepository();
-            
+            _repo = new CurrencyRepository();
+
             // first clear out the table
             var deleted = _repo.DeleteAll().Result;
 
             // then add some data for testing
             datas.Add(
-                new ArbitragePath
+                new Currency
                 {
-                    Id = 0,
-                    Created = DateTime.UtcNow,
-                    Path = "Pair 1,Pair 2,Pair 3"
+                    Image = "BTC Image",
+                    Name = "Bitcoin",
+                    Symbol = "BTC"
                 });
             datas.Add(
-                new ArbitragePath
+                new Currency
                 {
-                    Id = 0,
-                    Created = DateTime.UtcNow,
-                    Path = "Pair 1,Pair 3,Pair 4" 
+                    Image = "ETH Image",
+                    Name = "Ethereum",
+                    Symbol = "ETH"
                 });
 
             var addedEntites = _repo.AddAll(datas).Result;
@@ -87,51 +87,52 @@ namespace Cryptobitfolio.Data.Tests
         public void UpdateOne_Test()
         {
             var id = 1;
-            var newProperty = "a new path";
+            var newProperty = "BTC image 2";
             var entity = _repo.Get(id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
 
-            entity.Path = newProperty;
+            entity.Image = newProperty;
 
             var updatedEntity = _repo.Update(entity).Result;
 
-            Assert.Equal(entity.Path, updatedEntity.Path);
+            Assert.Equal(entity.Image, updatedEntity.Image);
 
             var entityFetch = _repo.Get(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
-            Assert.Equal(newProperty, entityFetch.Path);
+            Assert.Equal(newProperty, entityFetch.Image);
         }
 
         [Fact]
         public void UpdateAll_Test()
         {
-            var newProperties = new List<string> { "new path 1", "new path 2" };
+            var newProperties = new List<string> { "BTC image 2", "ETH image 2" };
             var entities = _repo.Get().Result;
-            var entityList = entities.ToList();
 
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            entityList[0].Path = newProperties[0];
-            entityList[1].Path = newProperties[1];
+            var entityList = entities.ToList();
+
+            entityList[0].Image = newProperties[0];
+            entityList[1].Image = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
             var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entityList[0].Path, updatedList[0].Path);
-            Assert.Equal(entityList[1].Path, updatedList[1].Path);
+            Assert.Equal(entityList[0].Image, updatedList[0].Image);
+            Assert.Equal(entityList[1].Image, updatedList[1].Image);
 
             var entitiesFetch = _repo.Get().Result;
             var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], fetchList[0].Path);
-            Assert.Equal(newProperties[1], fetchList[1].Path);
+            Assert.Equal(newProperties[0], fetchList[0].Image);
+            Assert.Equal(newProperties[1], fetchList[1].Image);
         }
 
         [Fact]

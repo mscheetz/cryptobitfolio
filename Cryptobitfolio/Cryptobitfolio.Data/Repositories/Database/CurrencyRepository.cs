@@ -8,35 +8,35 @@ using SQLite;
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    public class ArbitragePathRepository : IDatabaseRepository<ArbitragePath>
+    public class CurrencyRepository : IDatabaseRepository<Currency>
     {
         private SQLiteAsyncConnection db;
 
-        public ArbitragePathRepository()
+        public CurrencyRepository()
         {
             var context = new SqliteContext();
-            db = context.GetConnection<ArbitragePath>();
+            db = context.GetConnection<Currency>();
 
-            db.CreateTableAsync<ArbitragePath>();
+            db.CreateTableAsync<Currency>();
         }
 
-        public async Task<IEnumerable<ArbitragePath>> Get()
+        public async Task<IEnumerable<Currency>> Get()
         {
-            return await db.Table<ArbitragePath>().ToListAsync();
+            return await db.Table<Currency>().ToListAsync();
         }
 
-        public async Task<IEnumerable<ArbitragePath>> Get(List<int> ids)
+        public async Task<IEnumerable<CoinBuy>> Get(List<int> ids)
         {
-            return await db.Table<ArbitragePath>().Where(e => ids.Contains(e.Id)).ToListAsync();
+            return await db.Table<CoinBuy>().Where(e => ids.Contains(e.Id)).ToListAsync();
         }
 
-        public async Task<ArbitragePath> Get(int Id)
+        public async Task<Currency> Get(int Id)
         {
-            ArbitragePath entity;
+            Currency entity;
 
             try
             {
-                entity = await db.Table<ArbitragePath>().Where(e => e.Id == Id).FirstAsync();
+                entity = await db.Table<Currency>().Where(e => e.Id == Id).FirstAsync();
             }
             catch
             {
@@ -46,35 +46,35 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<ArbitragePath> Add(ArbitragePath entity)
+        public async Task<Currency> Add(Currency entity)
         {
             entity.Id = await db.InsertAsync(entity);
 
             return entity;
         }
 
-        public async Task<IEnumerable<ArbitragePath>> AddAll(IEnumerable<ArbitragePath> entityList)
+        public async Task<IEnumerable<Currency>> AddAll(IEnumerable<Currency> entityList)
         {
             await db.InsertAllAsync(entityList);
 
             return entityList;
         }
 
-        public async Task<ArbitragePath> Update(ArbitragePath entity)
+        public async Task<Currency> Update(Currency entity)
         {
             await db.UpdateAsync(entity);
 
             return entity;
         }
 
-        public async Task<IEnumerable<ArbitragePath>> UpdateAll(IEnumerable<ArbitragePath> entityList)
+        public async Task<IEnumerable<Currency>> UpdateAll(IEnumerable<Currency> entityList)
         {
             await db.UpdateAllAsync(entityList);
 
             return entityList;
         }
 
-        public async Task<bool> Delete(ArbitragePath entity)
+        public async Task<bool> Delete(Currency entity)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace Cryptobitfolio.Data.Repositories
         {
             try
             {
-                await db.DeleteAllAsync<ArbitragePath>();
+                await db.DeleteAllAsync<Currency>();
                 await ResetAutoIncrement();
             }
             catch (Exception ex)
@@ -105,7 +105,7 @@ namespace Cryptobitfolio.Data.Repositories
 
         private async Task ResetAutoIncrement()
         {
-            await db.ExecuteScalarAsync<ArbitragePath>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(ArbitragePath).Name}'");
+            await db.ExecuteScalarAsync<Currency>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(Currency).Name}'");
         }
     }
 }

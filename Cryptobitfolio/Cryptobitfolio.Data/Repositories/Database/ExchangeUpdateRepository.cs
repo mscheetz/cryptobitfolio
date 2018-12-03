@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Cryptobitfolio.Business.Entities;
 using Cryptobitfolio.Business.Entities.Trade;
 using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Interfaces.Database;
 using SQLite;
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    public class ExchangeUpdateRepository : IExchangeUpdateRepository
+    public class ExchangeUpdateRepository : IDatabaseRepository<ExchangeUpdate>
     {
         private SQLiteAsyncConnection db;
 
@@ -25,6 +26,11 @@ namespace Cryptobitfolio.Data.Repositories
             return await db.Table<ExchangeUpdate>().ToListAsync();
         }
 
+        public async Task<IEnumerable<ExchangeUpdate>> Get(List<int> ids)
+        {
+            return await db.Table<ExchangeUpdate>().Where(e => ids.Contains(e.Id)).ToListAsync();
+        }
+
         public async Task<ExchangeUpdate> Get(int id)
         {
             ExchangeUpdate entity;
@@ -32,22 +38,6 @@ namespace Cryptobitfolio.Data.Repositories
             try
             {
                 entity = await db.Table<ExchangeUpdate>().Where(c => c.Id == id).FirstAsync();
-            }
-            catch
-            {
-                entity = null;
-            }
-
-            return entity;
-        }
-
-        public async Task<ExchangeUpdate> Get(Exchange exchange)
-        {
-            ExchangeUpdate entity;
-
-            try
-            {
-                entity = await db.Table<ExchangeUpdate>().Where(e => e.Exchange.Equals(exchange.ToString())).FirstAsync();
             }
             catch
             {
@@ -71,7 +61,7 @@ namespace Cryptobitfolio.Data.Repositories
             }
         }
 
-        public async Task<List<ExchangeUpdate>> AddAll(List<ExchangeUpdate> entityList)
+        public async Task<IEnumerable<ExchangeUpdate>> AddAll(IEnumerable<ExchangeUpdate> entityList)
         {
             await db.InsertAllAsync(entityList);
 
@@ -85,7 +75,7 @@ namespace Cryptobitfolio.Data.Repositories
             return entity;
         }
 
-        public async Task<List<ExchangeUpdate>> UpdateAll(List<ExchangeUpdate> entityList)
+        public async Task<IEnumerable<ExchangeUpdate>> UpdateAll(IEnumerable<ExchangeUpdate> entityList)
         {
             await db.UpdateAllAsync(entityList);
 
