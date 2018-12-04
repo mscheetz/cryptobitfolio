@@ -13,6 +13,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         public decimal AverageBuy => ExchangeCoinList.Count == 0 ? 0.0M : ExchangeCoinList.Average(c => c.AverageBuy);
         public string AverageBuyString => AverageBuy.ToString("0.00######");
         public List<ExchangeCoin> ExchangeCoinList { get; set; }
+        public List<Alerter> Alerts { get; set; }
         public string QtyLabel => string.Format($"Qty: {Quantity}");
         public string AvgBuyLabel => string.Format($"Avg Buy: {AverageBuy}");
         public decimal CurrentPrice { get; set; }
