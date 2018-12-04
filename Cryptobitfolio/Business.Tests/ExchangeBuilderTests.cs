@@ -92,7 +92,7 @@ namespace Business.Tests
                 Symbol = "BTC",
                 Exchange = Cryptobitfolio.Business.Entities.Exchange.Binance,
                 CoinBuyList = new List<CoinBuy>(),
-                Id = 0,
+                ExchangeCoinId = 0,
                 OpenOrderList = new List<Cryptobitfolio.Business.Contracts.Trade.ExchangeOrder>()
             };
             var exchangeCoin = exchangeBuilder.GetExchangeCoin(balance);
@@ -123,7 +123,7 @@ namespace Business.Tests
             var quantity = 0.03M;
             var expected = new CoinBuy
             {
-                ExchangeName = Cryptobitfolio.Business.Entities.Exchange.Binance,
+                Exchange = Cryptobitfolio.Business.Entities.Exchange.Binance,
                 Id = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,

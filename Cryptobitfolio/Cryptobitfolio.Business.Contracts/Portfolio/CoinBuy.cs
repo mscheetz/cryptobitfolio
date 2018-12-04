@@ -10,7 +10,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         public decimal Quantity { get; set; }
         public decimal Price { get; set; }
         public decimal BTCPrice { get; set; }
-        public Exchange ExchangeName { get; set; }
+        public Exchange Exchange { get; set; }
         public DateTime TransactionDate { get; set; }
     }
 }

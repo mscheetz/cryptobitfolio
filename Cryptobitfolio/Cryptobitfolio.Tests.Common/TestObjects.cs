@@ -372,7 +372,7 @@ namespace Cryptobitfolio.Tests.Common
             {
                 new Business.Contracts.Portfolio.CoinBuy
                 {
-                    ExchangeName = Business.Entities.Exchange.Binance,
+                    Exchange = Business.Entities.Exchange.Binance,
                     Id = "1",
                     Pair = "BTCUSDT",
                     Price = 4100.00M,
@@ -380,7 +380,7 @@ namespace Cryptobitfolio.Tests.Common
                 },
                 new Business.Contracts.Portfolio.CoinBuy
                 {
-                    ExchangeName = Business.Entities.Exchange.Binance,
+                    Exchange = Business.Entities.Exchange.Binance,
                     Id = "2",
                     Pair = "BTCUSDT",
                     Price = 7423.00M,
@@ -426,28 +426,28 @@ namespace Cryptobitfolio.Tests.Common
             {
                 new Business.Contracts.Portfolio.Currency
                 {
-                    Id = 1,
+                    CurrencyId = 1,
                     Image = "image.jpg",
                     Name = "Bitcoin",
                     Symbol = "BTC"
                 },
                 new Business.Contracts.Portfolio.Currency
                 {
-                    Id = 2,
+                    CurrencyId = 2,
                     Image = "image.jpg",
                     Name = "Ethereum",
                     Symbol = "ETH"
                 },
                 new Business.Contracts.Portfolio.Currency
                 {
-                    Id = 3,
+                    CurrencyId = 3,
                     Image = "image.jpg",
                     Name = "Stellar",
                     Symbol = "XLM"
                 },
                 new Business.Contracts.Portfolio.Currency
                 {
-                    Id = 4,
+                    CurrencyId = 4,
                     Image = "image.jpg",
                     Name = "Nano",
                     Symbol = "NANO"

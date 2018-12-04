@@ -7,7 +7,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
     public class ExchangeCoin
     {
-        public int Id { get; set; }
+        public int ExchangeCoinId { get; set; }
         public string Symbol { get; set; }
         public decimal Quantity { get; set; }
         public decimal AverageBuy => CoinBuyList.Count == 0 ? 0.0M : CoinBuyList.Average(c => c.Price);

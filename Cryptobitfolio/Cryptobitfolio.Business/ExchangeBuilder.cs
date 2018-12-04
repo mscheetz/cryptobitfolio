@@ -120,17 +120,17 @@ namespace Cryptobitfolio.Business
         public void LoadExchange(ExchangeApi exchangeApi)
         {
             IExchangeHubRepository loadedHub = null;
-            if (exchangeApi.ExchangeName == Exchange.CoinbasePro)
+            if (exchangeApi.Exchange == Exchange.CoinbasePro)
             {
-                loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret, exchangeApi.ApiExtra);
+                loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.Exchange, exchangeApi.ApiKey, exchangeApi.ApiSecret, exchangeApi.ApiExtra);
             }
-            else if (exchangeApi.ExchangeName == Exchange.Switcheo)
+            else if (exchangeApi.Exchange == Exchange.Switcheo)
             {
-                loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.WIF);
+                loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.Exchange, exchangeApi.WIF);
             }
             else
             {
-                loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.ExchangeName, exchangeApi.ApiKey, exchangeApi.ApiSecret);
+                loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.Exchange, exchangeApi.ApiKey, exchangeApi.ApiSecret);
             }
             exchangeHubs.Add(currentHub);
 
@@ -252,7 +252,7 @@ namespace Cryptobitfolio.Business
                         ? await _exchangeApiRepo.Add(entity) 
                         : await _exchangeApiRepo.Update(entity);
 
-            exchangeApi.Id = entity.Id;
+            exchangeApi.ExchangeApiId = entity.Id;
 
             return exchangeApi;
         }
@@ -486,7 +486,7 @@ namespace Cryptobitfolio.Business
                 Symbol = balance.Symbol,
                 Exchange = StringToExchange(currentExchange),
                 CoinBuyList = new List<CoinBuy>(),
-                Id = 0,
+                ExchangeCoinId = 0,
                 OpenOrderList = new List<ExchangeOrder>()
             };
 
@@ -504,7 +504,7 @@ namespace Cryptobitfolio.Business
             var coinBuy = new CoinBuy
             {
                 BTCPrice = orderResponse.Pair.EndsWith("BTC") ? orderResponse.Price : 0,
-                ExchangeName = StringToExchange(currentExchange),
+                Exchange = StringToExchange(currentExchange),
                 Id = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
@@ -544,8 +544,8 @@ namespace Cryptobitfolio.Business
                 ApiKey = entity.ApiKey,
                 ApiKeyName = entity.ApiKeyName,
                 ApiSecret = entity.ApiSecret,
-                ExchangeName = entity.Exchange,
-                Id = entity.Id
+                Exchange = entity.Exchange,
+                ExchangeApiId = entity.Id
             };
 
             return contract;
@@ -559,8 +559,8 @@ namespace Cryptobitfolio.Business
                 ApiKey = contract.ApiKey,
                 ApiKeyName = contract.ApiKeyName,
                 ApiSecret = contract.ApiSecret,
-                Exchange = contract.ExchangeName,
-                Id = contract.Id
+                Exchange = contract.Exchange,
+                Id = contract.ExchangeApiId
             };
 
             return entity;

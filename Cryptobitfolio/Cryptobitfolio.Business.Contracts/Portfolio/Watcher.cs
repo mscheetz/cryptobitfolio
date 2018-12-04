@@ -7,7 +7,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
     public class Watcher
     {
-        public int WatchListId { get; set; }
+        public int WatcherId { get; set; }
         public bool Enabled { get; set; }
         public DateTime DateAdded { get; set; }
         public decimal WatchPrice { get; set; }

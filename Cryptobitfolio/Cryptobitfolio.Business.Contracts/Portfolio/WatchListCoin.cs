@@ -13,7 +13,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
 
         public WatchListCoin(Currency currency)
         {
-            this.Id = currency.Id;
+            this.CurrencyId = currency.CurrencyId;
             this.Image = currency.Image;
             this.Name = currency.Name;
             this.Symbol = currency.Symbol;
