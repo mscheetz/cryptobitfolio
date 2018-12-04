@@ -11,7 +11,7 @@ namespace Cryptobitfolio.Data.Tests
 {
     public class ExchangeApiRepositoryTests : IDisposable
     {
-        private readonly IDatabaseRepository<ExchangeApi> _repo;
+        private readonly IExchangeApiRepository _repo;
         private List<ExchangeApi> datas = new List<ExchangeApi>();
 
         public ExchangeApiRepositoryTests()
@@ -80,10 +80,47 @@ namespace Cryptobitfolio.Data.Tests
         }
 
         [Fact]
+        public void GetManySearch_Test()
+        {
+            var entityList = _repo.Get(e => e.ApiExtra == null || e.ApiExtra == "").Result;
+
+            Assert.NotNull(entityList);
+            Assert.NotEmpty(entityList);
+        }
+
+        [Fact]
+        public void GetManyOrder_Test()
+        {
+            var entityList = _repo.Get(e => e.Exchange).Result;
+
+            Assert.NotNull(entityList);
+            Assert.NotEmpty(entityList);
+        }
+
+        [Fact]
+        public void GetManySearchAndOrder_Test()
+        {
+            var entityList = _repo.Get(e => e.ApiExtra == null || e.ApiExtra == "", e => e.Created).Result;
+
+            Assert.NotNull(entityList);
+            Assert.NotEmpty(entityList);
+        }
+
+        [Fact]
         public void GetOne_Test()
         {
             var id = 1;
-            var entity = _repo.Get(id).Result;
+            var entity = _repo.GetOne(id).Result;
+
+            Assert.NotNull(entity);
+            Assert.Equal(id, entity.Id);
+        }
+
+        [Fact]
+        public void GetOneSearch_Test()
+        {
+            var id = 1;
+            var entity = _repo.GetOne(e => e.Exchange == Business.Entities.Exchange.Binance).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
@@ -94,7 +131,7 @@ namespace Cryptobitfolio.Data.Tests
         {
             var id = 1;
             var newProperty = "ABCDEF";
-            var entity = _repo.Get(id).Result;
+            var entity = _repo.GetOne(id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
@@ -105,7 +142,7 @@ namespace Cryptobitfolio.Data.Tests
 
             Assert.Equal(entity.ApiKey, updatedEntity.ApiKey);
 
-            var entityFetch = _repo.Get(id).Result;
+            var entityFetch = _repo.GetOne(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
@@ -148,7 +185,7 @@ namespace Cryptobitfolio.Data.Tests
 
             var delete = _repo.Delete(entityToDelete).Result;
 
-            var entityFetch = _repo.Get(entityToDelete.Id).Result;
+            var entityFetch = _repo.GetOne(entityToDelete.Id).Result;
 
             Assert.Null(entityFetch);
         }

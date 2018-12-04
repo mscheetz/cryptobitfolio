@@ -11,18 +11,25 @@ namespace Cryptobitfolio.Data.Interfaces.Database
 
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
     using System.Text;
     using System.Threading.Tasks;
 
     #endregion Usings
 
-    public interface IDatabaseRepository<T>
+    public interface IDatabaseRepositoryBase<T>
     {
         Task<IEnumerable<T>> Get();
 
-        Task<IEnumerable<T>> Get(List<int> ids);
+        Task<IEnumerable<T>> Get(Expression<Func<T, bool>> predicate);
 
-        Task<T> Get(int Id);
+        Task<IEnumerable<T>> Get<TValue>(Expression<Func<T, TValue>> orderBy);
+
+        Task<IEnumerable<T>> Get<TValue>(Expression<Func<T, bool>> predicate = null, Expression<Func<T, TValue>> orderBy = null);
+
+        Task<T> GetOne(int Id);
+
+        Task<T> GetOne(Expression<Func<T, bool>> predicate);
 
         Task<T> Add(T entity);
 

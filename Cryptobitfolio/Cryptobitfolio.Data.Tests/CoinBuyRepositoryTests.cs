@@ -11,7 +11,7 @@ namespace Cryptobitfolio.Data.Tests
 {
     public class CoinBuyRepositoryTests : IDisposable
     {
-        private readonly IDatabaseRepository<CoinBuy> _repo;
+        private readonly ICoinBuyRepository _repo;
         private List<CoinBuy> datas = new List<CoinBuy>();
 
         public CoinBuyRepositoryTests()
@@ -28,7 +28,7 @@ namespace Cryptobitfolio.Data.Tests
                     Id = 0,
                     CoinId = 1,
                     CurrencyId = 1,
-                    ExchangeName = Business.Entities.Exchange.Binance,
+                    Exchange = Business.Entities.Exchange.Binance,
                     Price = 5418.00M,
                     Quantity = 0.4M,
                     TransactionDate = DateTime.UtcNow
@@ -39,7 +39,7 @@ namespace Cryptobitfolio.Data.Tests
                     Id = 0,
                     CoinId = 2,
                     CurrencyId = 2,
-                    ExchangeName = Business.Entities.Exchange.Binance,
+                    Exchange = Business.Entities.Exchange.Binance,
                     Price = 0.0240M,
                     Quantity = 14.2M,
                     TransactionDate = DateTime.UtcNow
@@ -82,10 +82,47 @@ namespace Cryptobitfolio.Data.Tests
         }
 
         [Fact]
+        public void GetManySearch_Test()
+        {
+            var entityList = _repo.Get(e => e.Exchange == Business.Entities.Exchange.Binance).Result;
+
+            Assert.NotNull(entityList);
+            Assert.NotEmpty(entityList);
+        }
+
+        [Fact]
+        public void GetManyOrder_Test()
+        {
+            var entityList = _repo.Get(e => e.Price).Result;
+
+            Assert.NotNull(entityList);
+            Assert.NotEmpty(entityList);
+        }
+
+        [Fact]
+        public void GetManySearchAndOrder_Test()
+        {
+            var entityList = _repo.Get(e => e.Exchange == Business.Entities.Exchange.Binance, e => e.Price).Result;
+
+            Assert.NotNull(entityList);
+            Assert.NotEmpty(entityList);
+        }
+
+        [Fact]
         public void GetOne_Test()
         {
             var id = 1;
-            var entity = _repo.Get(id).Result;
+            var entity = _repo.GetOne(id).Result;
+
+            Assert.NotNull(entity);
+            Assert.Equal(id, entity.Id);
+        }
+
+        [Fact]
+        public void GetOneSearch_Test()
+        {
+            var id = 1;
+            var entity = _repo.GetOne(e => e.Exchange == Business.Entities.Exchange.Binance && e.CurrencyId == id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
@@ -96,7 +133,7 @@ namespace Cryptobitfolio.Data.Tests
         {
             var id = 1;
             var newProperty = 3900.00M;
-            var entity = _repo.Get(id).Result;
+            var entity = _repo.GetOne(id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
@@ -107,7 +144,7 @@ namespace Cryptobitfolio.Data.Tests
 
             Assert.Equal(entity.Price, updatedEntity.Price);
 
-            var entityFetch = _repo.Get(id).Result;
+            var entityFetch = _repo.GetOne(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
@@ -151,7 +188,7 @@ namespace Cryptobitfolio.Data.Tests
 
             var delete = _repo.Delete(entityToDelete).Result;
             
-            var entityFetch = _repo.Get(entityToDelete.Id).Result;
+            var entityFetch = _repo.GetOne(entityToDelete.Id).Result;
 
             Assert.Null(entityFetch);
         }

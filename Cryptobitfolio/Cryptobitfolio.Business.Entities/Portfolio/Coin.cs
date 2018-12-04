@@ -2,12 +2,8 @@
 
 namespace Cryptobitfolio.Business.Entities.Portfolio
 {
-    public class Coin
+    public class Coin : EntityBase
     {
-        [PrimaryKey]
-        [NotNull]
-        [AutoIncrement]
-        public int Id { get; set; }
 
         public int CurrencyId { get; set; }
 

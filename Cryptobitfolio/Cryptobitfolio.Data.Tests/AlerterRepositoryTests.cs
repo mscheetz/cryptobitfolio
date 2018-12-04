@@ -9,34 +9,42 @@ using Xunit;
 
 namespace Cryptobitfolio.Data.Tests
 {
-    public class CoinRepositoryTests : IDisposable
+    public class AlerterRepositoryTests : IDisposable
     {
-        private readonly IDatabaseRepositoryBase<Coin> _repo;
-        private List<Coin> datas = new List<Coin>();
+        private readonly IAlerterRepository _repo;
+        private List<Alerter> datas = new List<Alerter>();
 
-        public CoinRepositoryTests()
+        public AlerterRepositoryTests()
         {
-            _repo = new CoinRepository();
+            _repo = new AlerterRepository();
             
             // first clear out the table
             var deleted = _repo.DeleteAll().Result;
 
             // then add some data for testing
             datas.Add(
-                new Coin
+                new Alerter
                 {
                     Id = 0,
-                    AverageBuy = 5301.23M,
+                    Created = DateTime.UtcNow.AddDays(-10),
                     CurrencyId = 1,
-                    Quantity = 0.44M
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Hit = null,
+                    Pair = "BTCUSDT",
+                    Price = 3412.00M
                 });
             datas.Add(
-                new Coin
+                new Alerter
                 {
                     Id = 0,
-                    AverageBuy = 0.045M,
+                    Created = DateTime.UtcNow.AddDays(-4),
                     CurrencyId = 2,
-                    Quantity = 4.25M
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Hit = null,
+                    Pair = "ETHUSDT",
+                    Price = 75.5M
                 });
 
             var addedEntites = _repo.AddAll(datas).Result;
@@ -78,7 +86,7 @@ namespace Cryptobitfolio.Data.Tests
         [Fact]
         public void GetManySearch_Test()
         {
-            var entityList = _repo.Get(e => e.Quantity > 0).Result;
+            var entityList = _repo.Get(e => e.Exchange == Business.Entities.Exchange.Binance).Result;
 
             Assert.NotNull(entityList);
             Assert.NotEmpty(entityList);
@@ -87,7 +95,7 @@ namespace Cryptobitfolio.Data.Tests
         [Fact]
         public void GetManyOrder_Test()
         {
-            var entityList = _repo.Get(e => e.AverageBuy).Result;
+            var entityList = _repo.Get(e => e.Created).Result;
 
             Assert.NotNull(entityList);
             Assert.NotEmpty(entityList);
@@ -96,7 +104,7 @@ namespace Cryptobitfolio.Data.Tests
         [Fact]
         public void GetManySearchAndOrder_Test()
         {
-            var entityList = _repo.Get(e => e.Quantity > 0, e => e.AverageBuy).Result;
+            var entityList = _repo.Get(e => e.Exchange == Business.Entities.Exchange.Binance, e => e.Created).Result;
 
             Assert.NotNull(entityList);
             Assert.NotEmpty(entityList);
@@ -116,62 +124,61 @@ namespace Cryptobitfolio.Data.Tests
         public void GetOneSearch_Test()
         {
             var id = 1;
-            var entity = _repo.GetOne(e => e.CurrencyId == id).Result;
+            var entity = _repo.GetOne(e => e.Exchange == Business.Entities.Exchange.Binance && e.Pair.Equals("BTCUSDT")).Result;
 
             Assert.NotNull(entity);
-            Assert.Equal(id, entity.CurrencyId);
+            Assert.Equal(id, entity.Id);
         }
 
         [Fact]
         public void UpdateOne_Test()
         {
             var id = 1;
-            var newProperty = 3900.00M;
+            var newProperty = DateTime.UtcNow;
             var entity = _repo.GetOne(id).Result;
 
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
 
-            entity.AverageBuy = newProperty;
+            entity.Hit = newProperty;
 
             var updatedEntity = _repo.Update(entity).Result;
 
-            Assert.Equal(entity.AverageBuy, updatedEntity.AverageBuy);
+            Assert.Equal(entity.Hit, updatedEntity.Hit);
 
             var entityFetch = _repo.GetOne(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
-            Assert.Equal(newProperty, entityFetch.AverageBuy);
+            Assert.Equal(newProperty, entityFetch.Hit);
         }
 
         [Fact]
         public void UpdateAll_Test()
         {
-            var newProperties = new List<decimal> { 3900.00M, 0.05M };
+            var newProperties = new List<DateTime> { DateTime.UtcNow, DateTime.UtcNow };
             var entities = _repo.Get().Result;
+            var entityList = entities.ToList();
 
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            var entityList = entities.ToList();
-
-            entityList[0].AverageBuy = newProperties[0];
-            entityList[1].AverageBuy = newProperties[1];
+            entityList[0].Hit = newProperties[0];
+            entityList[1].Hit = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
             var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entityList[0].AverageBuy, updatedList[0].AverageBuy);
-            Assert.Equal(entityList[1].AverageBuy, updatedList[1].AverageBuy);
+            Assert.Equal(entityList[0].Hit, updatedList[0].Hit);
+            Assert.Equal(entityList[1].Hit, updatedList[1].Hit);
 
             var entitiesFetch = _repo.Get().Result;
             var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], fetchList[0].AverageBuy);
-            Assert.Equal(newProperties[1], fetchList[1].AverageBuy);
+            Assert.Equal(newProperties[0], fetchList[0].Hit);
+            Assert.Equal(newProperties[1], fetchList[1].Hit);
         }
 
         [Fact]
@@ -181,7 +188,7 @@ namespace Cryptobitfolio.Data.Tests
             var entityToDelete = entityList.FirstOrDefault();
 
             var delete = _repo.Delete(entityToDelete).Result;
-            
+
             var entityFetch = _repo.GetOne(entityToDelete.Id).Result;
 
             Assert.Null(entityFetch);

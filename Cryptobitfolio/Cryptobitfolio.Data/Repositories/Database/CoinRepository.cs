@@ -1,111 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Cryptobitfolio.Business.Entities.Portfolio;
-using Cryptobitfolio.Data.Interfaces;
-using Cryptobitfolio.Data.Interfaces.Database;
-using SQLite;
+﻿// -----------------------------------------------------------------------------
+// <copyright file="CoinRepository" company="Matt Scheetz">
+//     Copyright (c) Matt Scheetz All Rights Reserved
+// </copyright>
+// <author name="Matt Scheetz" date="12/3/2018 7:37:26 PM" />
+// -----------------------------------------------------------------------------
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    public class CoinRepository : IDatabaseRepository<Coin>
+    #region usings
+
+    using Cryptobitfolio.Business.Entities.Portfolio;
+    using Cryptobitfolio.Data.Interfaces.Database;
+    using Cryptobitfolio.Data.Repositories.Database;
+    using SQLite;
+
+    #endregion usings
+
+    public class CoinRepository : DatabaseRepositoryBase<Coin>, ICoinRepository
     {
         private SQLiteAsyncConnection db;
 
-        public CoinRepository()
+        public CoinRepository() : this(new SqliteContext())
         {
-            var context = new SqliteContext();
-            db = context.GetConnection<Coin>();
-
-            db.CreateTableAsync<Coin>();
         }
 
-        public async Task<IEnumerable<Coin>> Get()
+        public CoinRepository(SqliteContext context) : base(context)
         {
-            return await db.Table<Coin>().ToListAsync();
-        }
-
-        public async Task<IEnumerable<Coin>> Get(List<int> ids)
-        {
-            return await db.Table<Coin>().Where(e => ids.Contains(e.CurrencyId)).ToListAsync();
-        }
-
-        public async Task<Coin> Get(int Id)
-        {
-            Coin entity;
-
-            try
-            {
-                entity = await db.Table<Coin>().Where(e => e.Id == Id).FirstAsync();
-            }
-            catch
-            {
-                entity = null;
-            }
-
-            return entity;
-        }
-
-        public async Task<Coin> Add(Coin entity)
-        {
-            entity.Id = await db.InsertAsync(entity);
-
-            return entity;
-        }
-
-        public async Task<IEnumerable<Coin>> AddAll(IEnumerable<Coin> entityList)
-        {
-            await db.InsertAllAsync(entityList);
-
-            return entityList;
-        }
-
-        public async Task<Coin> Update(Coin entity)
-        {
-            await db.UpdateAsync(entity);
-
-            return entity;
-        }
-
-        public async Task<IEnumerable<Coin>> UpdateAll(IEnumerable<Coin> entityList)
-        {
-            await db.UpdateAllAsync(entityList);
-
-            return entityList;
-        }
-
-        public async Task<bool> Delete(Coin entity)
-        {
-            try
-            {
-                await db.DeleteAsync(entity);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-            return true;
-        }
-
-        public async Task<bool> DeleteAll()
-        {
-            try
-            {
-                await db.DeleteAllAsync<Coin>();
-                await ResetAutoIncrement();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-            return true;
-        }
-
-        private async Task ResetAutoIncrement()
-        {
-            await db.ExecuteScalarAsync<Coin>($"UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='{typeof(Coin).Name}'");
         }
     }
 }

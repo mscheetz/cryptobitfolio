@@ -1,13 +1,12 @@
 ﻿// -----------------------------------------------------------------------------
-// <copyright file="ExchangeUpdate" company="Matt Scheetz">
+// <copyright file="HistoricalPrice" company="Matt Scheetz">
 //     Copyright (c) Matt Scheetz All Rights Reserved
 // </copyright>
-// <author name="Matt Scheetz" date="11/19/2018 7:58:33 PM" />
+// <author name="Matt Scheetz" date="12/3/2018 7:26:47 PM" />
 // -----------------------------------------------------------------------------
 
 namespace Cryptobitfolio.Business.Entities.Trade
 {
-    using SQLite;
     #region Usings
 
     using System;
@@ -16,12 +15,15 @@ namespace Cryptobitfolio.Business.Entities.Trade
 
     #endregion Usings
 
-    public class ExchangeUpdate : EntityBase
+    public class HistoricalPrice : EntityBase
     {
         #region Properties
 
-        public DateTime UpdateAt { get; set; }
+        public int CurrencyId { get; set; }
         public Exchange Exchange { get; set; }
+        public string Pair { get; set; }
+        public decimal Price { get; set; }
+        public DateTime Snapshot { get; set; }
 
         #endregion Properties
     }

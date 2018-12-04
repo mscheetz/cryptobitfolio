@@ -3,12 +3,8 @@ using System;
 
 namespace Cryptobitfolio.Business.Entities.Trade
 {
-    public class ExchangeOrder
+    public class ExchangeOrder : EntityBase
     {
-        [PrimaryKey]
-        [NotNull]
-        [AutoIncrement]
-        public int Id { get; set; }
         public Exchange Exchange { get; set; }
         public Side TradeSide { get; set; }
         public string TradingPair { get; set; }
