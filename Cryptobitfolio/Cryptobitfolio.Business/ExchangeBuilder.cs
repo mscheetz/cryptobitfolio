@@ -8,6 +8,7 @@ using Cryptobitfolio.Business.Contracts.Trade;
 using Cryptobitfolio.Business.Common;
 using System.Threading.Tasks;
 using Cryptobitfolio.Data.Repositories;
+using Cryptobitfolio.Data.Interfaces.Database;
 
 namespace Cryptobitfolio.Business
 {
@@ -22,7 +23,7 @@ namespace Cryptobitfolio.Business
         private IExchangeHubRepository currentHub = null;
         private string currentExchange = string.Empty;
         private DateTime lastUpdated;
-        private List<Entities.Trade.ExchangeApi> _exchangeApis;
+        private IEnumerable<Entities.Trade.ExchangeApi> _exchangeApis;
         //private List<ExchangeHub.ExchangeHub> exchangeHubs;
         private List<IExchangeHubRepository> exchangeHubs;
         private List<string> currentHubMarkets;
