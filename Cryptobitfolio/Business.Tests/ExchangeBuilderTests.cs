@@ -4,11 +4,13 @@ using Cryptobitfolio.Business.Contracts.Portfolio;
 using Cryptobitfolio.Business.Contracts.Trade;
 using Cryptobitfolio.Business.Entities.Trade;
 using Cryptobitfolio.Data.Interfaces;
+using Cryptobitfolio.Data.Interfaces.Database;
 using Cryptobitfolio.Tests.Common;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,10 +25,18 @@ namespace Business.Tests
         {
             testObjs = new TestObjects();
             var fileRepo = new FileRepository.FileRepository();
-            var apiInfo = fileRepo.GetDataFromFile<Cryptobitfolio.Business.Entities.Trade.ExchangeApi>("config.json");
-            var apiInfoList = new List<Cryptobitfolio.Business.Entities.Trade.ExchangeApi> { apiInfo };
+            //var apiInfo = fileRepo.GetDataFromFile<Cryptobitfolio.Business.Entities.Trade.ExchangeApi>("config.json");
+            //var apiInfoList = new List<Cryptobitfolio.Business.Entities.Trade.ExchangeApi> { apiInfo };
             var exchangeApiRepoMock = new Mock<IExchangeApiRepository>();
-            exchangeApiRepoMock.Setup(m => m.Get()).Returns(Task.FromResult(apiInfoList));
+            exchangeApiRepoMock.Setup(m => m.Get()).Returns(Task.FromResult(testObjs.GetEntityExchangeApis()));
+            exchangeApiRepoMock.Setup(m => m.Get(It.IsAny<Expression<Func<Cryptobitfolio.Business.Entities.Trade.ExchangeApi, bool>>>()))
+                .Returns(Task.FromResult(testObjs.GetEntityExchangeApis(Cryptobitfolio.Business.Entities.Exchange.Binance)));
+            exchangeApiRepoMock.Setup(m => m.Delete(It.IsAny<Cryptobitfolio.Business.Entities.Trade.ExchangeApi>()))
+                .Returns(Task.FromResult(true));
+            exchangeApiRepoMock.Setup(m => m.Add(It.IsAny<Cryptobitfolio.Business.Entities.Trade.ExchangeApi>()))
+                .Returns(Task.FromResult(testObjs.GetEntityExchangeApis().First()));
+            exchangeApiRepoMock.Setup(m => m.Update(It.IsAny<Cryptobitfolio.Business.Entities.Trade.ExchangeApi>()))
+                .Returns(Task.FromResult(testObjs.GetUpdatedExchangeApi()));
             var exchangeUpdateRepoMock = new Mock<IExchangeUpdateRepository>();
             var arbitrageRepoMock = new Mock<IArbitragePathRepository>();
             var arbitrageBldrMock = new Mock<IArbitrageBuilder>();
@@ -124,7 +134,7 @@ namespace Business.Tests
             var expected = new CoinBuy
             {
                 Exchange = Cryptobitfolio.Business.Entities.Exchange.Binance,
-                Id = orderResponse.OrderId,
+                CoinBuyId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
                 Quantity = quantity,
@@ -133,7 +143,7 @@ namespace Business.Tests
 
             var coinBuy = exchangeBuilder.GetCoinBuy(orderResponse, quantity);
 
-            Assert.Equal(expected.Id, coinBuy.Id);
+            Assert.Equal(expected.CoinBuyId, coinBuy.CoinBuyId);
             Assert.Equal(expected.Pair, coinBuy.Pair);
             Assert.Equal(expected.Price, coinBuy.Price);
             Assert.Equal(expected.TransactionDate, coinBuy.TransactionDate);
@@ -192,6 +202,60 @@ namespace Business.Tests
             var coinList = exchangeBuilder.GetCoins();
 
             Assert.NotEmpty(coinList);
+        }
+
+        [Fact]
+        public void GetExchangeApis_Tests()
+        {
+            var exchangeApis = exchangeBuilder.GetExchangeApis().Result;
+
+            Assert.NotNull(exchangeApis);
+            Assert.NotEmpty(exchangeApis);
+        }
+
+        [Fact]
+        public void GetExchangeApisByExchange_Tests()
+        {
+            var exchange = Cryptobitfolio.Business.Entities.Exchange.Binance;
+            var exchangeApis = exchangeBuilder.GetExchangeApis(exchange).Result;
+
+            Assert.NotNull(exchangeApis);
+            Assert.NotEmpty(exchangeApis);
+        }
+
+        [Fact]
+        public void AddExchangeApi_Tests()
+        {
+            var api = testObjs.GetContractExchangeApis().First();
+            api.ExchangeApiId = 0;
+
+            var addedApi = exchangeBuilder.SaveExchangeApi(api).Result;
+
+            Assert.NotNull(addedApi);
+            Assert.True(addedApi.ExchangeApiId > 0);
+        }
+
+        [Fact]
+        public void UpdateExchangeApi_Tests()
+        {
+            var updatedValue = "Updated Binance Api 1";
+            var api = testObjs.GetContractExchangeApis().First();
+            api.ApiKeyName = updatedValue;
+
+            var updatedApi = exchangeBuilder.SaveExchangeApi(api).Result;
+
+            Assert.NotNull(updatedApi);
+            Assert.Equal(updatedValue, updatedApi.ApiKeyName);
+        }
+
+        [Fact]
+        public void DeleteExchangeApi_Tests()
+        {
+            var api = testObjs.GetContractExchangeApis().First();
+
+            var result = exchangeBuilder.DeleteExchangeApi(api).Result;
+
+            Assert.True(result);
         }
     }
 }

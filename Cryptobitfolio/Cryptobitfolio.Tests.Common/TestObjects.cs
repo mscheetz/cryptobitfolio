@@ -1,6 +1,7 @@
 ﻿using Cryptobitfolio.Business;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Cryptobitfolio.Tests.Common
 {
@@ -373,7 +374,7 @@ namespace Cryptobitfolio.Tests.Common
                 new Business.Contracts.Portfolio.CoinBuy
                 {
                     Exchange = Business.Entities.Exchange.Binance,
-                    Id = "1",
+                    CoinBuyId = "1",
                     Pair = "BTCUSDT",
                     Price = 4100.00M,
                     Quantity = 0.005M
@@ -381,7 +382,7 @@ namespace Cryptobitfolio.Tests.Common
                 new Business.Contracts.Portfolio.CoinBuy
                 {
                     Exchange = Business.Entities.Exchange.Binance,
-                    Id = "2",
+                    CoinBuyId = "2",
                     Pair = "BTCUSDT",
                     Price = 7423.00M,
                     Quantity = 0.005M
@@ -457,6 +458,113 @@ namespace Cryptobitfolio.Tests.Common
             return currencies;
         }
 
+        public IEnumerable<Business.Contracts.Trade.ExchangeApi> GetContractExchangeApis()
+        {
+            var apis = new List<Business.Contracts.Trade.ExchangeApi>();
+
+            apis.Add(new Business.Contracts.Trade.ExchangeApi
+            {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Binance Api 1",
+                ApiSecret = "secret value",
+                Exchange = Business.Entities.Exchange.Binance,
+                ExchangeApiId = 1
+            });
+            apis.Add(new Business.Contracts.Trade.ExchangeApi
+            {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Binance Api 2",
+                ApiSecret = "secret value",
+                Exchange = Business.Entities.Exchange.Binance,
+                ExchangeApiId = 2
+            });
+            apis.Add(new Business.Contracts.Trade.ExchangeApi
+            {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Bittrex Api 1",
+                ApiSecret = "secret value",
+                Exchange = Business.Entities.Exchange.Bittrex,
+                ExchangeApiId = 3
+            });
+            apis.Add(new Business.Contracts.Trade.ExchangeApi
+            {
+                ApiExtra = "extra value",
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Binance Api 1",
+                ApiSecret = "secret value",
+                Exchange = Business.Entities.Exchange.CoinbasePro,
+                ExchangeApiId = 4
+            });
+
+            return apis;
+        }
+
         #endregion Contract Objects
+
+        #region Entity Objects
+
+        public IEnumerable<Business.Entities.Trade.ExchangeApi> GetEntityExchangeApis()
+        {
+            var apis = new List<Business.Entities.Trade.ExchangeApi>();
+
+            apis.Add(new Business.Entities.Trade.ExchangeApi {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Binance Api 1",
+                ApiSecret = "secret value",
+                Created = DateTime.UtcNow,
+                Exchange = Business.Entities.Exchange.Binance,
+                Id = 1
+            });
+            apis.Add(new Business.Entities.Trade.ExchangeApi
+            {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Binance Api 2",
+                ApiSecret = "secret value",
+                Created = DateTime.UtcNow,
+                Exchange = Business.Entities.Exchange.Binance,
+                Id = 2
+            });
+            apis.Add(new Business.Entities.Trade.ExchangeApi
+            {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Bittrex Api 1",
+                ApiSecret = "secret value",
+                Created = DateTime.UtcNow,
+                Exchange = Business.Entities.Exchange.Bittrex,
+                Id = 3
+            });
+            apis.Add(new Business.Entities.Trade.ExchangeApi
+            {
+                ApiExtra = "extra value",
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Binance Api 1",
+                ApiSecret = "secret value",
+                Created = DateTime.UtcNow,
+                Exchange = Business.Entities.Exchange.CoinbasePro,
+                Id = 4
+            });
+
+            return apis;
+        }
+
+        public IEnumerable<Business.Entities.Trade.ExchangeApi> GetEntityExchangeApis(Business.Entities.Exchange exchange)
+        {
+            return GetEntityExchangeApis().Where(e => e.Exchange == exchange);
+        }
+
+        public Business.Entities.Trade.ExchangeApi GetUpdatedExchangeApi()
+        {
+            return new Business.Entities.Trade.ExchangeApi
+            {
+                ApiKey = "asdfasfd",
+                ApiKeyName = "Updated Binance Api 1",
+                ApiSecret = "secret value",
+                Created = DateTime.UtcNow,
+                Exchange = Business.Entities.Exchange.Binance,
+                Id = 1
+            };
+        }
+
+        #endregion Entity Objects
     }
 }

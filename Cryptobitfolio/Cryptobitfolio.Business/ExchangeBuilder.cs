@@ -230,6 +230,12 @@ namespace Cryptobitfolio.Business
 
         }
 
+        #region ExchangeApi Methods
+
+        /// <summary>
+        /// Get all ExchangeApis
+        /// </summary>
+        /// <returns>Collection of ExchangeApis</returns>
         public async Task<IEnumerable<ExchangeApi>> GetExchangeApis()
         {
             var entities = await _exchangeApiRepo.Get();
@@ -245,6 +251,31 @@ namespace Cryptobitfolio.Business
             return contractList;
         }
 
+        /// <summary>
+        /// Get all ExchangeApis for a given exchange
+        /// </summary>
+        /// <param name="exchange">Exchange to find</param>
+        /// <returns>Collection of ExchangeApis</returns>
+        public async Task<IEnumerable<ExchangeApi>> GetExchangeApis(Exchange exchange)
+        {
+            var entities = await _exchangeApiRepo.Get(e => e.Exchange == exchange);
+            var contractList = new List<ExchangeApi>();
+
+            foreach (var entity in entities)
+            {
+                var contract = ExchangeApiEntityToContract(entity);
+
+                contractList.Add(contract);
+            }
+
+            return contractList;
+        }
+
+        /// <summary>
+        /// Save exhange api to database
+        /// </summary>
+        /// <param name="exchangeApi">ExchangeApi to save</param>
+        /// <returns>Updated ExchangeApi object</returns>
         public async Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi)
         {
             var entity = ExchangeApiContractToEntity(exchangeApi);
@@ -258,6 +289,11 @@ namespace Cryptobitfolio.Business
             return exchangeApi;
         }
 
+        /// <summary>
+        /// Delete an ExchangeApi
+        /// </summary>
+        /// <param name="exchangeApi">ExchangeApi to delete</param>
+        /// <returns>Boolean value of deletion attempt</returns>
         public async Task<bool> DeleteExchangeApi(ExchangeApi exchangeApi)
         {
             var entity = ExchangeApiContractToEntity(exchangeApi);
@@ -272,6 +308,8 @@ namespace Cryptobitfolio.Business
                 throw new Exception(ex.Message);
             }
         }
+
+        #endregion ExchangeApi Methods
 
         public List<Coin> GetCoins()
         {
@@ -506,7 +544,7 @@ namespace Cryptobitfolio.Business
             {
                 BTCPrice = orderResponse.Pair.EndsWith("BTC") ? orderResponse.Price : 0,
                 Exchange = StringToExchange(currentExchange),
-                Id = orderResponse.OrderId,
+                CoinBuyId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
                 Quantity = quantityApplied,
@@ -537,7 +575,7 @@ namespace Cryptobitfolio.Business
 
         #region ExchangeApi converters
 
-        private ExchangeApi ExchangeApiEntityToContract(Business.Entities.Trade.ExchangeApi entity)
+        private ExchangeApi ExchangeApiEntityToContract(Entities.Trade.ExchangeApi entity)
         {
             var contract = new ExchangeApi
             {
@@ -552,9 +590,9 @@ namespace Cryptobitfolio.Business
             return contract;
         }
 
-        private Business.Entities.Trade.ExchangeApi ExchangeApiContractToEntity(ExchangeApi contract)
+        private Entities.Trade.ExchangeApi ExchangeApiContractToEntity(ExchangeApi contract)
         {
-            var entity = new Business.Entities.Trade.ExchangeApi
+            var entity = new Entities.Trade.ExchangeApi
             {
                 ApiExtra = contract.ApiExtra,
                 ApiKey = contract.ApiKey,
