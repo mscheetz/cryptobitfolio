@@ -5,7 +5,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
     public class CoinBuy
     {
-        public string Id { get; set; }
+        public string CoinBuyId { get; set; }
         public string Pair { get; set; }
         public decimal Quantity { get; set; }
         public decimal Price { get; set; }

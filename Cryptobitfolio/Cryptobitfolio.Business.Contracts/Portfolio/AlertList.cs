@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
-    public class WatchListCoin : Currency
+    public class AlertList : Currency
     {
-        public WatchListCoin()
+        public AlertList()
         {
         }
 
-        public WatchListCoin(Currency currency)
+        public AlertList(Currency currency)
         {
             this.CurrencyId = currency.CurrencyId;
             this.Image = currency.Image;
@@ -19,6 +19,6 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
             this.Symbol = currency.Symbol;
         }
 
-        public Watcher[] Watchers { get; set; }
+        public Alerter[] Alerters { get; set; }
     }
 }

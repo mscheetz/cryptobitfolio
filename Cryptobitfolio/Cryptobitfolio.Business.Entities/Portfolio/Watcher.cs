@@ -1,7 +1,4 @@
-﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Cryptobitfolio.Business.Entities.Portfolio
 {

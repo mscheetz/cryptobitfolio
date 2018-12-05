@@ -5,15 +5,25 @@ using System.Text;
 
 namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
-    public class Coin
+    public class Coin : Currency
     {
+        public Coin()
+        {
+        }
+
+        public Coin(Currency currency)
+        {
+            this.CurrencyId = currency.CurrencyId;
+            this.Symbol = currency.Symbol;
+            this.Name = currency.Name;
+            this.Image = currency.Image;
+        }
+
         public int CoinId { get; set; }
-        public Currency Currency { get; set; }
         public decimal Quantity => ExchangeCoinList.Count == 0 ? 0.0M : ExchangeCoinList.Sum(c => c.Quantity);
         public decimal AverageBuy => ExchangeCoinList.Count == 0 ? 0.0M : ExchangeCoinList.Average(c => c.AverageBuy);
         public string AverageBuyString => AverageBuy.ToString("0.00######");
         public List<ExchangeCoin> ExchangeCoinList { get; set; }
-        public List<Alerter> Alerts { get; set; }
         public string QtyLabel => string.Format($"Qty: {Quantity}");
         public string AvgBuyLabel => string.Format($"Avg Buy: {AverageBuy}");
         public decimal CurrentPrice { get; set; }
@@ -27,6 +37,8 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
             }
         }
         public double Percent24Hr { get; set; }
+        public decimal High24Hr { get; set; }
+        public decimal Low24Hr { get; set; }
         public double Percent7D { get; set; }
     }
 }

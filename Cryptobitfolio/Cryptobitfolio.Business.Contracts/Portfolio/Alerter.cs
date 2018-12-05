@@ -7,9 +7,10 @@
 
 namespace Cryptobitfolio.Business.Contracts.Portfolio
 {
-    using Cryptobitfolio.Business.Entities;
     #region Usings
 
+    using Cryptobitfolio.Business.Contracts.Trade;
+    using Cryptobitfolio.Business.Entities;
     using System;
 
     #endregion Usings
@@ -19,13 +20,13 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         #region Properties
 
         public int AlertId { get; set; }
-        public int CurrencyId { get; set; }
         public string Pair { get; set; }
         public Exchange Exchange { get; set; }
         public decimal Price { get; set; }
         public bool Enabled { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Hit { get; set; }
+        public HistoricalPrice[] HistoricalPrices { get; set; }
 
         #endregion Properties
     }

@@ -20,7 +20,7 @@ namespace Cryptobitfolio.UI
     public class App : Application
     {
         private static List<Business.Contracts.Portfolio.Coin> coinList;
-        private static List<WatchListCoin> watchListCoins;
+        private static List<Business.Contracts.Portfolio.WatchList> watchListCoins;
         private static List<ExchangeTransaction> transactions;
 
         public App()
@@ -237,16 +237,16 @@ namespace Cryptobitfolio.UI
             coinList.Add(coin);
         }
 
-        public async static Task<List<WatchListCoin>> GetWatchListCoins()
+        public async static Task<List<Business.Contracts.Portfolio.WatchList>> GetWatchListCoins()
         {
             if (watchListCoins == null || watchListCoins.Count == 0)
             {
-                var coins = new List<WatchListCoin>
+                var coins = new List<Business.Contracts.Portfolio.WatchList>
                 {
-                    new WatchListCoin { CurrencyId = 1, Name = "Bitcoin", Symbol = "BTC", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 1, WatchPrice = 6199.0M, Pair = "BTCUSDT" } }},
-                    new WatchListCoin { CurrencyId = 2, Name = "Ethereum", Symbol = "ETH", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 2, WatchPrice = 185.0M, Pair = "ETHUSDT" } }},
-                    new WatchListCoin { CurrencyId = 3, Name = "Stellar", Symbol = "XLM", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-4), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 3, WatchPrice = 0.00002900M, Pair = "XLMBTC", WatchHit = DateTime.UtcNow.AddHours(-20) } }},
-                    new WatchListCoin { CurrencyId = 4, Name = "NEO", Symbol = "NEO", Watchers = new Watcher[] { new Watcher { DateAdded = DateTime.UtcNow.AddDays(-2), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 4, WatchPrice = 0.001999M, Pair = "NEOBTC" } }},
+                    new Business.Contracts.Portfolio.WatchList { CurrencyId = 1, Name = "Bitcoin", Symbol = "BTC", Watchers = new Watcher[] { new Watcher { Created = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 1, Price = 6199.0M, Pair = "BTCUSDT" } }},
+                    new Business.Contracts.Portfolio.WatchList { CurrencyId = 2, Name = "Ethereum", Symbol = "ETH", Watchers = new Watcher[] { new Watcher { Created = DateTime.UtcNow.AddDays(-1), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 2, Price = 185.0M, Pair = "ETHUSDT" } }},
+                    new Business.Contracts.Portfolio.WatchList { CurrencyId = 3, Name = "Stellar", Symbol = "XLM", Watchers = new Watcher[] { new Watcher { Created = DateTime.UtcNow.AddDays(-4), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 3, Price = 0.00002900M, Pair = "XLMBTC", Hit = DateTime.UtcNow.AddHours(-20) } }},
+                    new Business.Contracts.Portfolio.WatchList { CurrencyId = 4, Name = "NEO", Symbol = "NEO", Watchers = new Watcher[] { new Watcher { Created = DateTime.UtcNow.AddDays(-2), Enabled = true, Exchange = Business.Entities.Exchange.Binance, WatcherId = 4, Price = 0.001999M, Pair = "NEOBTC" } }},
                 };
 
                 watchListCoins = coins;
@@ -255,17 +255,17 @@ namespace Cryptobitfolio.UI
             return watchListCoins;
         }
 
-        public async static Task<WatchListCoin> GetWatchListCoins(string symbol)
+        public async static Task<Business.Contracts.Portfolio.WatchList> GetWatchListCoins(string symbol)
         {
             return GetWatchListCoins().Result.Where(w => w.Symbol.Equals(symbol)).FirstOrDefault();
         }
 
-        public async static Task<WatchListCoin> GetWatchListCoins(int id)
+        public async static Task<Business.Contracts.Portfolio.WatchList> GetWatchListCoins(int id)
         {
             return GetWatchListCoins().Result.Where(w => w.CurrencyId == id).FirstOrDefault();
         }
 
-        public async static Task AddWatchListCoin(WatchListCoin coin)
+        public async static Task AddWatchListCoin(Business.Contracts.Portfolio.WatchList coin)
         {
             watchListCoins.Add(coin);
         }

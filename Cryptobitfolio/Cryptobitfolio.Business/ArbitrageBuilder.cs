@@ -11,6 +11,7 @@ namespace Cryptobitfolio.Business
     using Cryptobitfolio.Business.Contracts.Portfolio;
     using Cryptobitfolio.Business.Entities;
     using Cryptobitfolio.Data.Interfaces;
+    using Cryptobitfolio.Data.Interfaces.Database;
     #region Usings
 
     using System;
@@ -75,7 +76,7 @@ namespace Cryptobitfolio.Business
             paths.Add(new ArbitrageLoop(path4, quantity));
             paths.Add(new ArbitrageLoop(path5, quantity));
             paths.Add(new ArbitrageLoop(path6, quantity));
-            var arbitragePaths = _arbitragePathRepo.Get().Result;
+            var arbitragePaths = _arbitragePathRepo.Get().Result.ToList();
             for (var i = 0; i < arbitragePaths.Count; i++)
             {
                 paths.Add(new ArbitrageLoop(arbitragePaths[i].Path.Split(','), quantity));

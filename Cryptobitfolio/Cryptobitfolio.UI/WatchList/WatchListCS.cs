@@ -92,7 +92,7 @@ namespace Cryptobitfolio.UI.WatchList
             {
                 await Navigation.PushAsync(new WatchCoinCS
                 {
-                    BindingContext = e.SelectedItem as WatchListCoin
+                    BindingContext = e.SelectedItem as Business.Contracts.Portfolio.WatchList
                 });
             }
         }

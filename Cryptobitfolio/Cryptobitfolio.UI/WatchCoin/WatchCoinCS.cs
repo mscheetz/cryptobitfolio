@@ -10,7 +10,7 @@ namespace Cryptobitfolio.UI.WatchCoin
     {
         public WatchCoinCS()
         {
-            BindingContext = new WatchListCoin();
+            BindingContext = new Business.Contracts.Portfolio.WatchList();
             Title = "Watch Coin Info";
 
             var nameEntry = new Entry();
