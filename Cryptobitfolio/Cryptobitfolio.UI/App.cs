@@ -11,8 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity;
-using Unity.ServiceLocation;
+//using Unity;
+//using Unity.ServiceLocation;
 using Xamarin.Forms;
 
 namespace Cryptobitfolio.UI
@@ -25,14 +25,14 @@ namespace Cryptobitfolio.UI
 
         public App()
         {
-            var unityContainer = new UnityContainer();
+            //var unityContainer = new UnityContainer();
 
-            unityContainer.RegisterType<IExchangeApiRepository, ExchangeApiRepository>();
-            unityContainer.RegisterType<IExchangeBuilder, ExchangeBuilder>();
-            unityContainer.RegisterInstance(typeof(ExchangeViewModel));
+            //unityContainer.RegisterType<IExchangeApiRepository, ExchangeApiRepository>();
+            //unityContainer.RegisterType<IExchangeBuilder, ExchangeBuilder>();
+            //unityContainer.RegisterInstance(typeof(ExchangeViewModel));
 
-            var unityServiceLocator = new UnityServiceLocator(unityContainer);
-            ServiceLocator.SetLocatorProvider(() => unityServiceLocator);
+            //var unityServiceLocator = new UnityServiceLocator(unityContainer);
+            //ServiceLocator.SetLocatorProvider(() => unityServiceLocator);
             
             MainPage = new MainPage();
         }
@@ -60,66 +60,69 @@ namespace Cryptobitfolio.UI
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("BTCUSDT") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = .0014M, Symbol = "BTC"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = .0014M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("BTCUSDT") && c.Exchange == Business.Entities.Exchange.Bittrex).ToList(),
-                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = .0013M, Symbol = "BTC"
+                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = .0013M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("ETHUSDT") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = .55M, Symbol = "ETH"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = .55M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("XLMBTC") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = 399, Symbol = "XLM"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = 399
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("NEOBTC") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = 6.5M, Symbol = "NEO"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = 6.5M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("NEOBTC") && c.Exchange == Business.Entities.Exchange.Bittrex).ToList(),
-                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = 8.0M, Symbol = "NEO"
+                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = 8.0M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("POLYBTC") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = 902M, Symbol = "POLY"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = 902M
                     }
                 };
 
+
+
                 var coins = new List<Business.Contracts.Portfolio.Coin>
                 {
+
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =0, Currency = new Currency{ Name = "Bitcoin", Symbol = "BTC" }, CurrentPrice = 6379.44M, Percent24Hr = 0.47, Percent7D = -0.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("BTC")).ToList()
+                        CoinId =0, Name = "Bitcoin", Symbol = "BTC" , CurrentPrice = 6379.44M, Percent24Hr = 0.47, Percent7D = -0.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("BTC"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =1, Currency = new Currency{ Name = "Ethereum", Symbol = "ETH"}, CurrentPrice = 242.46M, Percent24Hr = 1.7, Percent7D = 2.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("ETH")).ToList()
+                        CoinId =1, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 242.46M, Percent24Hr = 1.7, Percent7D = 2.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("ETH"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =2, Currency = new Currency{ Name = "Stellar", Symbol = "XLM"}, CurrentPrice = 0.00001042M, Percent24Hr = 0.00, Percent7D = -1.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("XLM")).ToList()
+                        CoinId =2, Name = "Stellar", Symbol = "XLM", CurrentPrice = 0.00001042M, Percent24Hr = 0.00, Percent7D = -1.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("XLM"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =3, Currency = new Currency{ Name = "NEO", Symbol = "NEO"}, CurrentPrice = 0.0019M, Percent24Hr = -7.47, Percent7D = -0.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("NEO")).ToList()
+                        CoinId =3, Name = "NEO", Symbol = "NEO", CurrentPrice = 0.0019M, Percent24Hr = -7.47, Percent7D = -0.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("NEO"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =4, Currency = new Currency{ Name = "Polymath", Symbol = "POLY"}, CurrentPrice = 0.00000570M, Percent24Hr = 20.47, Percent7D = 10.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("POLY")).ToList()
+                        CoinId =4, Name = "Polymath", Symbol = "POLY", CurrentPrice = 0.00000570M, Percent24Hr = 20.47, Percent7D = 10.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("POLY"))).ToList()
                     },
                 };
 
@@ -153,37 +156,37 @@ namespace Cryptobitfolio.UI
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("BTCUSDT") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = .0014M, Symbol = "BTC"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = .0014M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("BTCUSDT") && c.Exchange == Business.Entities.Exchange.Bittrex).ToList(),
-                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = .0013M, Symbol = "BTC"
+                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = .0013M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("ETHUSDT") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = .55M, Symbol = "ETH"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = .55M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("XLMBTC") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = 399, Symbol = "XLM"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = 399
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("NEOBTC") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = 6.5M, Symbol = "NEO"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = 6.5M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("NEOBTC") && c.Exchange == Business.Entities.Exchange.Bittrex).ToList(),
-                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = 8.0M, Symbol = "NEO"
+                        Exchange = Business.Entities.Exchange.Bittrex, Quantity = 8.0M
                     },
                     new ExchangeCoin
                     {
                         CoinBuyList = coinBuyList.Where(c => c.Pair.Equals("POLYBTC") && c.Exchange == Business.Entities.Exchange.Binance).ToList(),
-                        Exchange = Business.Entities.Exchange.Binance, Quantity = 902M, Symbol = "POLY"
+                        Exchange = Business.Entities.Exchange.Binance, Quantity = 902M
                     }
                 };
 
@@ -191,28 +194,28 @@ namespace Cryptobitfolio.UI
                 {
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =0, Currency = new Currency{ Name = "Bitcoin", Symbol = "BTC" }, CurrentPrice = 6379.44M, Percent24Hr = 0.47, Percent7D = -0.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("BTC")).ToList()
+                        CoinId =0, Name = "Bitcoin", Symbol = "BTC" , CurrentPrice = 6379.44M, Percent24Hr = 0.47, Percent7D = -0.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("BTC"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =1, Currency = new Currency{ Name = "Ethereum", Symbol = "ETH"}, CurrentPrice = 242.46M, Percent24Hr = 1.7, Percent7D = 2.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("ETH")).ToList()
+                        CoinId =1, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 242.46M, Percent24Hr = 1.7, Percent7D = 2.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("ETH"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =2, Currency = new Currency{ Name = "Stellar", Symbol = "XLM"}, CurrentPrice = 0.00001042M, Percent24Hr = 0.00, Percent7D = -1.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("XLM")).ToList()
+                        CoinId =2, Name = "Stellar", Symbol = "XLM", CurrentPrice = 0.00001042M, Percent24Hr = 0.00, Percent7D = -1.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("XLM"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =3, Currency = new Currency{ Name = "NEO", Symbol = "NEO"}, CurrentPrice = 0.0019M, Percent24Hr = -7.47, Percent7D = -0.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("NEO")).ToList()
+                        CoinId =3, Name = "NEO", Symbol = "NEO", CurrentPrice = 0.0019M, Percent24Hr = -7.47, Percent7D = -0.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("NEO"))).ToList()
                     },
                     new Business.Contracts.Portfolio.Coin
                     {
-                        CoinId =4, Currency = new Currency{ Name = "Polymath", Symbol = "POLY"}, CurrentPrice = 0.00000570M, Percent24Hr = 20.47, Percent7D = 10.5,
-                        ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("POLY")).ToList()
+                        CoinId =4, Name = "Polymath", Symbol = "POLY", CurrentPrice = 0.00000570M, Percent24Hr = 20.47, Percent7D = 10.5,
+                        ExchangeCoinList = exchangeCoins.Where(e => e.CoinBuyList.Any(c => c.Pair.StartsWith("POLY"))).ToList()
                     },
                 };
 
@@ -224,7 +227,7 @@ namespace Cryptobitfolio.UI
 
         public async static Task<Business.Contracts.Portfolio.Coin> GetCoin(string symbol)
         {
-            return GetCoins().Result.Where(c => c.Currency.Symbol.Equals(symbol)).FirstOrDefault();
+            return GetCoins().Result.Where(c => c.Symbol.Equals(symbol)).FirstOrDefault();
         }
 
         public async static Task<Business.Contracts.Portfolio.Coin> GetCoin(int id)
