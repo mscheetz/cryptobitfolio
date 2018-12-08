@@ -14,7 +14,7 @@ namespace Cryptobitfolio.Business
 {
     public class ExchangeBuilder : IExchangeBuilder
     {
-        private readonly IExchangeApiRepository _exchangeApiRepo;
+        private readonly IExchangeApiBuilder _exchangeApiBldr;
         private readonly IExchangeUpdateRepository _exchangeUpdateRepo;
         private readonly IArbitragePathRepository _arbitragePathRepo;
         private readonly IArbitrageBuilder _arbitrageBldr;
@@ -23,7 +23,7 @@ namespace Cryptobitfolio.Business
         private IExchangeHubRepository currentHub = null;
         private string currentExchange = string.Empty;
         private DateTime lastUpdated;
-        private IEnumerable<Entities.Trade.ExchangeApi> _exchangeApis;
+        private IEnumerable<ExchangeApi> _exchangeApis;
         //private List<ExchangeHub.ExchangeHub> exchangeHubs;
         private List<IExchangeHubRepository> exchangeHubs;
         private List<string> currentHubMarkets;
@@ -36,55 +36,58 @@ namespace Cryptobitfolio.Business
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="exhangeApiRepo">Exchange Api repository</param>
+        /// <param name="exchangeApiBldr">Exchange Api Builder</param>
         /// <param name="exchangeUpdateRepo">Exchange Update repository</param>
         /// <param name="arbitragePathRepo">Arbitrage Path repository</param>
         /// <param name="arbitrageBuilder">Arbitrage builder</param>
         /// <param name="cmcBuilder">CMC builder</param>
-        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo, 
+        public ExchangeBuilder(IExchangeApiBuilder exchangeApiBldr, 
                                IExchangeUpdateRepository exchangeUpdateRepo,
                                IArbitragePathRepository arbitragePathRepo,
                                IArbitrageBuilder arbitrageBuilder,
                                ICMCBuilder cmcBuilder)
         {
-            _exchangeApiRepo = exhangeApiRepo;
+            _exchangeApiBldr = exchangeApiBldr;
             _exchangeUpdateRepo = exchangeUpdateRepo;
             _arbitragePathRepo = arbitragePathRepo;
             _arbitrageBldr = arbitrageBuilder;
             _cmcBldr = cmcBuilder;
-            LoadBuilder();
+            LoadBuilder().RunSynchronously();
         }
 
         /// <summary>
         /// Constructor for unit tests
         /// </summary>
-        /// <param name="exhangeApiRepo">Exchange Api repository</param>
+        /// <param name="exchangeApiBldr">Exchange Api Builder</param>
         /// <param name="exchangeUpdateRepo">Exchange Update repository</param>
         /// <param name="arbitragePathRepo">Arbitrage Path repository</param>
         /// <param name="arbitrageBuilder">Arbitrage builder</param>
         /// <param name="exchangeHubRepo">Exchange Hub repository</param>
         /// <param name="cmcBuilder">CMC builder</param>
-        public ExchangeBuilder(IExchangeApiRepository exhangeApiRepo,
+        public ExchangeBuilder(IExchangeApiBuilder exchangeApiBldr,
                                IExchangeUpdateRepository exchangeUpdateRepo,
                                IArbitragePathRepository arbitragePathRepo,
                                IArbitrageBuilder arbitrageBuilder,
                                IExchangeHubRepository exchangeHubRepo,
                                ICMCBuilder cmcBuilder)
         {
-            _exchangeApiRepo = exhangeApiRepo;
+            _exchangeApiBldr = exchangeApiBldr;
             _exchangeUpdateRepo = exchangeUpdateRepo;
             _arbitragePathRepo = arbitragePathRepo;
             _arbitrageBldr = arbitrageBuilder;
             currentHub = exchangeHubRepo;
             _cmcBldr = cmcBuilder;
             currentExchange = "Binance";
-            LoadBuilder(true);
+            LoadBuilder(true).RunSynchronously();
         }
 
-        public void LoadBuilder(bool test = false)
+        /// <summary>
+        /// Loads data for this builder
+        /// </summary>
+        /// <param name="test">Use test data?</param>
+        public async Task LoadBuilder(bool test = false)
         {
-            _exchangeApis = _exchangeApiRepo.Get().Result;
-            //exchangeHubs = new List<ExchangeHub.ExchangeHub>();
+            _exchangeApis = await _exchangeApiBldr.GetExchangeApis();
             exchangeHubs = new List<IExchangeHubRepository>();
             coinSet = new HashSet<string>();
             exchangeCoinList = new List<ExchangeCoin>();
@@ -135,21 +138,40 @@ namespace Cryptobitfolio.Business
             }
             exchangeHubs.Add(currentHub);
 
-            OnBuildExchangeCoins(loadedHub);
-            OnBuildOrders(loadedHub);
+            var e = OnBuildExchangeCoins(loadedHub);
+            var o = OnBuildOrders(loadedHub);
         }
 
-        public DateTime UpdatePortfolio()
+        /// <summary>
+        /// Returns a collection of Coins
+        /// Or builds a collection of coins if one
+        /// does not exist
+        /// </summary>
+        /// <returns>Collection of Coins</returns>
+        public async Task<List<Coin>> GetCoins()
         {
-            BuildCoinsFromExchanges();
-            BuildOrders();
+            if (coinList == null || coinList.Count == 0)
+            {
+                await BuildCoinsFromExchanges();
+            }
+            return coinList;
+        }
+
+        /// <summary>
+        /// Updates Portfolio with latest data from exchanges
+        /// </summary>
+        /// <returns>DateTime of update</returns>
+        public async Task<DateTime> UpdatePortfolio()
+        {
+            await BuildCoinsFromExchanges();
+            await BuildOrders();
             this.lastUpdated = DateTime.UtcNow;
 
             var exchanges = _exchangeApis.Select(e => e.Exchange).ToList();
             foreach(var exchange in exchanges)
             {
                 var exchg = new Entities.Trade.ExchangeUpdate { Exchange = exchange, UpdateAt = lastUpdated };
-                _exchangeUpdateRepo.Add(exchg);
+                await _exchangeUpdateRepo.Add(exchg);
             }
 
             return lastUpdated;
@@ -163,7 +185,7 @@ namespace Cryptobitfolio.Business
         /// <summary>
         /// Build Coins in portfolio from exchange data
         /// </summary>
-        public void BuildCoinsFromExchanges()
+        public async Task BuildCoinsFromExchanges()
         {
             if(coinList == null || coinList.Count == 0)
                 coinList = new List<Coin>();
@@ -172,10 +194,10 @@ namespace Cryptobitfolio.Business
 
             foreach(var hub in exchangeHubs)
             {
-                exchangeCoins.AddRange(OnBuildExchangeCoins(hub));
+                exchangeCoins.AddRange(await OnBuildExchangeCoins(hub));
             }
 
-            CreateCoins(exchangeCoins);
+            await CreateCoins(exchangeCoins);
         }
 
         /// <summary>
@@ -183,11 +205,13 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="hub">ExchangeHub for current exchange</param>
         /// <returns>Collection of ExchangeCoins</returns>
-        private IEnumerable<ExchangeCoin> OnBuildExchangeCoins(IExchangeHubRepository hub)
+        private async Task<IEnumerable<ExchangeCoin>> OnBuildExchangeCoins(IExchangeHubRepository hub)
         {
             currentHub = hub;
-            currentHubMarkets = currentHub.GetMarkets().Result.ToList();
-            return GetExchangeCoins();
+            var markets = await currentHub.GetMarkets();
+            currentHubMarkets = markets.ToList();
+
+            return await GetExchangeCoins();
         }
 
         /// <summary>
@@ -195,17 +219,15 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="exchangeCoins">Exchange coins to add to Coins</param>
         /// <returns>Collection of Coins</returns>
-        public IEnumerable<Coin> CreateCoins(IEnumerable<ExchangeCoin> exchangeCoins)
+        public async Task<IEnumerable<Coin>> CreateCoins(IEnumerable<ExchangeCoin> exchangeCoins)
         {
-            var currencies = GetCurrencies(coinSet.ToList());
+            var currencies = await GetCurrencies(coinSet.ToList());
 
             foreach(var symbol in coinSet)
             {
-                var coin = new Coin
-                {
-                    Currency = currencies.Where(c => c.Symbol.Equals(symbol)).FirstOrDefault(),
-                    ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals(symbol)).ToList(),
-                };
+                var coin = new Coin(currencies.Where(c => c.Symbol.Equals(symbol)).FirstOrDefault());
+
+                coin.ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals(symbol)).ToList();
 
                 coinList.Add(coin);
             }
@@ -213,111 +235,23 @@ namespace Cryptobitfolio.Business
             return coinList;
         }
 
-        public void BuildOrders()
+        public async Task BuildOrders()
         {
             orderList = new List<ExchangeOrder>();
             foreach (var hub in exchangeHubs)
             {
-                OnBuildOrders(hub);
+                await OnBuildOrders(hub);
             }
         }
 
-        private void OnBuildOrders(IExchangeHubRepository hub)
+        private async Task OnBuildOrders(IExchangeHubRepository hub)
         {
             currentHub = hub;
-            //currentHub.SetMarketsAsync();
-            currentHubMarkets = currentHub.GetMarkets().Result.ToList();
 
-        }
+            var markets = await currentHub.GetMarkets();
 
-        #region ExchangeApi Methods
+            currentHubMarkets = markets.ToList();
 
-        /// <summary>
-        /// Get all ExchangeApis
-        /// </summary>
-        /// <returns>Collection of ExchangeApis</returns>
-        public async Task<IEnumerable<ExchangeApi>> GetExchangeApis()
-        {
-            var entities = await _exchangeApiRepo.Get();
-            var contractList = new List<ExchangeApi>();
-
-            foreach(var entity in entities)
-            {
-                var contract = ExchangeApiEntityToContract(entity);
-
-                contractList.Add(contract);
-            }
-
-            return contractList;
-        }
-
-        /// <summary>
-        /// Get all ExchangeApis for a given exchange
-        /// </summary>
-        /// <param name="exchange">Exchange to find</param>
-        /// <returns>Collection of ExchangeApis</returns>
-        public async Task<IEnumerable<ExchangeApi>> GetExchangeApis(Exchange exchange)
-        {
-            var entities = await _exchangeApiRepo.Get(e => e.Exchange == exchange);
-            var contractList = new List<ExchangeApi>();
-
-            foreach (var entity in entities)
-            {
-                var contract = ExchangeApiEntityToContract(entity);
-
-                contractList.Add(contract);
-            }
-
-            return contractList;
-        }
-
-        /// <summary>
-        /// Save exhange api to database
-        /// </summary>
-        /// <param name="exchangeApi">ExchangeApi to save</param>
-        /// <returns>Updated ExchangeApi object</returns>
-        public async Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi)
-        {
-            var entity = ExchangeApiContractToEntity(exchangeApi);
-
-            entity = entity.Id == 0 
-                        ? await _exchangeApiRepo.Add(entity) 
-                        : await _exchangeApiRepo.Update(entity);
-
-            exchangeApi.ExchangeApiId = entity.Id;
-
-            return exchangeApi;
-        }
-
-        /// <summary>
-        /// Delete an ExchangeApi
-        /// </summary>
-        /// <param name="exchangeApi">ExchangeApi to delete</param>
-        /// <returns>Boolean value of deletion attempt</returns>
-        public async Task<bool> DeleteExchangeApi(ExchangeApi exchangeApi)
-        {
-            var entity = ExchangeApiContractToEntity(exchangeApi);
-
-            try
-            {
-                await _exchangeApiRepo.Delete(entity);
-                return true;
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        #endregion ExchangeApi Methods
-
-        public List<Coin> GetCoins()
-        {
-            if(coinList == null || coinList.Count == 0)
-            {
-                BuildCoinsFromExchanges();
-            }
-            return coinList;
         }
 
         public List<ExchangeOrder> GetOpenOrders()
@@ -336,21 +270,23 @@ namespace Cryptobitfolio.Business
         /// Get all ExchangeCoins for an exchange
         /// </summary>
         /// <returns>Collection of ExchangeCoins</returns>
-        public IEnumerable<ExchangeCoin> GetExchangeCoins()
+        public async Task<IEnumerable<ExchangeCoin>> GetExchangeCoins()
         {
-            var coinList = new List<Coin>();
+            //var coinList = new List<Coin>();
             var exCoinList = new List<ExchangeCoin>();
 
-            var balances = currentHub.GetBalances().Result.Where(b => b.Available + b.Frozen > 0);
+            var balances = await currentHub.GetBalances();
+            
+            var nonZeroBalances = balances.Where(b => b.Available + b.Frozen > 0);
 
-            var currencyList = GetCurrencies(balances.Select(b => b.Symbol).ToList());
+            //var currencyList = GetCurrencies(balances.Select(b => b.Symbol).ToList());
 
-            foreach(var bal in balances)
+            foreach(var bal in nonZeroBalances)
             {
-                var currency = currencyList.Where(c => c.Symbol.Equals(bal.Symbol)).FirstOrDefault();
-                var coin = GetExchangeCoin(bal);
-                coin.CoinBuyList = GetRelevantBuys(coin.Symbol, coin.Quantity);
-                coin.OpenOrderList = GetOpenOrdersForASymbol(coin.Symbol);
+                //var currency = currencyList.Where(c => c.Symbol.Equals(bal.Symbol)).FirstOrDefault();
+                var coin = CreateExchangeCoin(bal);
+                coin.CoinBuyList = await GetRelevantBuys(coin.Symbol, coin.Quantity);
+                coin.OpenOrderList = await GetOpenOrdersForASymbol(coin.Symbol);
 
                 exCoinList.Add(coin);
                 coinSet.Add(bal.Symbol);
@@ -364,9 +300,9 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="symbols">Symbols to find</param>
         /// <returns>Collection of Currencies</returns>
-        public List<Currency> GetCurrencies(List<string> symbols)
+        public async Task<List<Currency>> GetCurrencies(List<string> symbols)
         {
-            var currencies = _cmcBldr.GetCurrencies(symbols).Result;
+            var currencies = await _cmcBldr.GetCurrencies(symbols);
 
             return currencies.ToList();
         }
@@ -377,10 +313,11 @@ namespace Cryptobitfolio.Business
         /// <param name="symbol">Symbol of coin</param>
         /// <param name="quantity">Quantity of coin</param>
         /// <returns>Collection of CoinBuy objects</returns>
-        public List<CoinBuy> GetRelevantBuys(string symbol, decimal quantity)
+        public async Task<List<CoinBuy>> GetRelevantBuys(string symbol, decimal quantity)
         {
-            var pairs = GetMarketsForACoin(symbol);
-            var orders = GetExchangeOrders(pairs).Result.OrderByDescending(o => o.TransactTime);
+            var pairs = await GetMarketsForACoin(symbol);
+            var orders = await GetExchangeOrders(pairs);
+            orders = orders.OrderByDescending(o => o.TransactTime);
             var coinBuyList = new List<CoinBuy>();
 
             foreach (var order in orders)
@@ -408,9 +345,9 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="symbol">Symbol of currency</param>
         /// <returns>Collection of trading pairs</returns>
-        public IEnumerable<string> GetMarketsForACoin(string symbol)
+        public async Task<IEnumerable<string>> GetMarketsForACoin(string symbol)
         {
-            var pairs = GetMarkets().Result;
+            var pairs = await GetMarkets();
 
             pairs = pairs.Where(p => p.StartsWith(symbol));
 
@@ -459,7 +396,7 @@ namespace Cryptobitfolio.Business
             return orders;
         }
 
-        private List<ExchangeOrder> GetExchangeOpenOrders()
+        private async Task<List<ExchangeOrder>> GetExchangeOpenOrders()
         {
             var orderList = new List<ExchangeOrder>();
             var exchange = currentHub.GetExchange();
@@ -467,7 +404,7 @@ namespace Cryptobitfolio.Business
 
             foreach (var coin in exchangeCoins)
             {
-                orderList.AddRange(GetOpenOrdersForASymbol(coin.Currency.Symbol));
+                orderList.AddRange(await GetOpenOrdersForASymbol(coin.Symbol));
             }
 
             return orderList;
@@ -478,16 +415,16 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="symbol">String of symbol</param>
         /// <returns>Collection of ExchangeOrders</returns>
-        public List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol)
+        public async Task<List<ExchangeOrder>> GetOpenOrdersForASymbol(string symbol)
         {
-            var pairs = GetMarketsForACoin(symbol);
-            var orders = GetExchangeOpenOrdersByPairs(pairs).Result;
+            var pairs = await GetMarketsForACoin(symbol);
+            var orders = await GetExchangeOpenOrdersByPairs(pairs);
             var exchangeOrderList = new List<ExchangeOrder>();
 
             foreach (var order in orders)
             {
-                var exchaneOrder = GetExchangeOrder(order);
-                exchangeOrderList.Add(exchaneOrder);
+                var exchangeOrder = OrderResponseToExchangeOrder(order);
+                exchangeOrderList.Add(exchangeOrder);
             }
 
             return exchangeOrderList;
@@ -517,7 +454,7 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="balance">Balance object to convert</param>
         /// <returns>new ExchangeCoin object</returns>
-        public ExchangeCoin GetExchangeCoin(ExchangeHub.Contracts.Balance balance)
+        public ExchangeCoin CreateExchangeCoin(ExchangeHub.Contracts.Balance balance)
         {
             var exchangeCoin = new ExchangeCoin
             {
@@ -554,7 +491,12 @@ namespace Cryptobitfolio.Business
             return coinBuy;
         }
 
-        public ExchangeOrder GetExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse)
+        /// <summary>
+        /// Convert an OrderResponse to an ExchangeOrder
+        /// </summary>
+        /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <returns>new ExchangeOrder object</returns>
+        public ExchangeOrder OrderResponseToExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse)
         {
             var exchangeOrder = new ExchangeOrder
             {

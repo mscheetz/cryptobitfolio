@@ -105,7 +105,7 @@ namespace Business.Tests
                 ExchangeCoinId = 0,
                 OpenOrderList = new List<Cryptobitfolio.Business.Contracts.Trade.ExchangeOrder>()
             };
-            var exchangeCoin = exchangeBuilder.GetExchangeCoin(balance);
+            var exchangeCoin = exchangeBuilder.CreateExchangeCoin(balance);
 
             Assert.NotNull(exchangeCoin);
             Assert.Equal(expected.Exchange, exchangeCoin.Exchange);

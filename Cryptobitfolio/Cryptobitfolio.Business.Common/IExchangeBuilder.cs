@@ -12,55 +12,34 @@ namespace Cryptobitfolio.Business.Common
     {
         void LoadExchange(ExchangeApi exchangeApi);
 
-        DateTime UpdatePortfolio();
+        /// <summary>
+        /// Updates Portfolio with latest data from exchanges
+        /// </summary>
+        /// <returns>DateTime of update</returns>
+        Task<DateTime> UpdatePortfolio();
 
         /// <summary>
         /// Build Coins in portfolio from exchange data
         /// </summary>
-        void BuildCoinsFromExchanges();
+        Task BuildCoinsFromExchanges();
 
         /// <summary>
         /// Create Coins for portfolio
         /// </summary>
         /// <param name="exchangeCoins">Exchange coins to add to Coins</param>
         /// <returns>Collection of Coins</returns>
-        IEnumerable<Coin> CreateCoins(IEnumerable<ExchangeCoin> exchangeCoins);
+        Task<IEnumerable<Coin>> CreateCoins(IEnumerable<ExchangeCoin> exchangeCoins);
 
 
-        void BuildOrders();
-
-        #region ExchangeApi Methods
+        Task BuildOrders();
 
         /// <summary>
-        /// Get all ExchangeApis
+        /// Returns a collection of Coins
+        /// Or builds a collection of coins if one
+        /// does not exist
         /// </summary>
-        /// <returns>Collection of ExchangeApis</returns>
-        Task<IEnumerable<ExchangeApi>> GetExchangeApis();
-
-        /// <summary>
-        /// Get all ExchangeApis for a given exchange
-        /// </summary>
-        /// <param name="exchange">Exchange to find</param>
-        /// <returns>Collection of ExchangeApis</returns>
-        Task<IEnumerable<ExchangeApi>> GetExchangeApis(Exchange exchange);
-
-        /// <summary>
-        /// Save exhange api to database
-        /// </summary>
-        /// <param name="exchangeApi">ExchangeApi to save</param>
-        /// <returns>Updated ExchangeApi object</returns>
-        Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi);
-
-        /// <summary>
-        /// Delete an ExchangeApi
-        /// </summary>
-        /// <param name="exchangeApi">ExchangeApi to delete</param>
-        /// <returns>Boolean value of deletion attempt</returns>
-        Task<bool> DeleteExchangeApi(ExchangeApi exchangeApi);
-
-        #endregion ExchangeApi Methods
-
-        List<Coin> GetCoins();
+        /// <returns>Collection of Coins</returns>
+        Task<List<Coin>> GetCoins();
 
         List<ExchangeOrder> GetOpenOrders();
 
@@ -68,7 +47,7 @@ namespace Cryptobitfolio.Business.Common
         /// Get all ExchangeCoins for an exchange
         /// </summary>
         /// <returns>Collection of ExchangeCoins</returns>
-        IEnumerable<ExchangeCoin> GetExchangeCoins();
+        Task<IEnumerable<ExchangeCoin>> GetExchangeCoins();
 
         IEnumerable<ArbitrageLoop> GetInternalArbitrages(string symbol, decimal quantity, Exchange exchange);
 
@@ -77,7 +56,7 @@ namespace Cryptobitfolio.Business.Common
         /// </summary>
         /// <param name="balance">Balance object to convert</param>
         /// <returns>new ExchangeCoin object</returns>
-        ExchangeCoin GetExchangeCoin(ExchangeHub.Contracts.Balance balance);
+        ExchangeCoin CreateExchangeCoin(ExchangeHub.Contracts.Balance balance);
 
         /// <summary>
         /// Create a CoinBuy from an ExchangeHub OrderResponse
@@ -87,7 +66,12 @@ namespace Cryptobitfolio.Business.Common
         /// <returns>new CoinBuy object</returns>
         CoinBuy GetCoinBuy(ExchangeHub.Contracts.OrderResponse orderResponse, decimal quantityApplied);
 
-        ExchangeOrder GetExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse);
+        /// <summary>
+        /// Convert an OrderResponse to an ExchangeOrder
+        /// </summary>
+        /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <returns>new ExchangeOrder object</returns>
+        ExchangeOrder OrderResponseToExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse);
 
         /// <summary>
         /// Get buys for a given coin that fulfill the a given quantity
@@ -95,14 +79,14 @@ namespace Cryptobitfolio.Business.Common
         /// <param name="symbol">Symbol of coin</param>
         /// <param name="quantity">Quantity of coin</param>
         /// <returns>Collection of CoinBuy objects</returns>
-        List<CoinBuy> GetRelevantBuys(string symbol, decimal quantity);
+        Task<List<CoinBuy>> GetRelevantBuys(string symbol, decimal quantity);
 
         /// <summary>
         /// Get all markets for a given coin
         /// </summary>
         /// <param name="symbol">Symbol of currency</param>
         /// <returns>Collection of trading pairs</returns>
-        IEnumerable<string> GetMarketsForACoin(string symbol);
+        Task<IEnumerable<string>> GetMarketsForACoin(string symbol);
 
         /// <summary>
         /// Get all markets for the current hub
@@ -122,6 +106,6 @@ namespace Cryptobitfolio.Business.Common
         /// </summary>
         /// <param name="symbol">String of symbol</param>
         /// <returns>Collection of ExchangeOrders</returns>
-        List<ExchangeOrder> GetOpenOrdersForASymbol(string symbol);
+        Task<List<ExchangeOrder>> GetOpenOrdersForASymbol(string symbol);
     }
 }

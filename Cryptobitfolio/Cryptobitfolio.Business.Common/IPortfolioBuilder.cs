@@ -1,20 +1,21 @@
 ﻿// -----------------------------------------------------------------------------
-// <copyright file="PortfolioBuilder" company="Matt Scheetz">
+// <copyright file="IPortfolioBuilder" company="Matt Scheetz">
 //     Copyright (c) Matt Scheetz All Rights Reserved
 // </copyright>
 // <author name="Matt Scheetz" date="12/7/2018 8:26:05 PM" />
 // -----------------------------------------------------------------------------
 
-namespace Cryptobitfolio.Business
+namespace Cryptobitfolio.Business.Common
 {
     #region Usings
 
-    using Cryptobitfolio.Business.Common;
     using System;
-    
+    using System.Collections.Generic;
+    using System.Text;
+
     #endregion Usings
 
-    public class PortfolioBuilder : IPortfolioBuilder
+    public interface IPortfolioBuilder
     {
     }
 }
