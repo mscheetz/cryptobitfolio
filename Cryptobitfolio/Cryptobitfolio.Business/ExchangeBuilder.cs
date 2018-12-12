@@ -136,7 +136,8 @@ namespace Cryptobitfolio.Business
             {
                 loadedHub = new ExchangeHubRepository((ExchangeHub.Contracts.Exchange)exchangeApi.Exchange, exchangeApi.ApiKey, exchangeApi.ApiSecret);
             }
-            exchangeHubs.Add(currentHub);
+            currentHub = loadedHub;
+            exchangeHubs.Add(loadedHub);
 
             var e = OnBuildExchangeCoins(loadedHub);
             var o = OnBuildOrders(loadedHub);
@@ -481,7 +482,7 @@ namespace Cryptobitfolio.Business
             {
                 BTCPrice = orderResponse.Pair.EndsWith("BTC") ? orderResponse.Price : 0,
                 Exchange = StringToExchange(currentExchange),
-                CoinBuyId = orderResponse.OrderId,
+                OrderId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
                 Quantity = quantityApplied,

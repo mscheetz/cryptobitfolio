@@ -6,7 +6,9 @@ namespace Cryptobitfolio.Business.Entities.Portfolio
     {
         public int CurrencyId { get; set; }
         public int CoinId { get; set; }
+        public string OrderId { get; set; }
         public decimal Quantity { get; set; }
+        public string Pair { get; set; }
         public decimal Price { get; set; }
         public Exchange Exchange { get; set; }
         public DateTime TransactionDate { get; set; }

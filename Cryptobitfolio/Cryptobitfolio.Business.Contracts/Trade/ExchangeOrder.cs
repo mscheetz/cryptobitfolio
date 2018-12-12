@@ -14,6 +14,7 @@ namespace Cryptobitfolio.Business.Contracts.Trade
         public Side Side { get; set; }
         public DateTime PlaceDate { get; set; }
         public Exchange Exchange { get; set; }
-        public DateTime ClosedDate { get; set; }
+        public DateTime? ClosedDate { get; set; }
+        public TradeStatus Status { get; set; }
     }
 }
