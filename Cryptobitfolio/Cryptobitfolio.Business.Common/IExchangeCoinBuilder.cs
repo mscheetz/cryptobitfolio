@@ -8,6 +8,7 @@
 namespace Cryptobitfolio.Business.Common
 {
     using Cryptobitfolio.Business.Contracts.Portfolio;
+    using Cryptobitfolio.Business.Entities;
     #region Usings
 
     using System;
@@ -26,5 +27,13 @@ namespace Cryptobitfolio.Business.Common
         Task<IEnumerable<ExchangeCoin>> Get();
 
         Task<ExchangeCoin> Update(ExchangeCoin contract);
+
+        Task<IEnumerable<ExchangeCoin>> Get(string symbol);
+
+        Task<IEnumerable<ExchangeCoin>> Get(Exchange exchange);
+
+        Task<IEnumerable<ExchangeCoin>> Get(string symbol, Exchange exchange);
+
+        Task<IEnumerable<ExchangeCoin>> GetLastest(Exchange exchange);
     }
 }

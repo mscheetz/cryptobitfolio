@@ -23,12 +23,14 @@ namespace Cryptobitfolio.Business
     {
         #region Properties
 
-        ICurrencyRepository _currencyRepo;
+        private ICMCBuilder _cmcBldr;
+        private ICurrencyRepository _currencyRepo;
 
         #endregion Properties
 
-        public CurrencyBuilder(ICurrencyRepository repo)
+        public CurrencyBuilder(ICMCBuilder cmcBuilder, ICurrencyRepository repo)
         {
+            this._cmcBldr = cmcBuilder;
             this._currencyRepo = repo;
         }
 
@@ -55,12 +57,26 @@ namespace Cryptobitfolio.Business
             return EntitiesToContracts(entities);
         }
 
+        public async Task<IEnumerable<Currency>> Get(string symbol)
+        {
+            var entities = await _currencyRepo.Get(c => c.Symbol.Equals(symbol));
+
+            return EntitiesToContracts(entities);
+        }
+
         public async Task<Currency> Update(Currency contract)
         {
             var entity = ContractToEntity(contract);
             entity = await _currencyRepo.Update(entity);
 
             return EntityToContract(entity);
+        }
+
+        public async Task<IEnumerable<Currency>> GetLatest(List<string> symbols)
+        {
+            var cmcList = await _cmcBldr.GetCurrencies(symbols);
+
+            return null;
         }
 
         private IEnumerable<Currency> EntitiesToContracts(IEnumerable<Entities.Portfolio.Currency> entities)

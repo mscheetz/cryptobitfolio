@@ -147,6 +147,20 @@ namespace Cryptobitfolio.Business
             return markets;
         }
 
+        /// <summary>
+        /// Get all markets for a given coin
+        /// </summary>
+        /// <param name="symbol">Symbol of currency</param>
+        /// <returns>Collection of trading pairs</returns>
+        public async Task<IEnumerable<string>> GetMarketsForACoin(string symbol)
+        {
+            var pairs = await GetMarkets();
+
+            pairs = pairs.Where(p => p.StartsWith(symbol));
+
+            return pairs;
+        }
+
         public async Task<IEnumerable<string>> GetExchangeMarkets(Exchange exchange)
         {
             var hub = _exchangeHubs.Where(e => e.GetExchange() == exchange.ToString()).FirstOrDefault();
@@ -156,13 +170,31 @@ namespace Cryptobitfolio.Business
             return markets;
         }
 
-        public async Task<IEnumerable<Balance>> GetBalances()
+        public async Task<Dictionary<Exchange, IEnumerable<Balance>>> GetBalances()
         {
-            var balances = new List<Balance>();
+            var balances = new Dictionary<Exchange, IEnumerable<Balance>>();
+            
             foreach(var hub in _exchangeHubs)
             {
                 var xchBal = await hub.GetBalances();
-                balances.AddRange(xchBal);
+                var exchange = IHelper.StringToExchange(hub.GetExchange());
+                balances.Add(exchange, xchBal);
+            }
+
+            return balances;
+        }
+
+        public async Task<Dictionary<Exchange, IEnumerable<Balance>>> GetBalances(string symbol)
+        {
+            var balances = new Dictionary<Exchange, IEnumerable<Balance>>();
+
+            foreach (var hub in _exchangeHubs)
+            {
+                var xchBal = await hub.GetBalances();
+                var symbolBalance = xchBal.Where(b => b.Symbol.Equals(symbol));
+
+                var exchange = IHelper.StringToExchange(hub.GetExchange());
+                balances.Add(exchange, symbolBalance);
             }
 
             return balances;
@@ -212,6 +244,27 @@ namespace Cryptobitfolio.Business
             return orders;
         }
 
+        /// <summary>
+        /// Get orders for a collection of trading pairs
+        /// </summary>
+        /// <param name="pairs">Trading pairs</param>
+        /// <returns>Collection of OrderResponses</returns>
+        public async Task<IEnumerable<OrderResponse>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange)
+        {
+            var hub = _exchangeHubs.Where(e => e.GetExchange() == exchange.ToString()).FirstOrDefault();
+
+            var orders = new List<OrderResponse>();
+
+            foreach (var pair in pairs)
+            {
+                var pairOrders = await hub.GetOrders(pair);
+
+                orders.AddRange(pairOrders);
+            }
+
+            return orders;
+        }
+
         public async Task<IEnumerable<OrderResponse>> GetOpenOrders(string pair)
         {
             var orders = new List<OrderResponse>();
@@ -236,6 +289,22 @@ namespace Cryptobitfolio.Business
             var hub = _exchangeHubs.Where(e => e.GetExchange() == exchange.ToString()).FirstOrDefault();
 
             var orders = await hub.GetOpenOrders(pair);
+
+            return orders;
+        }
+
+        public async Task<IEnumerable<OrderResponse>> GetExchangeOpenOrdersByPairs(IEnumerable<string> pairs, Exchange exchange)
+        {
+            var hub = _exchangeHubs.Where(e => e.GetExchange() == exchange.ToString()).FirstOrDefault();
+
+            var orders = new List<OrderResponse>();
+
+            foreach (var pair in pairs)
+            {
+                var pairOrders = await hub.GetOpenOrders(pair);
+
+                orders.AddRange(pairOrders);
+            }
 
             return orders;
         }

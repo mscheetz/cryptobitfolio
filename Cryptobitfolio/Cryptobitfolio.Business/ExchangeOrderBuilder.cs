@@ -7,14 +7,14 @@
 
 namespace Cryptobitfolio.Business
 {
-    using Cryptobitfolio.Business.Common;
-    using Cryptobitfolio.Business.Contracts.Trade;
-    using Cryptobitfolio.Data.Interfaces.Database;
     #region Usings
 
-    using System;
+    using Cryptobitfolio.Business.Common;
+    using Cryptobitfolio.Business.Contracts.Trade;
+    using Cryptobitfolio.Business.Entities;
+    using Cryptobitfolio.Data.Interfaces.Database;
     using System.Collections.Generic;
-    using System.Text;
+    using System.Linq;
     using System.Threading.Tasks;
 
     #endregion Usings
@@ -23,13 +23,16 @@ namespace Cryptobitfolio.Business
     {
         #region Properties
 
-        IExchangeOrderRepository _eoRepo;
+        private IExchangeOrderRepository _eoRepo;
+        private IExchangeHubBuilder _hubBldr;
+        private List<ExchangeOrder> _orders;
 
         #endregion Properties
 
-        public ExchangeOrderBuilder(IExchangeOrderRepository repo)
+        public ExchangeOrderBuilder(IExchangeOrderRepository repo, IExchangeHubBuilder hubBldr)
         {
             this._eoRepo = repo;
+            this._hubBldr = hubBldr;
         }
 
         public async Task<ExchangeOrder> Add(ExchangeOrder contract)
@@ -52,7 +55,88 @@ namespace Cryptobitfolio.Business
         {
             var entities = await _eoRepo.Get();
 
-            return EntitiesToContracts(entities);
+            var contracts = EntitiesToContracts(entities);
+
+            _orders = contracts.ToList();
+
+            return contracts;
+        }
+
+        public async Task<IEnumerable<ExchangeOrder>> Get(string symbol, Exchange exchange)
+        {
+            var entities = await _eoRepo.Get(e => e.Pair.StartsWith(symbol) && e.Exchange == exchange);
+
+            var contracts = EntitiesToContracts(entities);
+
+            _orders = contracts.ToList();
+
+            return contracts;
+        }
+
+        public async Task<IEnumerable<ExchangeOrder>> GetFromExchange(string symbol, Exchange exchange)
+        {
+            var pairs = await _hubBldr.GetMarketsForACoin(symbol);
+            var orders = await _hubBldr.GetExchangeOpenOrdersByPairs(pairs, exchange);
+            var exchangeOrderList = new List<ExchangeOrder>();
+
+            foreach (var order in orders)
+            {
+                var exchangeOrder = OrderResponseToExchangeOrder(order, exchange);
+                exchangeOrderList.Add(exchangeOrder);
+            }
+
+            return exchangeOrderList;
+        }
+
+        public async Task<IEnumerable<ExchangeOrder>> GetLatest(string symbol, Exchange exchange)
+        {
+            var _exchangeOrders = await GetFromExchange(symbol, exchange);
+
+            var _orders = await Get(symbol, exchange);
+
+            var exchangeList = _exchangeOrders.OrderByDescending(e => e.ClosedDate).ToList();
+            var dbList = _orders.OrderByDescending(e => e.ClosedDate).ToList();
+
+            bool clearDb = false;
+            bool updateDb = false;
+
+            if (dbList != null || dbList.Count > 0)
+            {
+                clearDb = true;
+                updateDb = true;
+            }
+            if (exchangeList == null || exchangeList.Count == 0)
+            {
+                clearDb = false;
+                updateDb = false;
+            }
+            if (clearDb == true && (exchangeList[0].ClosedDate == dbList[0].ClosedDate))
+            {
+                clearDb = false;
+                updateDb = false;
+            }
+            if (clearDb)
+            {
+                foreach (var coinBuy in dbList)
+                {
+                    await Delete(coinBuy);
+                }
+            }
+            if (updateDb)
+            {
+                for (var i = 0; i < exchangeList.Count; i++)
+                {
+                    exchangeList[i] = await Add(exchangeList[i]);
+                }
+            }
+            if (exchangeList != null && exchangeList.Count > 0)
+            {
+                return exchangeList;
+            }
+            else
+            {
+                return dbList;
+            }
         }
 
         public async Task<ExchangeOrder> Update(ExchangeOrder contract)
@@ -128,6 +212,28 @@ namespace Cryptobitfolio.Business
             };
 
             return entity;
+        }
+
+        /// <summary>
+        /// Convert an OrderResponse to an ExchangeOrder
+        /// </summary>
+        /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <returns>new ExchangeOrder object</returns>
+        public ExchangeOrder OrderResponseToExchangeOrder(ExchangeHub.Contracts.OrderResponse orderResponse, Exchange exchange)
+        {
+            var exchangeOrder = new ExchangeOrder
+            {
+                Exchange = exchange,
+                FilledQuantity = orderResponse.FilledQuantity,
+                OrderId = orderResponse.OrderId,
+                Pair = orderResponse.Pair,
+                PlaceDate = orderResponse.TransactTime,
+                Price = orderResponse.Price,
+                Quantity = orderResponse.OrderQuantity,
+                Side = (Side)orderResponse.Side
+            };
+
+            return exchangeOrder;
         }
     }
 }
