@@ -7,13 +7,12 @@
 
 namespace Cryptobitfolio.Business.Common
 {
-    using Cryptobitfolio.Business.Entities;
-    using ExchangeHub.Contracts;
+    using Cryptobitfolio.Business.Contracts.Portfolio;
+    using Cryptobitfolio.Business.Contracts.Trade;
     #region Usings
 
-    using System;
+    using ExchangeHub.Contracts;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading.Tasks;
     using Exchange = Entities.Exchange;
 
@@ -21,9 +20,11 @@ namespace Cryptobitfolio.Business.Common
 
     public interface IExchangeHubBuilder
     {
+        bool SetExchange(Exchange exchange);
+
         Task<IEnumerable<string>> GetMarkets();
 
-        Task<Dictionary<Exchange, IEnumerable<string>>> GetExchangeMarketDictionary();
+        Task<Dictionary<Exchange, IEnumerable<string>>> GetAllMarkets();
 
         Task<IEnumerable<string>> GetExchangeMarkets();
 
@@ -31,34 +32,36 @@ namespace Cryptobitfolio.Business.Common
 
         Task<IEnumerable<string>> GetExchangeMarkets(Exchange exchange);
 
-        Task<Dictionary<Exchange, IEnumerable<Balance>>> GetBalances();
+        Task<IEnumerable<ExchangeCoin>> GetBalances();
 
-        Task<Dictionary<Exchange, IEnumerable<Balance>>> GetBalances(string symbol);
+        Task<IEnumerable<ExchangeCoin>> GetBalances(string symbol);
 
-        Task<IEnumerable<Balance>> GetExchangeBalances();
+        Task<IEnumerable<ExchangeCoin>> GetBalances(List<string> symbols);
 
-        Task<IEnumerable<Balance>> GetExchangeBalances(Exchange exchange);
+        Task<IEnumerable<ExchangeCoin>> GetExchangeBalances();
 
-        Task<IEnumerable<OrderResponse>> GetOrders(string pair);
+        Task<IEnumerable<ExchangeCoin>> GetExchangeBalances(Exchange exchange);
 
-        Task<IEnumerable<OrderResponse>> GetExchangeOrders(string pair);
+        Task<IEnumerable<CoinBuy>> GetOrders(string pair);
 
-        Task<IEnumerable<OrderResponse>> GetExchangeOrders(string pair, Exchange exchange);
+        Task<IEnumerable<CoinBuy>> GetExchangeOrders(string pair);
+
+        Task<IEnumerable<CoinBuy>> GetExchangeOrders(string pair, Exchange exchange);
 
         /// <summary>
         /// Get orders for a collection of trading pairs
         /// </summary>
         /// <param name="pairs">Trading pairs</param>
         /// <returns>Collection of OrderResponses</returns>
-        Task<IEnumerable<OrderResponse>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange);
+        Task<IEnumerable<CoinBuy>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange);
 
-        Task<IEnumerable<OrderResponse>> GetOpenOrders(string pair);
+        Task<IEnumerable<ExchangeOrder>> GetOpenOrders(string pair);
 
-        Task<IEnumerable<OrderResponse>> GetExchangeOpenOrders(string pair);
+        Task<IEnumerable<ExchangeOrder>> GetExchangeOpenOrders(string pair);
 
-        Task<IEnumerable<OrderResponse>> GetExchangeOpenOrders(string pair, Exchange exchange);
+        Task<IEnumerable<ExchangeOrder>> GetExchangeOpenOrders(string pair, Exchange exchange);
 
-        Task<IEnumerable<OrderResponse>> GetExchangeOpenOrdersByPairs(IEnumerable<string> pairs, Exchange exchange);
+        Task<IEnumerable<ExchangeOrder>> GetExchangeOpenOrdersByPairs(IEnumerable<string> pairs, Exchange exchange);
 
     }
 }

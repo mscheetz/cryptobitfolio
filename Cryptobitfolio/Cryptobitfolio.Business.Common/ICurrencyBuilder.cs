@@ -7,12 +7,10 @@
 
 namespace Cryptobitfolio.Business.Common
 {
-    using Cryptobitfolio.Business.Contracts.Portfolio;
     #region Usings
 
-    using System;
+    using Cryptobitfolio.Business.Contracts.Portfolio;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading.Tasks;
 
     #endregion Usings
@@ -23,8 +21,14 @@ namespace Cryptobitfolio.Business.Common
 
         Task<bool> Delete(Currency contract);
 
+        Task<Currency> Update(Currency contract);
+
         Task<IEnumerable<Currency>> Get();
 
-        Task<Currency> Update(Currency contract);
+        Task<IEnumerable<Currency>> Get(string symbol);
+
+        Task<IEnumerable<Currency>> Get(List<string> symbols);
+
+        Task<IEnumerable<Currency>> GetLatest(List<string> symbols);
     }
 }

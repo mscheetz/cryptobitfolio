@@ -13,10 +13,13 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
 
         public Coin(Currency currency)
         {
-            this.CurrencyId = currency.CurrencyId;
-            this.Symbol = currency.Symbol;
-            this.Name = currency.Name;
-            this.Image = currency.Image;
+            this.SetCurrency(currency);
+        }
+
+        public Coin(Currency currency, int Id)
+        {
+            this.CoinId = Id;
+            this.SetCurrency(currency);
         }
 
         public int CoinId { get; set; }
@@ -40,5 +43,13 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         public decimal High24Hr { get; set; }
         public decimal Low24Hr { get; set; }
         public double Percent7D { get; set; }
+
+        public void SetCurrency(Currency currency)
+        {
+            this.CurrencyId = currency.CurrencyId;
+            this.Symbol = currency.Symbol;
+            this.Name = currency.Name;
+            this.Image = currency.Image;
+        }
     }
 }

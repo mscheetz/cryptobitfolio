@@ -14,6 +14,7 @@ namespace Cryptobitfolio.Business
 
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -64,6 +65,13 @@ namespace Cryptobitfolio.Business
             return EntitiesToContracts(entities);
         }
 
+        public async Task<IEnumerable<Currency>> Get(List<string> symbols)
+        {
+            var entities = await _currencyRepo.Get(c => symbols.Contains(c.Symbol));
+
+            return EntitiesToContracts(entities);
+        }
+        
         public async Task<Currency> Update(Currency contract)
         {
             var entity = ContractToEntity(contract);
@@ -75,8 +83,56 @@ namespace Cryptobitfolio.Business
         public async Task<IEnumerable<Currency>> GetLatest(List<string> symbols)
         {
             var cmcList = await _cmcBldr.GetCurrencies(symbols);
+            var currencies = await this.Get(symbols);
 
-            return null;
+            return await OnGetLastest(cmcList.ToList(), currencies.ToList());
+        }
+
+
+        private async Task<IEnumerable<Currency>> OnGetLastest(List<Currency> cmcList, List<Currency> dbList)
+        {
+            var addList = cmcList.Where(e => !dbList.Any(d => d.Symbol.Equals(e.Symbol))).ToList();
+            var updateList = dbList.Where(d => cmcList.Any(e => e.Symbol.Equals(d.Symbol))).Select(d => d.CurrencyId).ToArray();
+            var deleteList = dbList.Where(d => !cmcList.Any(e => e.Symbol.Equals(d.Symbol))).Select(d => d.CurrencyId).ToArray();
+
+            if (addList.Count > 0)
+            {
+                foreach (var item in addList)
+                {
+                    await Add(item);
+                }
+            }
+
+            if (updateList.Length > 0)
+            {
+                for (var i = 0; i < updateList.Length; i++)
+                {
+                    var item = dbList.Where(d => d.CurrencyId == updateList[i]).FirstOrDefault();
+                    var cmcItem = cmcList.Where(c => c.Symbol.Equals(item.Symbol)).FirstOrDefault();
+                    item.Image = cmcItem.Image;
+                    item.Name = cmcItem.Name;
+                    item = await Update(item);
+                }
+            }
+
+            if (deleteList.Length > 0)
+            {
+                for (var i = 0; i < deleteList.Length; i++)
+                {
+                    var item = dbList.Where(d => d.CurrencyId == deleteList[i]).FirstOrDefault();
+                    await Delete(item);
+                }
+            }
+
+            if (cmcList != null && cmcList.Count > 0)
+            {
+                return cmcList;
+            }
+            else
+            {
+                return dbList;
+            }
+
         }
 
         private IEnumerable<Currency> EntitiesToContracts(IEnumerable<Entities.Portfolio.Currency> entities)

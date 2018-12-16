@@ -84,46 +84,41 @@ namespace Cryptobitfolio.Business
             var exchangeList = relevantBuys.OrderByDescending(b => b.TransactionDate).ToList();
             var dbList = coinBuys.OrderByDescending(b => b.TransactionDate).ToList();
 
-            bool clearDb = false;
-            bool updateDb = false;
+            return await OnGetLastest(exchangeList, dbList);
+        }
 
-            if (dbList != null || dbList.Count > 0)
+        private async Task<IEnumerable<CoinBuy>> OnGetLastest(List<CoinBuy> hubList, List<CoinBuy> dbList)
+        {
+            var addList = hubList.Where(e => !dbList.Any(d => d.OrderId.Equals(e.OrderId))).ToList();
+            var deleteList = dbList.Where(d => !hubList.Any(e => e.OrderId.Equals(d.OrderId)))
+                .Select(d => d.CoinBuyId).ToArray();
+
+            if (addList.Count > 0)
             {
-                clearDb = true;
-                updateDb = true;
-            }
-            if (exchangeList == null || exchangeList.Count == 0)
-            {
-                clearDb = false;
-                updateDb = false;
-            }
-            if(clearDb == true && (exchangeList[0].TransactionDate == dbList[0].TransactionDate))
-            {
-                clearDb = false;
-                updateDb = false;
-            }
-            if(clearDb)
-            {
-                foreach(var coinBuy in coinBuys)
+                foreach (var item in addList)
                 {
-                    await Delete(coinBuy);
+                    await Add(item);
                 }
             }
-            if(updateDb)
+            
+            if (deleteList.Length > 0)
             {
-                for (var i = 0; i < exchangeList.Count; i++)
+                for (var i = 0; i < deleteList.Length; i++)
                 {
-                    exchangeList[i] = await Add(exchangeList[i]);
+                    var item = dbList.Where(d => d.CoinBuyId == deleteList[i]).FirstOrDefault();
+                    await Delete(item);
                 }
             }
-            if (exchangeList != null && exchangeList.Count > 0)
+
+            if (hubList != null && hubList.Count > 0)
             {
-                return exchangeList;
+                return hubList;
             }
             else
             {
                 return dbList;
             }
+
         }
 
         public async Task<IEnumerable<CoinBuy>> GetRelevantCoinBuys(string symbol, decimal quantity, Exchange exchange)

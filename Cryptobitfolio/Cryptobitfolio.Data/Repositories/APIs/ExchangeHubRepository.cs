@@ -7,12 +7,10 @@
 
 namespace Cryptobitfolio.Data.Repositories
 {
-    using Cryptobitfolio.Data.Interfaces;
     #region Usings
 
-    using System;
+    using Cryptobitfolio.Data.Interfaces;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading.Tasks;
 
     #endregion Usings
@@ -21,6 +19,8 @@ namespace Cryptobitfolio.Data.Repositories
     {
         #region Properties
 
+        private string _exchange;
+        private string _apiKey;
         private ExchangeHub.ExchangeHub _hub;
 
         #endregion Properties
@@ -29,18 +29,23 @@ namespace Cryptobitfolio.Data.Repositories
 
         public ExchangeHubRepository(ExchangeHub.Contracts.Exchange exchange, string WIF)
         {
+            _exchange = exchange.ToString();
             _hub = new ExchangeHub.ExchangeHub(exchange, WIF);
             _hub.SetMarketsAsync();
         }
 
         public ExchangeHubRepository(ExchangeHub.Contracts.Exchange exchange, string apiKey, string apiSecret)
         {
+            _apiKey = apiKey;
+            _exchange = exchange.ToString();
             _hub = new ExchangeHub.ExchangeHub(exchange, apiKey, apiSecret);
             _hub.SetMarketsAsync();
         }
 
         public ExchangeHubRepository(ExchangeHub.Contracts.Exchange exchange, string apiKey, string apiSecret, string apiPassword)
         {
+            _apiKey = apiKey;
+            _exchange = exchange.ToString();
             _hub = new ExchangeHub.ExchangeHub(exchange, apiKey, apiSecret, apiPassword);
             _hub.SetMarketsAsync();
         }
@@ -53,7 +58,16 @@ namespace Cryptobitfolio.Data.Repositories
         /// <returns>String of exchange name</returns>
         public string GetExchange()
         {
-            return _hub.GetExchange().ToString();
+            return _exchange;
+        }
+
+        /// <summary>
+        /// Get api key for this connection
+        /// </summary>
+        /// <returns>String of Api Key</returns>
+        public string GetApiKey()
+        {
+            return _apiKey;
         }
 
         /// <summary>

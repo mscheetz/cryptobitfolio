@@ -83,6 +83,13 @@ namespace Cryptobitfolio.Business
             return EntitiesToContracts(entities);
         }
 
+        public async Task<IEnumerable<ExchangeCoin>> Get(List<string> symbols)
+        {
+            var entities = await _ecRepo.Get(e => symbols.Contains(e.Symbol));
+
+            return EntitiesToContracts(entities);
+        }
+
         public async Task<IEnumerable<ExchangeCoin>> Get(Exchange exchange)
         {
             var entities = await _ecRepo.Get(e => e.Exchange == exchange);
@@ -103,23 +110,32 @@ namespace Cryptobitfolio.Business
             var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
             var exCoins = await this.Get(symbol);
 
-            return await OnGetLastest(exchangeBalance.ToList(), exCoins.ToList());
+            return await OnGetLatest(exchangeBalance.ToList(), exCoins.ToList());
         }
 
-        public async Task<IEnumerable<ExchangeCoin>> GetLastest(Exchange exchange)
+        public async Task<IEnumerable<ExchangeCoin>> GetLatest(List<string> symbols)
+        {
+            var balances = await this._hubBldr.GetBalances(symbols);
+            var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
+            var exCoins = await this.Get(symbols);
+
+            return await OnGetLatest(exchangeBalance.ToList(), exCoins.ToList());
+        }
+
+        public async Task<IEnumerable<ExchangeCoin>> GetLatest(Exchange exchange)
         {
             var balances = await this._hubBldr.GetExchangeBalances(exchange);
             var exchangeBalance = BalanceCollectionToExchangeCoins(balances, exchange);
             var exCoins = await this.Get(exchange);
 
-            return await OnGetLastest(exchangeBalance.ToList(), exCoins.ToList());
+            return await OnGetLatest(exchangeBalance.ToList(), exCoins.ToList());
         }
 
-        private async Task<IEnumerable<ExchangeCoin>> OnGetLastest(List<ExchangeCoin> hubList, List<ExchangeCoin> dbList)
+        private async Task<IEnumerable<ExchangeCoin>> OnGetLatest(List<ExchangeCoin> hubList, List<ExchangeCoin> dbList)
         {
-            var addList = hubList.Where(e => !dbList.Any(d => d.Symbol.Equals(e.Symbol))).ToList();
-            var updateList = dbList.Where(d => hubList.Any(e => e.Symbol.Equals(d.Symbol) && e.Quantity != d.Quantity)).Select(d => d.ExchangeCoinId).ToArray();
-            var deleteList = dbList.Where(d => !hubList.Any(e => e.Symbol.Equals(d.Symbol))).Select(d => d.ExchangeCoinId).ToArray();
+            var addList = hubList.Where(e => !dbList.Any(d => d.Symbol.Equals(e.Symbol) && d.Exchange == e.Exchange)).ToList();
+            var updateList = dbList.Where(d => hubList.Any(e => e.Symbol.Equals(d.Symbol) && d.Exchange == e.Exchange && e.Quantity != d.Quantity)).Select(d => d.ExchangeCoinId).ToArray();
+            var deleteList = dbList.Where(d => !hubList.Any(e => e.Symbol.Equals(d.Symbol) && e.Exchange == d.Exchange)).Select(d => d.ExchangeCoinId).ToArray();
 
             if (addList.Count > 0)
             {
@@ -158,7 +174,6 @@ namespace Cryptobitfolio.Business
                 var returner = await GetFullCoins(dbList);
                 return returner;
             }
-
         }
 
         private async Task<IEnumerable<ExchangeCoin>> GetFullCoins(List<ExchangeCoin> exchangeCoins)

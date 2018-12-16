@@ -7,13 +7,11 @@
 
 namespace Cryptobitfolio.Business.Common
 {
-    using Cryptobitfolio.Business.Contracts.Portfolio;
-    using Cryptobitfolio.Business.Entities;
     #region Usings
 
-    using System;
+    using Cryptobitfolio.Business.Contracts.Portfolio;
+    using Cryptobitfolio.Business.Entities;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading.Tasks;
 
     #endregion Usings
@@ -30,10 +28,16 @@ namespace Cryptobitfolio.Business.Common
 
         Task<IEnumerable<ExchangeCoin>> Get(string symbol);
 
+        Task<IEnumerable<ExchangeCoin>> Get(List<string> symbols);
+
         Task<IEnumerable<ExchangeCoin>> Get(Exchange exchange);
 
         Task<IEnumerable<ExchangeCoin>> Get(string symbol, Exchange exchange);
 
-        Task<IEnumerable<ExchangeCoin>> GetLastest(Exchange exchange);
+        Task<IEnumerable<ExchangeCoin>> GetLatest(string symbol);
+
+        Task<IEnumerable<ExchangeCoin>> GetLatest(List<string> symbols);
+
+        Task<IEnumerable<ExchangeCoin>> GetLatest(Exchange exchange);
     }
 }

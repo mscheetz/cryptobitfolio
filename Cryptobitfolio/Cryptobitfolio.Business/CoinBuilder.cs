@@ -14,6 +14,7 @@ namespace Cryptobitfolio.Business
 
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
@@ -23,13 +24,17 @@ namespace Cryptobitfolio.Business
     {
         #region Properties
 
-        ICoinRepository _coinRepo;
+        private ICoinRepository _coinRepo;
+        private ICurrencyBuilder _currencyBldr;
+        private IExchangeCoinBuilder _xchgCoinBldr;
 
         #endregion Properties
 
-        public CoinBuilder(ICoinRepository repo)
+        public CoinBuilder(ICoinRepository repo, ICurrencyBuilder currencyBuilder, IExchangeCoinBuilder exchangeCoinBuilder)
         {
             this._coinRepo = repo;
+            this._currencyBldr = currencyBuilder;
+            this._xchgCoinBldr = exchangeCoinBuilder;
         }
 
         public async Task<Coin> Add(Coin contract)
@@ -48,6 +53,14 @@ namespace Cryptobitfolio.Business
             return result;
         }
 
+        public async Task<Coin> Update(Coin contract)
+        {
+            var entity = ContractToEntity(contract);
+            entity = await _coinRepo.Update(entity);
+
+            return EntityToContract(entity);
+        }
+
         public async Task<IEnumerable<Coin>> Get()
         {
             var entities = await _coinRepo.Get();
@@ -55,12 +68,16 @@ namespace Cryptobitfolio.Business
             return EntitiesToContracts(entities);
         }
 
-        public async Task<Coin> Update(Coin contract)
+        public async Task<IEnumerable<Coin>> GetLatest()
         {
-            var entity = ContractToEntity(contract);
-            entity = await _coinRepo.Update(entity);
+            var coinEntities = await _coinRepo.Get();
+            var symbols = coinEntities.Select(c => c.Symbol).ToList();
+            var currencies = await _currencyBldr.GetLatest(symbols);
+            var exchangeCoins = await _xchgCoinBldr.GetLatest(symbols);
 
-            return EntityToContract(entity);
+            var contracts = EntitiesToContracts(coinEntities, currencies, exchangeCoins);
+
+            return contracts;
         }
 
         private IEnumerable<Coin> EntitiesToContracts(IEnumerable<Entities.Portfolio.Coin> entities)
@@ -82,8 +99,33 @@ namespace Cryptobitfolio.Business
             var contract = new Coin
             {
                 CoinId = entity.Id,
-                CurrencyId = entity.CurrencyId                
+                CurrencyId = entity.CurrencyId,
+                Symbol = entity.Symbol
             };
+
+            return contract;
+        }
+
+        private IEnumerable<Coin> EntitiesToContracts(IEnumerable<Entities.Portfolio.Coin> entities, IEnumerable<Currency> currencies, IEnumerable<ExchangeCoin> exchangeCoins)
+        {
+            var contracts = new List<Coin>();
+
+            foreach (var entity in entities)
+            {
+                var currency = currencies.Where(c => c.Symbol.Equals(entity.Symbol)).FirstOrDefault();
+                var exchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals(entity.Symbol)).ToList();
+                var contract = EntityToContract(entity, currency, exchangeCoinList);
+
+                contracts.Add(contract);
+            }
+
+            return contracts;
+        }
+
+        private Coin EntityToContract(Entities.Portfolio.Coin entity, Currency currency, List<ExchangeCoin> exchangeCoins)
+        {
+            var contract = new Coin(currency, entity.Id);
+            contract.ExchangeCoinList = exchangeCoins;
 
             return contract;
         }
@@ -108,7 +150,8 @@ namespace Cryptobitfolio.Business
                 Id = contract.CoinId,
                 AverageBuy = contract.AverageBuy,
                 Quantity = contract.Quantity,
-                CurrencyId = contract.CurrencyId
+                CurrencyId = contract.CurrencyId,
+                Symbol = contract.Symbol
             };
 
             return entity;

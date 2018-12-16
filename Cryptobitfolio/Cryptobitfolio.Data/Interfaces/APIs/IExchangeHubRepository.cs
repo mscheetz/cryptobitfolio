@@ -25,6 +25,12 @@ namespace Cryptobitfolio.Data.Interfaces
         string GetExchange();
 
         /// <summary>
+        /// Get api key for this connection
+        /// </summary>
+        /// <returns>String of Api Key</returns>
+        string GetApiKey();
+
+        /// <summary>
         /// Get all markets on an exchange
         /// </summary>
         /// <returns>Collection of trading pair strings</returns>
