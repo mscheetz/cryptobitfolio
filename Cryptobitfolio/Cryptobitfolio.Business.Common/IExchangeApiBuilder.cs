@@ -24,28 +24,28 @@ namespace Cryptobitfolio.Business.Common
         /// Get all ExchangeApis
         /// </summary>
         /// <returns>Collection of ExchangeApis</returns>
-        Task<IEnumerable<ExchangeApi>> GetExchangeApis();
+        Task<IEnumerable<ExchangeApi>> Get();
 
         /// <summary>
         /// Get all ExchangeApis for a given exchange
         /// </summary>
         /// <param name="exchange">Exchange to find</param>
         /// <returns>Collection of ExchangeApis</returns>
-        Task<IEnumerable<ExchangeApi>> GetExchangeApis(Exchange exchange);
+        Task<IEnumerable<ExchangeApi>> Get(Exchange exchange);
 
         /// <summary>
         /// Save exhange api to database
         /// </summary>
         /// <param name="exchangeApi">ExchangeApi to save</param>
         /// <returns>Updated ExchangeApi object</returns>
-        Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi);
+        Task<ExchangeApi> Add(ExchangeApi exchangeApi);
 
         /// <summary>
         /// Delete an ExchangeApi
         /// </summary>
         /// <param name="exchangeApi">ExchangeApi to delete</param>
         /// <returns>Boolean value of deletion attempt</returns>
-        Task<bool> DeleteExchangeApi(ExchangeApi exchangeApi);
+        Task<bool> Delete(ExchangeApi exchangeApi);
 
         #endregion ExchangeApi Methods
     }

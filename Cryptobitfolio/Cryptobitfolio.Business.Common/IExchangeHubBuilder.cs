@@ -20,6 +20,10 @@ namespace Cryptobitfolio.Business.Common
 
     public interface IExchangeHubBuilder
     {
+        bool LoadExchange(ExchangeApi exchangeApi);
+
+        bool UnloadExchange(ExchangeApi exchangeApi);
+
         bool SetExchange(Exchange exchange);
 
         Task<IEnumerable<string>> GetMarkets();

@@ -22,15 +22,30 @@ namespace Cryptobitfolio.UI.ViewModels
 
         #region Properties
 
-        private readonly IExchangeBuilder _exchangeBuilder;
+        private readonly IAlertBuilder _alertBuilder;
+        private readonly ICoinBuilder _coinBuilder;
+        private readonly IExchangeApiBuilder _exchangeApiBuilder;
+        private readonly IExchangeHubBuilder _exchangeHubBuilder;
+        private readonly IExchangeOrderBuilder _exchangeOrderBuilder;
+        private readonly IWatchBuilder _watchBuilder;
 
         #endregion Properties
 
         #region Constructor/Destructor
 
-        public ExchangeViewModel(IExchangeBuilder exchangeBldr)
+        public ExchangeViewModel(IAlertBuilder alertBuilder,
+                                 ICoinBuilder coinBuilder,
+                                 IExchangeApiBuilder exchangeApiBuilder,
+                                 IExchangeHubBuilder exchangeHubBuilder,
+                                 IExchangeOrderBuilder exchangeOrderBldr, 
+                                 IWatchBuilder watchBuilder)
         {
-            _exchangeBuilder = exchangeBldr;
+            _alertBuilder = alertBuilder;
+            _coinBuilder = coinBuilder;
+            _exchangeApiBuilder = exchangeApiBuilder;
+            _exchangeHubBuilder = exchangeHubBuilder;
+            _exchangeOrderBuilder = exchangeOrderBldr;
+            _watchBuilder = watchBuilder;
         }
 
         #endregion Constructor/Destructor
@@ -39,37 +54,40 @@ namespace Cryptobitfolio.UI.ViewModels
 
         public void LoadExchange(Business.Contracts.Trade.ExchangeApi exchangeApi)
         {
-            _exchangeBuilder.LoadExchange(exchangeApi);
+            _exchangeHubBuilder.LoadExchange(exchangeApi);
         }
 
-        public DateTime UpdatePortfolio()
+        public async Task<IEnumerable<Business.Contracts.Portfolio.Coin>> UpdatePortfolio()
         {
-            return _exchangeBuilder.UpdatePortfolio();
+            return await _coinBuilder.Get();
         }
 
         public async Task<IEnumerable<Business.Contracts.Trade.ExchangeApi>> GetExchangeApis()
         {
-            return await _exchangeBuilder.GetExchangeApis();
+            return await _exchangeApiBuilder.Get();
         }
 
         public async Task<Business.Contracts.Trade.ExchangeApi> SaveExchangeApi(Business.Contracts.Trade.ExchangeApi exchangeApi)
         {
-            return await _exchangeBuilder.SaveExchangeApi(exchangeApi);
+            return await _exchangeApiBuilder.Add(exchangeApi);
         }
 
         public async Task<bool> DeleteExchangeApi(Business.Contracts.Trade.ExchangeApi exchangeApi)
         {
-            return await _exchangeBuilder.DeleteExchangeApi(exchangeApi);
+            var apiDelete = await _exchangeApiBuilder.Delete(exchangeApi);
+            var hubDelete = _exchangeHubBuilder.UnloadExchange(exchangeApi);
+
+            return apiDelete == hubDelete;
         }
 
-        public IEnumerable<Business.Contracts.Portfolio.Coin> GetCoins()
+        public async Task<IEnumerable<Business.Contracts.Portfolio.Coin>> GetCoins()
         {
-            return _exchangeBuilder.GetCoins();
+            return await _coinBuilder.Get();
         }
 
-        public List<Business.Contracts.Trade.ExchangeOrder> GetOpenOrders()
+        public async Task<IEnumerable<Business.Contracts.Trade.ExchangeOrder>> GetOpenOrders(Business.Entities.Exchange exchange)
         {
-            return _exchangeBuilder.GetOpenOrders();
+            return await _exchangeOrderBuilder.GetLatest("", exchange);
         }
 
         #endregion Methods

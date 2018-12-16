@@ -46,7 +46,7 @@ namespace Cryptobitfolio.Business
         /// Get all ExchangeApis
         /// </summary>
         /// <returns>Collection of ExchangeApis</returns>
-        public async Task<IEnumerable<ExchangeApi>> GetExchangeApis()
+        public async Task<IEnumerable<ExchangeApi>> Get()
         {
             var entities = await _exchangeApiRepo.Get();
             var contractList = new List<ExchangeApi>();
@@ -66,7 +66,7 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="exchange">Exchange to find</param>
         /// <returns>Collection of ExchangeApis</returns>
-        public async Task<IEnumerable<ExchangeApi>> GetExchangeApis(Exchange exchange)
+        public async Task<IEnumerable<ExchangeApi>> Get(Exchange exchange)
         {
             var entities = await _exchangeApiRepo.Get(e => e.Exchange == exchange);
             var contractList = new List<ExchangeApi>();
@@ -86,7 +86,7 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="exchangeApi">ExchangeApi to save</param>
         /// <returns>Updated ExchangeApi object</returns>
-        public async Task<ExchangeApi> SaveExchangeApi(ExchangeApi exchangeApi)
+        public async Task<ExchangeApi> Add(ExchangeApi exchangeApi)
         {
             var entity = ExchangeApiContractToEntity(exchangeApi);
 
@@ -104,7 +104,7 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="exchangeApi">ExchangeApi to delete</param>
         /// <returns>Boolean value of deletion attempt</returns>
-        public async Task<bool> DeleteExchangeApi(ExchangeApi exchangeApi)
+        public async Task<bool> Delete(ExchangeApi exchangeApi)
         {
             var entity = ExchangeApiContractToEntity(exchangeApi);
 

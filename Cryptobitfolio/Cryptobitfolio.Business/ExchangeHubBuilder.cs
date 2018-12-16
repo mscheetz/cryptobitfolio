@@ -61,7 +61,7 @@ namespace Cryptobitfolio.Business
 
         public async Task LoadBuilder(bool test = false)
         { 
-            _exchangeApis = await _xchApiBldr.GetExchangeApis();
+            _exchangeApis = await _xchApiBldr.Get();
             _exchangeHubs = new List<IExchangeHubRepository>();
 
             if (!test)
@@ -93,7 +93,7 @@ namespace Cryptobitfolio.Business
             }
         }
 
-        public void LoadExchange(ExchangeApi exchangeApi)
+        public bool LoadExchange(ExchangeApi exchangeApi)
         {
             var loadedHub = _exchangeHubs.Where(e => e.GetExchange().Equals(exchangeApi.Exchange.ToString()) && e.GetApiKey().Equals(exchangeApi.ApiKey)).FirstOrDefault();
 
@@ -115,8 +115,24 @@ namespace Cryptobitfolio.Business
             }
             _currentExchange = loadedHub.GetExchange();
             _currentHub = loadedHub;
+
+            return true;
             //var e = OnBuildExchangeCoins(loadedHub);
             //var o = OnBuildOrders(loadedHub);
+        }
+
+        public bool UnloadExchange(ExchangeApi exchangeApi)
+        {
+            var hub = _exchangeHubs.Where(e => e.GetExchange().Equals(exchangeApi.Exchange.ToString()) && e.GetApiKey().Equals(exchangeApi.ApiKey)).FirstOrDefault();
+            var response = false;
+
+            if(hub != null)
+            {
+                _exchangeHubs.Remove(hub);
+                response = true;
+            }
+
+            return response;
         }
 
         public bool SetExchange(Exchange exchange)

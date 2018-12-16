@@ -23,8 +23,10 @@ namespace Cryptobitfolio.Business.Common
 
         Task<bool> Delete(Coin contract);
 
+        Task<Coin> Update(Coin contract);
+
         Task<IEnumerable<Coin>> Get();
 
-        Task<Coin> Update(Coin contract);
+        Task<IEnumerable<Coin>> GetLatest();
     }
 }

@@ -87,7 +87,7 @@ namespace Cryptobitfolio.Business
         /// <param name="test">Use test data?</param>
         public async Task LoadBuilder(bool test = false)
         {
-            _exchangeApis = await _exchangeApiBldr.GetExchangeApis();
+            _exchangeApis = await _exchangeApiBldr.Get();
             exchangeHubs = new List<IExchangeHubRepository>();
             coinSet = new HashSet<string>();
             exchangeCoinList = new List<ExchangeCoin>();
