@@ -7,14 +7,14 @@
 
 namespace Cryptobitfolio.Business
 {
+    #region Usings
+
     using Cryptobitfolio.Business.Common;
     using Cryptobitfolio.Business.Contracts.Portfolio;
     using Cryptobitfolio.Data.Interfaces.Database;
-    #region Usings
-
     using System;
     using System.Collections.Generic;
-    using System.Text;
+    using System.Linq;
     using System.Threading.Tasks;
 
     #endregion Usings
@@ -24,12 +24,14 @@ namespace Cryptobitfolio.Business
         #region Properties
 
         private IAlerterRepository _alertRepo;
+        private IHistoricalPriceBuilder _hpBldr;
 
         #endregion Properties
 
-        public AlertBuilder(IAlerterRepository alerter)
+        public AlertBuilder(IAlerterRepository alerter, IHistoricalPriceBuilder historicalPriceBuilder)
         {
             _alertRepo = alerter;
+            this._hpBldr = historicalPriceBuilder;
         }
 
         /// <summary>
@@ -95,6 +97,44 @@ namespace Cryptobitfolio.Business
             return result;
         }
 
+        public async Task<IEnumerable<Alerter>> GetLatest()
+        {
+            var alerts = await this.Get();
+            var alertList = alerts.ToList();
+            var pairs = alerts.ToList().Where(a => a.Hit == null).Select(a => a.Pair).ToList();
+
+            var hpList = await _hpBldr.GetLatest(pairs);
+            var hitList = new List<Alerter>();
+            var hitTime = DateTime.UtcNow;
+
+            for (var i = 0; i < alertList.Count; i++)
+            {
+                var alert = alertList[i];
+                var hit = false;
+                var hp = hpList.Where(h => h.Exchange == alert.Exchange && h.Pair.Equals(alert.Pair)).FirstOrDefault();
+                if(alert.Direction == Entities.Direction.GTE && alert.Price <= hp.High)
+                {
+                    hit = true;
+                }
+                if(alert.Direction == Entities.Direction.LTE && alert.Price >= hp.Low)
+                {
+                    hit = true;
+                }
+                if(hit)
+                {
+                    alert.Hit = hitTime;
+                    hitList.Add(alert);
+                }
+            }
+
+            for(var i = 0; i< hitList.Count; i++)
+            {
+                hitList[i] = await this.Update(hitList[i]);
+            }
+
+            return hitList;
+        }
+
         private IEnumerable<Alerter> EntityCollectionToContracts(IEnumerable<Entities.Portfolio.Alerter> entities)
         {
             var contractList = new List<Alerter>();
@@ -115,6 +155,7 @@ namespace Cryptobitfolio.Business
             {
                 AlertId = entity.Id,
                 Created = entity.Created,
+                Direction = entity.Direction,
                 Enabled = entity.Enabled,
                 Exchange = entity.Exchange,
                 Hit = entity.Hit,
@@ -129,8 +170,9 @@ namespace Cryptobitfolio.Business
         {
             var entity = new Entities.Portfolio.Alerter
             {
-                Id = contract.Id,
+                Id = contract.AlertId,
                 Created = contract.Created,
+                Direction = contract.Direction,
                 Enabled = contract.Enabled,
                 Exchange = contract.Exchange,
                 Hit = contract.Hit,

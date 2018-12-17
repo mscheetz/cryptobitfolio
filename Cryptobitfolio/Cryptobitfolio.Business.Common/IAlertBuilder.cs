@@ -25,6 +25,20 @@ namespace Cryptobitfolio.Business.Common
         Task<Alerter> Add(Alerter alerter);
 
         /// <summary>
+        /// Delete an alert
+        /// </summary>
+        /// <param name="alerter">Alert to delete</param>
+        /// <returns>Boolean of deletion</returns>
+        Task<bool> Delete(Alerter alerter);
+
+        /// <summary>
+        /// Update an alert
+        /// </summary>
+        /// <param name="alerter">Alert to update</param>
+        /// <returns>Updated alert</returns>
+        Task<Alerter> Update(Alerter alerter);
+
+        /// <summary>
         /// Get all alerts
         /// </summary>
         /// <returns>Collection of Alerters</returns>
@@ -37,18 +51,6 @@ namespace Cryptobitfolio.Business.Common
         /// <returns>Collection of Alerters</returns>
         Task<IEnumerable<Alerter>> Get(string Symbol);
 
-        /// <summary>
-        /// Update an alert
-        /// </summary>
-        /// <param name="alerter">Alert to update</param>
-        /// <returns>Updated alert</returns>
-        Task<Alerter> Update(Alerter alerter);
-
-        /// <summary>
-        /// Delete an alert
-        /// </summary>
-        /// <param name="alerter">Alert to delete</param>
-        /// <returns>Boolean of deletion</returns>
-        Task<bool> Delete(Alerter alerter);
+        Task<IEnumerable<Alerter>> GetLatest();
     }
 }

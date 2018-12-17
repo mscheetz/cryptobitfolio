@@ -29,4 +29,10 @@
         Filled,
         Canceled,
     }
+
+    public enum Direction
+    {
+        GTE,
+        LTE
+    }
 }

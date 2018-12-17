@@ -7,14 +7,14 @@
 
 namespace Cryptobitfolio.Business
 {
-    using Cryptobitfolio.Business.Common;
-    using Cryptobitfolio.Business.Contracts.Trade;
-    using Cryptobitfolio.Data.Interfaces.Database;
     #region Usings
 
-    using System;
+    using Cryptobitfolio.Business.Common;
+    using Cryptobitfolio.Business.Contracts.Portfolio;
+    using Cryptobitfolio.Business.Contracts.Trade;
+    using Cryptobitfolio.Data.Interfaces.Database;
     using System.Collections.Generic;
-    using System.Text;
+    using System.Linq;
     using System.Threading.Tasks;
 
     #endregion Usings
@@ -23,12 +23,14 @@ namespace Cryptobitfolio.Business
     {
         #region Properties
 
-        IHistoricalPriceRepository _hpRepo;
+        private IExchangeHubBuilder _hubBldr;
+        private IHistoricalPriceRepository _hpRepo;
 
         #endregion Properties
 
-        public HistoricalPriceBuilder(IHistoricalPriceRepository repo)
+        public HistoricalPriceBuilder(IExchangeHubBuilder exchangeHubBuilder, IHistoricalPriceRepository repo)
         {
+            this._hubBldr = exchangeHubBuilder;
             this._hpRepo = repo;
         }
 
@@ -48,6 +50,14 @@ namespace Cryptobitfolio.Business
             return result;
         }
 
+        public async Task<HistoricalPrice> Update(HistoricalPrice contract)
+        {
+            var entity = ContractToEntity(contract);
+            entity = await _hpRepo.Update(entity);
+
+            return EntityToContract(entity);
+        }
+
         public async Task<IEnumerable<HistoricalPrice>> Get()
         {
             var entities = await _hpRepo.Get();
@@ -62,12 +72,22 @@ namespace Cryptobitfolio.Business
             return EntitiesToContracts(entities);
         }
 
-        public async Task<HistoricalPrice> Update(HistoricalPrice contract)
+        public async Task<IEnumerable<HistoricalPrice>> GetLatest(List<string> pairs)
         {
-            var entity = ContractToEntity(contract);
-            entity = await _hpRepo.Update(entity);
+            return await OnGetLatest(pairs);
+        }
 
-            return EntityToContract(entity);
+        private async Task<IEnumerable<HistoricalPrice>> OnGetLatest(List<string> pairs)
+        {
+            var hps = await _hubBldr.GetStats(pairs);
+            var hpList = hps.ToList();
+
+            for (var i = 0; i < hpList.Count; i++)
+            {
+                hpList[i] = await this.Add(hpList[i]);
+            }
+
+            return hpList;
         }
 
         private IEnumerable<HistoricalPrice> EntitiesToContracts(IEnumerable<Entities.Trade.HistoricalPrice> entities)
@@ -91,6 +111,8 @@ namespace Cryptobitfolio.Business
                 Exchange = entity.Exchange,
                 Pair = entity.Pair,
                 Price = entity.Price,
+                High = entity.High,
+                Low = entity.Low,
                 Snapshot = entity.Snapshot
             };
 
@@ -117,6 +139,8 @@ namespace Cryptobitfolio.Business
                 Exchange = contract.Exchange,
                 Pair = contract.Pair,
                 Price = contract.Price,
+                High = contract.High,
+                Low = contract.Low,
                 Snapshot = contract.Snapshot
             };
 

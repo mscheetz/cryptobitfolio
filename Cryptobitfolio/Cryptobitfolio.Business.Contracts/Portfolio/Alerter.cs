@@ -22,6 +22,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         public int AlertId { get; set; }
         public string Pair { get; set; }
         public Exchange Exchange { get; set; }
+        public Direction Direction { get; set; }
         public decimal Price { get; set; }
         public bool Enabled { get; set; }
         public DateTime Created { get; set; }

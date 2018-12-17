@@ -43,6 +43,13 @@ namespace Cryptobitfolio.Data.Interfaces
         Task<IEnumerable<ExchangeHub.Contracts.PairPrice>> GetLatestPrices();
 
         /// <summary>
+        /// Get 24hour stats for a trading pair
+        /// </summary>
+        /// <param name="pair">String of pair to find</param>
+        /// <returns>Ticker for the trading pair</returns>
+        Task<ExchangeHub.Contracts.Ticker> GetStats(string pair);
+
+        /// <summary>
         /// Get all balances for current account
         /// </summary>
         /// <returns>Collection of Balance objects</returns>

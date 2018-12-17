@@ -248,6 +248,28 @@ namespace Cryptobitfolio.Business
             return BalanceDictionaryToExchangeCoins(balances);
         }
 
+        public async Task<IEnumerable<HistoricalPrice>> GetStats(List<string> pairs)
+        {
+            var hpList = new List<HistoricalPrice>();
+
+            foreach (var hub in _exchangeHubs)
+            {
+                var exchange = hub.GetExchange();
+                var tickers = new List<Ticker>();
+
+                foreach (var pair in pairs)
+                {
+                    var ticker = await hub.GetStats(pair);
+
+                    tickers.Add(ticker);
+                }
+
+                hpList.AddRange(TickerCollectionToHistoricalPrices(tickers, IHelper.StringToExchange(exchange)));
+            }
+
+            return hpList;
+        }
+
         public async Task<IEnumerable<ExchangeCoin>> GetExchangeBalances()
         {
             var balances = await _currentHub.GetBalances();
@@ -470,6 +492,35 @@ namespace Cryptobitfolio.Business
             };
 
             return exchangeOrder;
+        }
+
+        private IEnumerable<HistoricalPrice> TickerCollectionToHistoricalPrices(IEnumerable<Ticker> tickers, Exchange exchange)
+        {
+            var hpList = new List<HistoricalPrice>();
+
+            foreach(var ticker in tickers)
+            {
+                var hp = TickerToHistoricalPrice(ticker, exchange);
+
+                hpList.Add(hp);
+            }
+
+            return hpList;
+        }
+
+        private HistoricalPrice TickerToHistoricalPrice(Ticker ticker, Exchange exchange)
+        {
+            var hp = new HistoricalPrice
+            {
+                Exchange = exchange,
+                High = ticker.High,
+                Low = ticker.Low,
+                Pair = ticker.Pair,
+                Price = ticker.LastPrice,
+                Snapshot = DateTime.UtcNow
+            };
+
+            return hp;
         }
     }
 }

@@ -23,10 +23,12 @@ namespace Cryptobitfolio.Business.Common
 
         Task<bool> Delete(HistoricalPrice contract);
 
+        Task<HistoricalPrice> Update(HistoricalPrice contract);
+
         Task<IEnumerable<HistoricalPrice>> Get();
 
         Task<IEnumerable<HistoricalPrice>> Get(string pair);
 
-        Task<HistoricalPrice> Update(HistoricalPrice contract);
+        Task<IEnumerable<HistoricalPrice>> GetLatest(List<string> pairs);
     }
 }

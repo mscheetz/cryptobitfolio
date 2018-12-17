@@ -89,6 +89,16 @@ namespace Cryptobitfolio.Data.Repositories
         }
 
         /// <summary>
+        /// Get 24hour stats for a trading pair
+        /// </summary>
+        /// <param name="pair">String of pair to find</param>
+        /// <returns>Ticker for the trading pair</returns>
+        public async Task<ExchangeHub.Contracts.Ticker> GetStats(string pair)
+        {
+            return await _hub.Get24hrStatsAsync(pair);
+        }
+
+        /// <summary>
         /// Get all balances for current account
         /// </summary>
         /// <returns>Collection of Balance objects</returns>
