@@ -80,6 +80,18 @@ namespace Cryptobitfolio.Business
             return contracts;
         }
 
+        public async Task<IEnumerable<Coin>> GetLatest(Business.Entities.Exchange exchange)
+        {
+            var coinEntities = await _coinRepo.Get();
+            var symbols = coinEntities.Select(c => c.Symbol).ToList();
+            var currencies = await _currencyBldr.GetLatest(symbols);
+            var exchangeCoins = await _xchgCoinBldr.GetLatest(exchange);
+
+            var contracts = EntitiesToContracts(coinEntities, currencies, exchangeCoins);
+
+            return contracts;
+        }
+
         private IEnumerable<Coin> EntitiesToContracts(IEnumerable<Entities.Portfolio.Coin> entities)
         {
             var contracts = new List<Coin>();

@@ -52,34 +52,6 @@ namespace Cryptobitfolio.UI.ViewModels
         
         #region Methods
 
-        public void LoadExchange(Business.Contracts.Trade.ExchangeApi exchangeApi)
-        {
-            _exchangeHubBuilder.LoadExchange(exchangeApi);
-        }
-
-        public async Task<IEnumerable<Business.Contracts.Portfolio.Coin>> UpdatePortfolio()
-        {
-            return await _coinBuilder.Get();
-        }
-
-        public async Task<IEnumerable<Business.Contracts.Trade.ExchangeApi>> GetExchangeApis()
-        {
-            return await _exchangeApiBuilder.Get();
-        }
-
-        public async Task<Business.Contracts.Trade.ExchangeApi> SaveExchangeApi(Business.Contracts.Trade.ExchangeApi exchangeApi)
-        {
-            return await _exchangeApiBuilder.Add(exchangeApi);
-        }
-
-        public async Task<bool> DeleteExchangeApi(Business.Contracts.Trade.ExchangeApi exchangeApi)
-        {
-            var apiDelete = await _exchangeApiBuilder.Delete(exchangeApi);
-            var hubDelete = _exchangeHubBuilder.UnloadExchange(exchangeApi);
-
-            return apiDelete == hubDelete;
-        }
-
         public async Task<IEnumerable<Business.Contracts.Portfolio.Coin>> GetCoins()
         {
             return await _coinBuilder.Get();

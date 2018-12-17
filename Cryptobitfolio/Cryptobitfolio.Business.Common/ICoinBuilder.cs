@@ -28,5 +28,7 @@ namespace Cryptobitfolio.Business.Common
         Task<IEnumerable<Coin>> Get();
 
         Task<IEnumerable<Coin>> GetLatest();
+
+        Task<IEnumerable<Coin>> GetLatest(Business.Entities.Exchange exchange);
     }
 }
