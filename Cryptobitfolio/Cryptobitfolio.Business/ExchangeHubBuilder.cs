@@ -287,36 +287,36 @@ namespace Cryptobitfolio.Business
             return BalanceCollectionToExchangeCoins(balances, exchange);
         }
 
-        public async Task<IEnumerable<CoinBuy>> GetOrders(string pair)
+        public async Task<IEnumerable<ExchangeOrder>> GetOrders(string pair)
         {
-            var coinBuyList = new List<CoinBuy>();
+            var exchangeOrderList = new List<ExchangeOrder>();
             foreach (var hub in _exchangeHubs)
             {
                 var xchgOrders = await hub.GetOrders(pair);
                 var xchg = hub.GetExchange();
-                var coinBuys = OrderResponseCollectionToCoinBuys(xchgOrders, IHelper.StringToExchange(xchg));
-                coinBuyList.AddRange(coinBuys);
+                var coinBuys = OrderResponseCollectionToExchangeOrders(xchgOrders, IHelper.StringToExchange(xchg));
+                exchangeOrderList.AddRange(coinBuys);
             }
 
-            return coinBuyList;
+            return exchangeOrderList;
         }
 
-        public async Task<IEnumerable<CoinBuy>> GetExchangeOrders(string pair)
+        public async Task<IEnumerable<ExchangeOrder>> GetExchangeOrders(string pair)
         {
             var orders = await _currentHub.GetOrders(pair);
 
-            var coinBuys = OrderResponseCollectionToCoinBuys(orders, IHelper.StringToExchange(_currentExchange));
+            var exchangeOrders = OrderResponseCollectionToExchangeOrders(orders, IHelper.StringToExchange(_currentExchange));
 
-            return coinBuys;
+            return exchangeOrders;
         }
 
-        public async Task<IEnumerable<CoinBuy>> GetExchangeOrders(string pair, Exchange exchange)
+        public async Task<IEnumerable<ExchangeOrder>> GetExchangeOrders(string pair, Exchange exchange)
         {
             var hub = _exchangeHubs.Where(e => e.GetExchange() == exchange.ToString()).FirstOrDefault();
 
             var orders = await hub.GetOrders(pair);
 
-            return OrderResponseCollectionToCoinBuys(orders, exchange);
+            return OrderResponseCollectionToExchangeOrders(orders, exchange);
         }
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace Cryptobitfolio.Business
         /// </summary>
         /// <param name="pairs">Trading pairs</param>
         /// <returns>Collection of OrderResponses</returns>
-        public async Task<IEnumerable<CoinBuy>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange)
+        public async Task<IEnumerable<ExchangeOrder>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange)
         {
             var hub = _exchangeHubs.Where(e => e.GetExchange() == exchange.ToString()).FirstOrDefault();
 
@@ -337,7 +337,7 @@ namespace Cryptobitfolio.Business
                 orders.AddRange(pairOrders);
             }
 
-            return OrderResponseCollectionToCoinBuys(orders, exchange);
+            return OrderResponseCollectionToExchangeOrders(orders, exchange);
         }
 
         public async Task<IEnumerable<ExchangeOrder>> GetOpenOrders(string pair)
@@ -452,8 +452,9 @@ namespace Cryptobitfolio.Business
                 OrderId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
-                Quantity = quantity == 0 ? orderResponse.FilledQuantity : quantity,
-                TransactionDate = orderResponse.TransactTime
+                FilledQuantity = quantity == 0 ? orderResponse.FilledQuantity : quantity,
+                Quantity = orderResponse.OrderQuantity,
+                ClosedDate = orderResponse.TransactTime
             };
 
             return coinBuy;

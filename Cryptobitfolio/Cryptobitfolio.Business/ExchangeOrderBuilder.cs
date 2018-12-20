@@ -166,13 +166,13 @@ namespace Cryptobitfolio.Business
             var contract = new ExchangeOrder
             {
                 ExchangeOrderId = entity.Id,
-                ClosedDate = entity.Filled,
+                ClosedDate = entity.ClosedDate,
                 Exchange = entity.Exchange,
                 FilledQuantity = entity.FilledQuantity,
                 OrderId = entity.OrderId,
                 Pair = entity.Pair,
                 Price = entity.Price,
-                PlaceDate = entity.Created,
+                PlaceDate = entity.PlaceDate,
                 Quantity = entity.Quantity,
                 Side = entity.Side,
                 Status = entity.Status
@@ -199,13 +199,13 @@ namespace Cryptobitfolio.Business
             var entity = new Entities.Trade.ExchangeOrder
             {
                 Id = contract.ExchangeOrderId,
-                Filled = contract.ClosedDate,
+                ClosedDate = contract.ClosedDate,
                 Exchange = contract.Exchange,
                 FilledQuantity = contract.FilledQuantity,
                 OrderId = contract.OrderId,
                 Pair = contract.Pair,
                 Price = contract.Price,
-                Created = contract.PlaceDate,
+                PlaceDate = contract.PlaceDate,
                 Quantity = contract.Quantity,
                 Side = contract.Side,
                 Status = contract.Status

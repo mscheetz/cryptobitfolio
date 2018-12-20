@@ -48,18 +48,18 @@ namespace Cryptobitfolio.Business.Common
 
         Task<IEnumerable<ExchangeCoin>> GetExchangeBalances(Exchange exchange);
 
-        Task<IEnumerable<CoinBuy>> GetOrders(string pair);
+        Task<IEnumerable<ExchangeOrder>> GetOrders(string pair);
 
-        Task<IEnumerable<CoinBuy>> GetExchangeOrders(string pair);
+        Task<IEnumerable<ExchangeOrder>> GetExchangeOrders(string pair);
 
-        Task<IEnumerable<CoinBuy>> GetExchangeOrders(string pair, Exchange exchange);
+        Task<IEnumerable<ExchangeOrder>> GetExchangeOrders(string pair, Exchange exchange);
 
         /// <summary>
         /// Get orders for a collection of trading pairs
         /// </summary>
         /// <param name="pairs">Trading pairs</param>
         /// <returns>Collection of OrderResponses</returns>
-        Task<IEnumerable<CoinBuy>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange);
+        Task<IEnumerable<ExchangeOrder>> GetExchangeOrders(IEnumerable<string> pairs, Exchange exchange);
 
         Task<IEnumerable<ExchangeOrder>> GetOpenOrders(string pair);
 

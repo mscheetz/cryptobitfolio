@@ -11,6 +11,7 @@ namespace Cryptobitfolio.Business
 
     using Cryptobitfolio.Business.Common;
     using Cryptobitfolio.Business.Contracts.Portfolio;
+    using Cryptobitfolio.Business.Contracts.Trade;
     using Cryptobitfolio.Business.Entities;
     using Cryptobitfolio.Data.Interfaces.Database;
     using ExchangeHub.Contracts;
@@ -81,8 +82,8 @@ namespace Cryptobitfolio.Business
             var relevantBuys = await this.GetRelevantCoinBuys(symbol, quantity, exchange);
             var coinBuys = await this.Get(symbol, exchange);
 
-            var exchangeList = relevantBuys.OrderByDescending(b => b.TransactionDate).ToList();
-            var dbList = coinBuys.OrderByDescending(b => b.TransactionDate).ToList();
+            var exchangeList = relevantBuys.OrderByDescending(b => b.ClosedDate).ToList();
+            var dbList = coinBuys.OrderByDescending(b => b.ClosedDate).ToList();
 
             return await OnGetLastest(exchangeList, dbList);
         }
@@ -135,7 +136,7 @@ namespace Cryptobitfolio.Business
 
                 quantity -= order.FilledQuantity;
 
-                var coinBuy = OrderResponseToCoinBuy(order, exchange, quantityApplied);
+                var coinBuy = ExchangeOrderToCoinBuy(order, exchange, quantityApplied);
                 coinBuyList.Add(coinBuy);
 
                 if (quantity <= 0)
@@ -152,7 +153,7 @@ namespace Cryptobitfolio.Business
             var pairs = await _hubBldr.GetMarketsForACoin(symbol);
             var orders = await _hubBldr.GetExchangeOrders(pairs, exchange);
 
-            return OrderResponseCollectionToCoinBuys(orders, exchange);
+            return ExchangeOrderCollectionToCoinBuys(orders, exchange);
         }
 
         private IEnumerable<CoinBuy> EntitiesToContracts(IEnumerable<Entities.Portfolio.CoinBuy> entities)
@@ -178,8 +179,15 @@ namespace Cryptobitfolio.Business
                 OrderId = entity.OrderId,
                 Pair = entity.Pair,
                 Price = entity.Price,
+                BTCPrice = entity.BTCPrice,
+                ClosedDate = entity.ClosedDate,
+                ExchangeOrderId = entity.Id,
+                FilledQuantity = entity.FilledQuantity,
+                PlaceDate = entity.PlaceDate,
                 Quantity = entity.Quantity,
-                TransactionDate = entity.TransactionDate
+                QuantityApplied = entity.QuantityApplied,
+                Side = entity.Side,
+                Status = entity.Status
             };
 
             return contract;
@@ -207,20 +215,27 @@ namespace Cryptobitfolio.Business
                 OrderId = contract.OrderId,
                 Pair = contract.Pair,
                 Price = contract.Price,
+                FilledQuantity = contract.FilledQuantity,
                 Quantity = contract.Quantity,
-                TransactionDate = contract.TransactionDate
+                PlaceDate = contract.PlaceDate,
+                BTCPrice = contract.BTCPrice,
+                ClosedDate = contract.ClosedDate,
+                CoinBuyId = contract.CoinBuyId,
+                QuantityApplied = contract.QuantityApplied,
+                Side = contract.Side,
+                Status = contract.Status
             };
 
             return entity;
         }
 
-        private IEnumerable<CoinBuy> OrderResponseCollectionToCoinBuys(IEnumerable<OrderResponse> orders, Exchange exchange)
+        private IEnumerable<CoinBuy> ExchangeOrderCollectionToCoinBuys(IEnumerable<ExchangeOrder> orders, Exchange exchange)
         {
             var coinBuys = new List<CoinBuy>();
 
             foreach(var order in orders)
             {
-                var coinBuy = OrderResponseToCoinBuy(order, exchange);
+                var coinBuy = ExchangeOrderToCoinBuy(order, exchange);
                 coinBuys.Add(coinBuy);
             }
 
@@ -230,20 +245,13 @@ namespace Cryptobitfolio.Business
         /// <summary>
         /// Create a CoinBuy from an ExchangeHub OrderResponse
         /// </summary>
-        /// <param name="orderResponse">OrderResponse to convert</param>
+        /// <param name="order">OrderResponse to convert</param>
         /// <returns>new CoinBuy object</returns>
-        private CoinBuy OrderResponseToCoinBuy(OrderResponse orderResponse, Exchange exchange, decimal quantity = 0)
+        private CoinBuy ExchangeOrderToCoinBuy(ExchangeOrder order, Exchange exchange, decimal quantity = 0)
         {
-            var coinBuy = new CoinBuy
-            {
-                BTCPrice = orderResponse.Pair.EndsWith("BTC") ? orderResponse.Price : 0,
-                Exchange = exchange,
-                OrderId = orderResponse.OrderId,
-                Pair = orderResponse.Pair,
-                Price = orderResponse.Price,
-                Quantity = quantity == 0 ? orderResponse.FilledQuantity : quantity,
-                TransactionDate = orderResponse.TransactTime
-            };
+            var coinBuy = new CoinBuy(order);
+            coinBuy.BTCPrice = coinBuy.Pair.EndsWith("BTC") ? order.Price : 0;
+            coinBuy.QuantityApplied = quantity == 0 ? order.FilledQuantity : quantity;
 
             return coinBuy;
         }

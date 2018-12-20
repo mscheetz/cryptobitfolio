@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Cryptobitfolio.Business.Entities.Trade;
+using System;
 
 namespace Cryptobitfolio.Business.Entities.Portfolio
 {
-    public class CoinBuy : EntityBase
+    public class CoinBuy : ExchangeOrder
     {
         public int CurrencyId { get; set; }
         public int CoinId { get; set; }
-        public string OrderId { get; set; }
-        public decimal Quantity { get; set; }
-        public string Pair { get; set; }
-        public decimal Price { get; set; }
-        public Exchange Exchange { get; set; }
-        public DateTime TransactionDate { get; set; }
+        public int CoinBuyId { get; set; }
+        public decimal QuantityApplied { get; set; }
+        public decimal BTCPrice { get; set; }
     }
 }
