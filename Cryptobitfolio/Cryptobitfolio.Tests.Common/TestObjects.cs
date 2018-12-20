@@ -377,7 +377,7 @@ namespace Cryptobitfolio.Tests.Common
                     CoinBuyId = "1",
                     Pair = "BTCUSDT",
                     Price = 4100.00M,
-                    Quantity = 0.005M
+                    OrderQuantity = 0.005M
                 },
                 new Business.Contracts.Portfolio.CoinBuy
                 {
@@ -385,7 +385,7 @@ namespace Cryptobitfolio.Tests.Common
                     CoinBuyId = "2",
                     Pair = "BTCUSDT",
                     Price = 7423.00M,
-                    Quantity = 0.005M
+                    OrderQuantity = 0.005M
                 }
             };
 

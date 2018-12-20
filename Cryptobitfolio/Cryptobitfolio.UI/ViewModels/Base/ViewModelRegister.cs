@@ -49,6 +49,11 @@ namespace Cryptobitfolio.UI.ViewModels.Base
             _container = new TinyIoCContainer();
 
             // View models - by default, TinyIoC will register concrete classes as multi-instance.
+            _container.Register<AlertListViewModel>();
+            _container.Register<ApiViewModel>();
+            _container.Register<ExchangeViewModel>();
+            _container.Register<PortfolioViewModel>();
+            _container.Register<WatchListViewModel>();
             //_container.Register<BasketViewModel>();
             //_container.Register<CatalogViewModel>();
             //_container.Register<CheckoutViewModel>();
@@ -61,6 +66,16 @@ namespace Cryptobitfolio.UI.ViewModels.Base
             //_container.Register<CampaignDetailsViewModel>();
 
             // Services - by default, TinyIoC will register interface registrations as singletons.
+            _container.Register<IAlertBuilder, AlertBuilder>();
+            _container.Register<ICoinBuilder, CoinBuilder>();
+            _container.Register<ICoinBuyBuilder, CoinBuyBuilder>();
+            _container.Register<ICurrencyBuilder, CurrencyBuilder>();
+            _container.Register<IExchangeApiBuilder, ExchangeApiBuilder>();
+            _container.Register<IExchangeCoinBuilder, ExchangeCoinBuilder>();
+            _container.Register<IExchangeHubBuilder, ExchangeHubBuilder>();
+            _container.Register<IExchangeOrderBuilder, ExchangeOrderBuilder>();
+            _container.Register<IWatchBuilder, WatchBuilder>();
+            
             _container.Register<IArbitrageBuilder, ArbitrageBuilder>();
             _container.Register<ICMCBuilder, CMCBuilder>();
             _container.Register<IExchangeBuilder, ExchangeBuilder>();
@@ -96,6 +111,15 @@ namespace Cryptobitfolio.UI.ViewModels.Base
             }
             else
             {
+                _container.Register<IAlertBuilder, AlertBuilder>();
+                _container.Register<ICoinBuilder, CoinBuilder>();
+                _container.Register<ICoinBuyBuilder, CoinBuyBuilder>();
+                _container.Register<ICurrencyBuilder, CurrencyBuilder>();
+                _container.Register<IExchangeApiBuilder, ExchangeApiBuilder>();
+                _container.Register<IExchangeCoinBuilder, ExchangeCoinBuilder>();
+                _container.Register<IExchangeHubBuilder, ExchangeHubBuilder>();
+                _container.Register<IExchangeOrderBuilder, ExchangeOrderBuilder>();
+                _container.Register<IWatchBuilder, WatchBuilder>();
                 //_container.Register<ICatalogService, CatalogService>();
                 //_container.Register<IBasketService, BasketService>();
                 //_container.Register<IOrderService, OrderService>();

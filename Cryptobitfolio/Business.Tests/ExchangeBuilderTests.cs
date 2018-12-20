@@ -137,7 +137,7 @@ namespace Business.Tests
                 CoinBuyId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
-                Quantity = quantity,
+                OrderQuantity = quantity,
                 TransactionDate = orderResponse.TransactTime
             };
 

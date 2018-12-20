@@ -485,7 +485,7 @@ namespace Cryptobitfolio.Business
                 OrderId = orderResponse.OrderId,
                 Pair = orderResponse.Pair,
                 Price = orderResponse.Price,
-                Quantity = quantityApplied,
+                OrderQuantity = quantityApplied,
                 TransactionDate = orderResponse.TransactTime
             };
 

@@ -22,16 +22,14 @@ namespace Cryptobitfolio.UI.ViewModels
 
         #region Properties
 
-        private readonly IAlertBuilder _alertBuilder;
         private readonly IWatchBuilder _watchBuilder;
 
         #endregion Properties
 
         #region Constructor/Destructor
 
-        public WatchListViewModel(IAlertBuilder alertBuilder, IWatchBuilder watchBuilder)
+        public WatchListViewModel(IWatchBuilder watchBuilder)
         {
-            _alertBuilder = alertBuilder;
             _watchBuilder = watchBuilder;
         }
 
@@ -39,14 +37,24 @@ namespace Cryptobitfolio.UI.ViewModels
         
         #region Methods
         
-        public async Task<IEnumerable<Business.Contracts.Portfolio.Alerter>> GetAlerts()
+        public async Task<IEnumerable<Business.Contracts.Portfolio.Watcher>> GetWatchers()
         {
-            return await _alertBuilder.Get();
+            return await _watchBuilder.Get();
         }
 
-        public async Task<IEnumerable<Business.Contracts.Portfolio.Alerter>> GetLatestAlerts()
+        public async Task<Business.Contracts.Portfolio.Watcher> AddWatcher(Business.Contracts.Portfolio.Watcher watcher)
         {
-            return await _alertBuilder.GetLatest();
+            return await _watchBuilder.Add(watcher);
+        }
+
+        public async Task<Business.Contracts.Portfolio.Watcher> UpdateWatcher(Business.Contracts.Portfolio.Watcher watcher)
+        {
+            return await _watchBuilder.Update(watcher);
+        }
+
+        public async Task<bool> DeleteWatcher(Business.Contracts.Portfolio.Watcher watcher)
+        {
+            return await _watchBuilder.Delete(watcher);
         }
 
         #endregion Methods

@@ -43,16 +43,16 @@ namespace Cryptobitfolio.UI
             {
                 var coinBuyList = new List<CoinBuy>
                 {
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "BTCUSDT", Price = 6500.00M, Quantity = 0.0014M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "BTCUSDT", Price = 5600.00M, Quantity = 0.0013M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "ETHUSDT", Price = 212.44M, Quantity = 0.55M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00003400M, Quantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00002900M, Quantity = 224M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "NEOBTC", Price = 0.0022M, Quantity = 6.5M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "NEOBTC", Price = 0.0029M, Quantity = 8.0M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00002978M, Quantity = 500M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00003978M, Quantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.0000362M, Quantity = 227M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "BTCUSDT", Price = 6500.00M, OrderQuantity = 0.0014M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "BTCUSDT", Price = 5600.00M, OrderQuantity = 0.0013M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "ETHUSDT", Price = 212.44M, OrderQuantity = 0.55M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00003400M, OrderQuantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00002900M, OrderQuantity = 224M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "NEOBTC", Price = 0.0022M, OrderQuantity = 6.5M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "NEOBTC", Price = 0.0029M, OrderQuantity = 8.0M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00002978M, OrderQuantity = 500M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00003978M, OrderQuantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.0000362M, OrderQuantity = 227M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
                 };
 
                 var exchangeCoins = new List<Business.Contracts.Portfolio.ExchangeCoin>
@@ -139,16 +139,16 @@ namespace Cryptobitfolio.UI
             {
                 var coinBuyList = new List<CoinBuy>
                 {
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "BTCUSDT", Price = 6500.00M, Quantity = 0.0014M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "BTCUSDT", Price = 5600.00M, Quantity = 0.0013M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "ETHUSDT", Price = 212.44M, Quantity = 0.55M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00003400M, Quantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00002900M, Quantity = 224M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "NEOBTC", Price = 0.0022M, Quantity = 6.5M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "NEOBTC", Price = 0.0029M, Quantity = 8.0M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00002978M, Quantity = 500M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00003978M, Quantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
-                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.0000362M, Quantity = 227M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "BTCUSDT", Price = 6500.00M, OrderQuantity = 0.0014M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "BTCUSDT", Price = 5600.00M, OrderQuantity = 0.0013M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "ETHUSDT", Price = 212.44M, OrderQuantity = 0.55M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00003400M, OrderQuantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "XLMBTC", Price = 0.00002900M, OrderQuantity = 224M, TransactionDate = DateTime.UtcNow.AddMonths(-2) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "NEOBTC", Price = 0.0022M, OrderQuantity = 6.5M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Bittrex, Pair = "NEOBTC", Price = 0.0029M, OrderQuantity = 8.0M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00002978M, OrderQuantity = 500M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.00003978M, OrderQuantity = 175M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
+                    new CoinBuy { Exchange = Business.Entities.Exchange.Binance, Pair = "POLYBTC", Price = 0.0000362M, OrderQuantity = 227M, TransactionDate = DateTime.UtcNow.AddMonths(-1) },
                 };
 
                 var exchangeCoins = new List<Business.Contracts.Portfolio.ExchangeCoin>

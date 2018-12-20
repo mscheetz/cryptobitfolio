@@ -25,9 +25,9 @@ namespace Cryptobitfolio.Data.Tests
             datas.Add(
                 new ExchangeOrder
                 {
-                    Created = DateTime.UtcNow.AddDays(-4),
+                    PlaceDate = DateTime.UtcNow.AddDays(-4),
                     Exchange = Business.Entities.Exchange.Binance,
-                    Filled = null,
+                    ClosedDate = null,
                     Price = 3489.23M,
                     Quantity = 0.25M,
                     Status = Business.Entities.TradeStatus.Open,
@@ -37,9 +37,9 @@ namespace Cryptobitfolio.Data.Tests
             datas.Add(
                 new ExchangeOrder
                 {
-                    Created = DateTime.UtcNow.AddDays(-10),
+                    PlaceDate = DateTime.UtcNow.AddDays(-10),
                     Exchange = Business.Entities.Exchange.Binance,
-                    Filled = DateTime.UtcNow.AddDays(-10),
+                    ClosedDate = DateTime.UtcNow.AddDays(-10),
                     Price = 0.021M,
                     Quantity = 4.5M,
                     Status = Business.Entities.TradeStatus.Filled,
@@ -95,7 +95,7 @@ namespace Cryptobitfolio.Data.Tests
         [Fact]
         public void GetManyOrder_Test()
         {
-            var entityList = _repo.Get(e => e.Created).Result;
+            var entityList = _repo.Get(e => e.PlaceDate).Result;
 
             Assert.NotNull(entityList);
             Assert.NotEmpty(entityList);
@@ -104,7 +104,7 @@ namespace Cryptobitfolio.Data.Tests
         [Fact]
         public void GetManySearchAndOrder_Test()
         {
-            var entityList = _repo.Get(e => e.Exchange == Business.Entities.Exchange.Binance, e => e.Created).Result;
+            var entityList = _repo.Get(e => e.Exchange == Business.Entities.Exchange.Binance, e => e.PlaceDate).Result;
 
             Assert.NotNull(entityList);
             Assert.NotEmpty(entityList);
@@ -140,17 +140,17 @@ namespace Cryptobitfolio.Data.Tests
             Assert.NotNull(entity);
             Assert.Equal(id, entity.Id);
 
-            entity.Filled = newProperty;
+            entity.ClosedDate = newProperty;
 
             var updatedEntity = _repo.Update(entity).Result;
 
-            Assert.Equal(entity.Filled, updatedEntity.Filled);
+            Assert.Equal(entity.ClosedDate, updatedEntity.ClosedDate);
 
             var entityFetch = _repo.GetOne(id).Result;
 
             Assert.NotNull(entityFetch);
             Assert.Equal(id, entityFetch.Id);
-            Assert.Equal(newProperty, entityFetch.Filled);
+            Assert.Equal(newProperty, entityFetch.ClosedDate);
         }
 
         [Fact]
@@ -163,22 +163,22 @@ namespace Cryptobitfolio.Data.Tests
             Assert.NotNull(entities);
             Assert.NotEmpty(entities);
 
-            entityList[0].Filled = newProperties[0];
-            entityList[1].Filled = newProperties[1];
+            entityList[0].ClosedDate = newProperties[0];
+            entityList[1].ClosedDate = newProperties[1];
 
             var updatedEntities = _repo.UpdateAll(entities).Result;
             var updatedList = updatedEntities.ToList();
 
-            Assert.Equal(entityList[0].Filled, updatedList[0].Filled);
-            Assert.Equal(entityList[1].Filled, updatedList[1].Filled);
+            Assert.Equal(entityList[0].ClosedDate, updatedList[0].ClosedDate);
+            Assert.Equal(entityList[1].ClosedDate, updatedList[1].ClosedDate);
 
             var entitiesFetch = _repo.Get().Result;
             var fetchList = entitiesFetch.ToList();
 
             Assert.NotNull(entitiesFetch);
             Assert.NotEmpty(entitiesFetch);
-            Assert.Equal(newProperties[0], fetchList[0].Filled);
-            Assert.Equal(newProperties[1], fetchList[1].Filled);
+            Assert.Equal(newProperties[0], fetchList[0].ClosedDate);
+            Assert.Equal(newProperties[1], fetchList[1].ClosedDate);
         }
 
         [Fact]
