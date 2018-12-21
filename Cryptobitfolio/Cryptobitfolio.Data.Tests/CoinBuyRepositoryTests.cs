@@ -31,7 +31,7 @@ namespace Cryptobitfolio.Data.Tests
                     Exchange = Business.Entities.Exchange.Binance,
                     Price = 5418.00M,
                     Quantity = 0.4M,
-                    TransactionDate = DateTime.UtcNow
+                    ClosedDate = DateTime.UtcNow
                 });
             datas.Add(
                 new CoinBuy
@@ -42,7 +42,7 @@ namespace Cryptobitfolio.Data.Tests
                     Exchange = Business.Entities.Exchange.Binance,
                     Price = 0.0240M,
                     Quantity = 14.2M,
-                    TransactionDate = DateTime.UtcNow
+                    ClosedDate = DateTime.UtcNow
                 });
 
             var addedEntites = _repo.AddAll(datas).Result;

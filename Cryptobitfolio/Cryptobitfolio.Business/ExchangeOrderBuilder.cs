@@ -76,16 +76,16 @@ namespace Cryptobitfolio.Business
         public async Task<IEnumerable<ExchangeOrder>> GetFromExchange(string symbol, Exchange exchange)
         {
             var pairs = await _hubBldr.GetMarketsForACoin(symbol);
-            var orders = await _hubBldr.GetExchangeOpenOrdersByPairs(pairs, exchange);
-            var exchangeOrderList = new List<ExchangeOrder>();
+            return await _hubBldr.GetExchangeOpenOrdersByPairs(pairs, exchange);
+            //var exchangeOrderList = new List<ExchangeOrder>();
 
-            foreach (var order in orders)
-            {
-                var exchangeOrder = OrderResponseToExchangeOrder(order, exchange);
-                exchangeOrderList.Add(exchangeOrder);
-            }
+            //foreach (var order in orders)
+            //{
+            //    var exchangeOrder = OrderResponseToExchangeOrder(order, exchange);
+            //    exchangeOrderList.Add(exchangeOrder);
+            //}
 
-            return exchangeOrderList;
+            //return exchangeOrderList;
         }
 
         public async Task<IEnumerable<ExchangeOrder>> GetLatest(string symbol, Exchange exchange)

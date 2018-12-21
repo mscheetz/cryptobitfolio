@@ -18,11 +18,11 @@ namespace Cryptobitfolio.UI.Portfolio
 
             Items = new ObservableCollection<Business.Contracts.Portfolio.Coin>
             {
-                new Business.Contracts.Portfolio.Coin{ CoinId=0, Currency = new Currency{ Name = "Bitcoin", Symbol = "BTC" }, CurrentPrice = 6379.44M, Percent24Hr = 0.47, Percent7D = -0.5 },
-                new Business.Contracts.Portfolio.Coin{ CoinId=1, Currency = new Currency{ Name = "Ethereum", Symbol = "ETH"}, CurrentPrice = 242.46M, Percent24Hr = 1.7, Percent7D = 2.5  },
-                new Business.Contracts.Portfolio.Coin{ CoinId=2, Currency = new Currency{ Name = "Stellar", Symbol = "XLM"}, CurrentPrice = 0.00001042M, Percent24Hr = 0.00, Percent7D = -1.5 },
-                new Business.Contracts.Portfolio.Coin{ CoinId=3, Currency = new Currency{ Name = "NEO", Symbol = "NEO"}, CurrentPrice = 0.0019M, Percent24Hr = -7.47, Percent7D = -0.5  },
-                new Business.Contracts.Portfolio.Coin{ CoinId=4, Currency = new Currency{ Name = "Polymath", Symbol = "POLY"}, CurrentPrice = 0.00000570M, Percent24Hr = 20.47, Percent7D = 10.5  },
+                new Business.Contracts.Portfolio.Coin{ CoinId=0, Name = "Bitcoin", Symbol = "BTC", CurrentPrice = 6379.44M, Percent24Hr = 0.47, Percent7D = -0.5 },
+                new Business.Contracts.Portfolio.Coin{ CoinId=1, Name = "Ethereum", Symbol = "ETH", CurrentPrice = 242.46M, Percent24Hr = 1.7, Percent7D = 2.5  },
+                new Business.Contracts.Portfolio.Coin{ CoinId=2, Name = "Stellar", Symbol = "XLM", CurrentPrice = 0.00001042M, Percent24Hr = 0.00, Percent7D = -1.5 },
+                new Business.Contracts.Portfolio.Coin{ CoinId=3, Name = "NEO", Symbol = "NEO", CurrentPrice = 0.0019M, Percent24Hr = -7.47, Percent7D = -0.5  },
+                new Business.Contracts.Portfolio.Coin{ CoinId=4, Name = "Polymath", Symbol = "POLY", CurrentPrice = 0.00000570M, Percent24Hr = 20.47, Percent7D = 10.5  },
             };
 
             coinList.ItemsSource = Items;

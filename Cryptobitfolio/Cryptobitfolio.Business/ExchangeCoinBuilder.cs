@@ -107,28 +107,28 @@ namespace Cryptobitfolio.Business
         public async Task<IEnumerable<ExchangeCoin>> GetLatest(string symbol)
         {
             var balances = await this._hubBldr.GetBalances(symbol);
-            var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
+            //var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
             var exCoins = await this.Get(symbol);
 
-            return await OnGetLatest(exchangeBalance.ToList(), exCoins.ToList());
+            return await OnGetLatest(balances.ToList(), exCoins.ToList());
         }
 
         public async Task<IEnumerable<ExchangeCoin>> GetLatest(List<string> symbols)
         {
             var balances = await this._hubBldr.GetBalances(symbols);
-            var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
+            //var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
             var exCoins = await this.Get(symbols);
 
-            return await OnGetLatest(exchangeBalance.ToList(), exCoins.ToList());
+            return await OnGetLatest(balances.ToList(), exCoins.ToList());
         }
 
         public async Task<IEnumerable<ExchangeCoin>> GetLatest(Exchange exchange)
         {
             var balances = await this._hubBldr.GetExchangeBalances(exchange);
-            var exchangeBalance = BalanceCollectionToExchangeCoins(balances, exchange);
+            //var exchangeBalance = BalanceCollectionToExchangeCoins(balances, exchange);
             var exCoins = await this.Get(exchange);
 
-            return await OnGetLatest(exchangeBalance.ToList(), exCoins.ToList());
+            return await OnGetLatest(balances.ToList(), exCoins.ToList());
         }
 
         private async Task<IEnumerable<ExchangeCoin>> OnGetLatest(List<ExchangeCoin> hubList, List<ExchangeCoin> dbList)

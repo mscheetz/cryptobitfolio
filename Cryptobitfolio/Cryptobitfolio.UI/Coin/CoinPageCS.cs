@@ -118,7 +118,7 @@ namespace Cryptobitfolio.UI.Coin
 
         private void OnShowTransactions()
         {
-            var transactions = App.GetTransactions(_coin.Currency.Symbol).Result;
+            var transactions = App.GetTransactions(_coin.Symbol).Result;
 
             var transactionDT = new DataTemplate(() =>
             {
@@ -164,7 +164,7 @@ namespace Cryptobitfolio.UI.Coin
 
         private void OnShowWatchList()
         {
-            var watchListCoin = App.GetWatchListCoins(_coin.Currency.Symbol).Result;
+            var watchListCoin = App.GetWatchListCoins(_coin.Symbol).Result;
 
             var watchers = watchListCoin.Watchers;
 

@@ -31,8 +31,8 @@ namespace Cryptobitfolio.Data.Tests
                     Price = 3489.23M,
                     Quantity = 0.25M,
                     Status = Business.Entities.TradeStatus.Open,
-                    TradeSide = Business.Entities.Side.Buy,
-                    TradingPair = "BTCUSDT"
+                    Side = Business.Entities.Side.Buy,
+                    Pair = "BTCUSDT"
                 });
             datas.Add(
                 new ExchangeOrder
@@ -43,8 +43,8 @@ namespace Cryptobitfolio.Data.Tests
                     Price = 0.021M,
                     Quantity = 4.5M,
                     Status = Business.Entities.TradeStatus.Filled,
-                    TradeSide = Business.Entities.Side.Buy,
-                    TradingPair = "ETHBTC"
+                    Side = Business.Entities.Side.Buy,
+                    Pair = "ETHBTC"
                 });
 
             var addedEntites = _repo.AddAll(datas).Result;
