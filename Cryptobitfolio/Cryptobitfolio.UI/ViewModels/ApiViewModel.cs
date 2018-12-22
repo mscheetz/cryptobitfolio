@@ -10,6 +10,7 @@ namespace Cryptobitfolio.UI.ViewModels
     #region Usings
 
     using Cryptobitfolio.Business.Common;
+    using Cryptobitfolio.UI.ViewModels.Base;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -18,7 +19,7 @@ namespace Cryptobitfolio.UI.ViewModels
 
     #endregion Usings
 
-    public class ApiViewModel
+    public class ApiViewModel : ViewModelBase
     {
 
         #region Properties

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Cryptobitfolio.UI.Views.ExchangePage"
+             Icon=""
+             Title="Exchange">
+    <StackLayout VerticalOptions="FillAndExpand">
+        <Button Text="Manage Api Keys" Clicked="OnManageApiKeys" />
+        <Grid VerticalOptions="FillAndExpand">
+            <ListView x:Name="MyListView"
+            ItemsSource="{Binding Items}"
+            ItemTapped="Handle_ItemTapped"
+            CachingStrategy="RecycleElement">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextCell Text="{Binding .}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </StackLayout>
+</ContentPage>

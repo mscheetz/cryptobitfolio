@@ -20,43 +20,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Bot\BotPage.xaml.cs">
+    <Compile Update="Views\Bot\BotPage.xaml.cs">
       <DependentUpon>BotPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Main\MainPage.xaml.cs">
+    <Compile Update="Views\Main\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="NewApi\NewApiPageOG.xaml.cs">
+    <Compile Update="Views\ApiDetail\NewApiPageOG.xaml.cs">
       <DependentUpon>NewApiPageOG.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Api\ApiPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="Exchange\ExchangePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="Main\MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="NewApi\NewApi.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="Portfolio\PortfolioPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="Settings\SettingsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Bot\BotPage.xaml">
+    <EmbeddedResource Update="Views\Bot\BotPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Coin\CoinPage.xaml">
+    <EmbeddedResource Update="Views\Coin\CoinPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>

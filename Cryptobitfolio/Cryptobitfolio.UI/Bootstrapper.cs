@@ -14,7 +14,9 @@ namespace Cryptobitfolio.UI
     using CommonServiceLocator;
     using Cryptobitfolio.Business;
     using Cryptobitfolio.Business.Common;
+    using Cryptobitfolio.UI;
     using Cryptobitfolio.UI.ViewModels;
+    using Cryptobitfolio.UI.Views;
 
     #endregion Usings
 
@@ -25,28 +27,13 @@ namespace Cryptobitfolio.UI
         public static void Initialize()
         {
             var builder = new ContainerBuilder();
-            // Register View Models
-            builder.RegisterType<AlertListViewModel>().AsSelf();
-            builder.RegisterType<ApiViewModel>().AsSelf();
-            builder.RegisterType<ExchangeViewModel>().AsSelf();
-            builder.RegisterType<PortfolioViewModel>().AsSelf();
-            builder.RegisterType<WatchListViewModel>().AsSelf();
+            builder.RegisterModule<CryptobitfolioModule>();
+            App.AppInstance._container = builder.Build();
+            //App.AppInstance.MainPage = App.AppInstance._container.Resolve<MainPageCS>();
 
-            // Regiseter Builders
-            builder.RegisterType<AlertBuilder>().As<IAlertBuilder>();
-            builder.RegisterType<CoinBuilder>().As<ICoinBuilder>();
-            builder.RegisterType<CoinBuyBuilder>().As<ICoinBuyBuilder>();
-            builder.RegisterType<CurrencyBuilder>().As<ICurrencyBuilder>();
-            builder.RegisterType<ExchangeApiBuilder>().As<IExchangeApiBuilder>();
-            builder.RegisterType<ExchangeCoinBuilder>().As<IExchangeCoinBuilder>();
-            builder.RegisterType<ExchangeHubBuilder>().As<IExchangeHubBuilder>();
-            builder.RegisterType<ExchangeOrderBuilder>().As<IExchangeOrderBuilder>();
-            builder.RegisterType<WatchBuilder>().As<IWatchBuilder>();
 
-            IContainer container = builder.Build();
-
-            var asl = new AutofacServiceLocator(container);
-            ServiceLocator.SetLocatorProvider(() => asl);
+            //var asl = new AutofacServiceLocator(container);
+            //ServiceLocator.SetLocatorProvider(() => asl);
         }
 
         #endregion Properties

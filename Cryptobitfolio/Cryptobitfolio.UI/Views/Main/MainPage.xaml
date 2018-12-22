@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:local="clr-namespace:Cryptobitfolio.UI.Views"
+            x:Class="Cryptobitfolio.UI.Views.MainPage">
+            <!--xmlns:local="clr-namespace:Cryptobitfolio.UI.Views.ExchangeCS"
+            xmlns:local1="clr-namespace:Cryptobitfolio.UI.Views.PortfolioCS"
+            xmlns:local2="clr-namespace:Cryptobitfolio.UI.Views.SettingsCS"
+            xmlns:local3="clr-namespace:Cryptobitfolio.UI.Views.BotCS"-->
+  <!--Pages can be added as references or inline-->
+    <NavigationPage Title="Portfolio" Icon="portfolio.png">
+        <x:Arguments>
+            <local:PortfolioPageCS />
+        </x:Arguments>
+    </NavigationPage>
+    <local:ExchangePageCS />
+    <local:BotPageCS />
+    <local:SettingsPageCS />
+</TabbedPage>

@@ -1,12 +1,7 @@
-﻿using CommonServiceLocator;
-using Cryptobitfolio.Business;
-using Cryptobitfolio.Business.Common;
+﻿using Autofac;
 using Cryptobitfolio.Business.Contracts.Portfolio;
 using Cryptobitfolio.Business.Contracts.Trade;
-using Cryptobitfolio.Data.Interfaces;
-using Cryptobitfolio.Data.Repositories;
-using Cryptobitfolio.UI.Main;
-using Cryptobitfolio.UI.ViewModels;
+using Cryptobitfolio.UI.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +14,19 @@ namespace Cryptobitfolio.UI
 {
     public class App : Application
     {
+        public IContainer _container;
+        public static App AppInstance;
         private static List<Business.Contracts.Portfolio.Coin> coinList;
         private static List<Business.Contracts.Portfolio.WatchList> watchListCoins;
         private static List<ExchangeTransaction> transactions;
 
         public App()
         {
+            AppInstance = this;
+
+            //InitializeComponent();
+
+            Bootstrapper.Initialize();
             //var unityContainer = new UnityContainer();
 
             //unityContainer.RegisterType<IExchangeApiRepository, ExchangeApiRepository>();
@@ -33,7 +35,7 @@ namespace Cryptobitfolio.UI
 
             //var unityServiceLocator = new UnityServiceLocator(unityContainer);
             //ServiceLocator.SetLocatorProvider(() => unityServiceLocator);
-            
+
             MainPage = new MainPage();
         }
 

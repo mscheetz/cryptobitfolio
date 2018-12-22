@@ -18,7 +18,7 @@ namespace Cryptobitfolio.UI.ViewModels
 
     #endregion Usings
 
-    public class PortfolioViewModel : ViewModelBase
+    public class PortfolioViewModel : ViewModelBaseOld
     {
         #region Properties
 
