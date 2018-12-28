@@ -14,7 +14,12 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         public decimal Price { get; set; }
         public Exchange Exchange { get; set; }
         public string Pair { get; set; }
-        public DateTime? Hit { get; set; }
+        public decimal High1Hr { get; set; }
+        public decimal Low1Hr { get; set; }
+        public decimal High24Hr { get; set; }
+        public decimal Low24Hr { get; set; }
+        public decimal High7Day { get; set; }
+        public decimal Low7Day { get; set; }
         public HistoricalPrice[] HistoricalPrices { get; set; }
     }
 }

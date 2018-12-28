@@ -499,6 +499,39 @@ namespace Cryptobitfolio.Tests.Common
             return apis;
         }
 
+        public IEnumerable<Business.Contracts.Portfolio.Alerter> GetAlertContracts()
+        {
+            var alerts = new List<Business.Contracts.Portfolio.Alerter>
+            {
+                new Business.Contracts.Portfolio.Alerter
+                {
+                    AlertId = 1,
+                    Created = DateTime.UtcNow,
+                    Direction = Business.Entities.Direction.LTE,
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    HistoricalPrices = new Business.Contracts.Trade.HistoricalPrice[0],
+                    Hit = null,
+                    Pair = "BTCUSDT",
+                    Price = 2875.4M
+                },
+                new Business.Contracts.Portfolio.Alerter
+                {
+                    AlertId = 2,
+                    Created = DateTime.UtcNow.AddDays(-2),
+                    Direction = Business.Entities.Direction.GTE,
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    HistoricalPrices = new Business.Contracts.Trade.HistoricalPrice[0],
+                    Hit = DateTime.UtcNow.AddHours(-2),
+                    Pair = "BTCUSDT",
+                    Price = 3879.4M
+                }
+            };
+
+            return alerts;
+        }
+
         #endregion Contract Objects
 
         #region Entity Objects
@@ -563,6 +596,245 @@ namespace Cryptobitfolio.Tests.Common
                 Exchange = Business.Entities.Exchange.Binance,
                 Id = 1
             };
+        }
+
+        public IEnumerable<Business.Entities.Portfolio.Coin> GetCoinEntities()
+        {
+            var coins = new List<Business.Entities.Portfolio.Coin>
+            {
+                new Business.Entities.Portfolio.Coin
+                {
+                    AverageBuy = 4598.3M,
+                    CurrencyId = 1,
+                    Id = 1,
+                    Quantity = 0.5M,
+                    Symbol = "BTC"
+                },
+                new Business.Entities.Portfolio.Coin
+                {
+                    AverageBuy = 149.0M,
+                    CurrencyId = 2,
+                    Id = 2,
+                    Quantity = 2.3M,
+                    Symbol = "ETH"
+                }
+            };
+
+            return coins;
+        }
+
+        public IEnumerable<Business.Entities.Portfolio.ExchangeCoin> GetExchangeCoinEntites()
+        {
+
+            var coins = new List<Business.Entities.Portfolio.ExchangeCoin>
+            {
+                new Business.Entities.Portfolio.ExchangeCoin
+                {
+                    AverageBuy = 4598.3M,
+                    CurrencyId = 1,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Id = 1,
+                    Quantity = 0.5M,
+                    Symbol = "BTC"
+                },
+                new Business.Entities.Portfolio.ExchangeCoin
+                {
+                    AverageBuy = 149.0M,
+                    CurrencyId = 2,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Id = 2,
+                    Quantity = 2.3M,
+                    Symbol = "ETH"
+                }
+            };
+            
+            return coins;
+        }
+        
+        public IEnumerable<Business.Entities.Portfolio.Alerter> GetAlertEntities()
+        {
+            var alerts = new List<Business.Entities.Portfolio.Alerter>
+            {
+                new Business.Entities.Portfolio.Alerter
+                {
+                    Created = DateTime.UtcNow,
+                    CurrencyId = 1,
+                    Direction = Business.Entities.Direction.LTE,
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Hit = null,
+                    Id = 1,
+                    Pair = "BTCUSDT",
+                    Price = 3215.98M
+                },
+                new Business.Entities.Portfolio.Alerter
+                {
+                    Created = DateTime.UtcNow.AddDays(-10),
+                    CurrencyId = 1,
+                    Direction = Business.Entities.Direction.LTE,
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Hit = DateTime.UtcNow.AddDays(-11),
+                    Id = 2,
+                    Pair = "BTCUSDT",
+                    Price = 3356.78M
+                }
+            };
+
+            return alerts;
+        }
+        
+        public IEnumerable<Business.Entities.Portfolio.ArbitragePath> GetAribtragePathEntities()
+        {
+            var path = new List<Business.Entities.Portfolio.ArbitragePath>
+            {
+                new Business.Entities.Portfolio.ArbitragePath
+                {
+                    Created = DateTime.UtcNow,
+                    Id = 1,
+                    Path = "",
+                },
+                new Business.Entities.Portfolio.ArbitragePath
+                {
+                    Created = DateTime.UtcNow,
+                    Id = 2,
+                    Path = "",
+                }
+            };
+
+            return path;
+        }
+
+        public IEnumerable<Business.Entities.Portfolio.CoinBuy> GetCoinBuyEntities()
+        {
+            var coins = new List<Business.Entities.Portfolio.CoinBuy>
+            {
+                new Business.Entities.Portfolio.CoinBuy
+                {
+                    BTCPrice = 3798.4M,
+                    ClosedDate = DateTime.UtcNow,
+                    CoinBuyId = 1,
+                    CoinId = 1,
+                    CurrencyId = 1,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    FilledQuantity = 0.12M,
+                    Id = 1,
+                    OrderId = "0001",
+                    Pair = "BTCUSDT",
+                    PlaceDate = DateTime.UtcNow,
+                    Price = 3798.4M,
+                    Quantity = 0.12M,
+                    QuantityApplied = 0.12M,
+                    Side = Business.Entities.Side.Buy,
+                    Status = Business.Entities.TradeStatus.Filled
+                },
+                new Business.Entities.Portfolio.CoinBuy
+                {
+                    BTCPrice = 3798.4M,
+                    ClosedDate = DateTime.UtcNow,
+                    CoinBuyId = 2,
+                    CoinId = 1,
+                    CurrencyId = 1,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    FilledQuantity = 0.5M,
+                    Id = 2,
+                    OrderId = "0002",
+                    Pair = "BTCUSDT",
+                    PlaceDate = DateTime.UtcNow,
+                    Price = 5767.34M,
+                    Quantity = 0.5M,
+                    QuantityApplied = 0.5M,
+                    Side = Business.Entities.Side.Buy,
+                    Status = Business.Entities.TradeStatus.Filled
+                }
+            };
+
+            return coins;
+        }
+
+        public IEnumerable<Business.Entities.Portfolio.Currency> GetCurrencyEntities()
+        {
+            var currencies = new List<Business.Entities.Portfolio.Currency>
+            {
+                new Business.Entities.Portfolio.Currency
+                {
+                    Id = 1,
+                    Image = "btc.png",
+                    Name = "Bitcoin",
+                    Symbol = "BTC"
+                },
+                new Business.Entities.Portfolio.Currency
+                {
+                    Id = 2,
+                    Image = "eth.png",
+                    Name = "Ethereum",
+                    Symbol = "ETH"
+                },
+                new Business.Entities.Portfolio.Currency
+                {
+                    Id = 3,
+                    Image = "xlm.png",
+                    Name = "Stellar Lumens",
+                    Symbol = "XLM"
+                },
+            };
+
+            return currencies;
+        }
+
+        public IEnumerable<Business.Entities.Portfolio.Watcher> GetWatcherEntities()
+        {
+            var watchers = new List<Business.Entities.Portfolio.Watcher>
+            {
+                new Business.Entities.Portfolio.Watcher
+                {
+                    CurrencyId = 1,
+                    DateAdded = DateTime.UtcNow,
+                    Enabled = true,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    Id = 1,
+                    Pair = "BTCUSDT",
+                    High1Hr = 3765.4M,
+                    Low1Hr = 3749.4M,
+                    High24Hr = 3848.7M,
+                    Low24Hr = 3749.4M,
+                    High7Day = 4287.4M,
+                    Low7Day = 31459M
+                }
+            };
+
+            return watchers;
+        }
+
+        public IEnumerable<Business.Entities.Trade.HistoricalPrice> GetHistoricalPriceEntities()
+        {
+            var prices = new List<Business.Entities.Trade.HistoricalPrice>
+            {
+                new Business.Entities.Trade.HistoricalPrice
+                {
+                    CurrencyId = 1,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 3765.4M,
+                    Id = 1,
+                    Low = 3749.4M,
+                    Pair = "BTCUSDT",
+                    Price = 3755.4M,
+                    Snapshot = DateTime.UtcNow.AddHours(-1)
+                },
+                new Business.Entities.Trade.HistoricalPrice
+                {
+                    CurrencyId = 1,
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 3765.4M,
+                    Id = 2,
+                    Low = 3749.4M,
+                    Pair = "BTCUSDT",
+                    Price = 3755.4M,
+                    Snapshot = DateTime.UtcNow.AddHours(-2)
+                }
+            };
+
+            return prices;
         }
 
         #endregion Entity Objects
