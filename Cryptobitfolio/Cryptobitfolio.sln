@@ -31,15 +31,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptobitfolio.Business.Com
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3D52BA67-C6FA-4F85-B014-C669AE0D7568}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business Tests", "Business Tests", "{973DE8BD-91E8-41FC-98F9-DFF4CD5E4642}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{973DE8BD-91E8-41FC-98F9-DFF4CD5E4642}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Business.Tests", "Business.Tests\Business.Tests.csproj", "{5ABBEF06-CFE9-4164-97DA-1BD62FF6114C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptobitfolio.Tests.Common", "Cryptobitfolio.Tests.Common\Cryptobitfolio.Tests.Common.csproj", "{5BD36CA5-276E-4DE7-BB9B-769DE3637C51}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data  Tests", "Data  Tests", "{0E3449F5-679B-403D-A7BD-863676D25921}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{0E3449F5-679B-403D-A7BD-863676D25921}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cryptobitfolio.Data.Tests", "Cryptobitfolio.Data.Tests\Cryptobitfolio.Data.Tests.csproj", "{9709DC96-D806-47AE-A6F2-3BCC443BD156}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cryptobitfolio.Data.Tests", "Cryptobitfolio.Data.Tests\Cryptobitfolio.Data.Tests.csproj", "{9709DC96-D806-47AE-A6F2-3BCC443BD156}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
