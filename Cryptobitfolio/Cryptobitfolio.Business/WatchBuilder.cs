@@ -117,9 +117,8 @@ namespace Cryptobitfolio.Business
                 Created = entity.DateAdded,
                 Enabled = entity.Enabled,
                 Exchange = entity.Exchange,
-                Hit = entity.WatchHit,
                 Pair = entity.Pair,
-                Price = entity.WatchPrice
+                Price = entity.Price
             };
 
             return contract;
@@ -133,9 +132,8 @@ namespace Cryptobitfolio.Business
                 DateAdded = contract.Created,
                 Enabled = contract.Enabled,
                 Exchange = contract.Exchange,
-                WatchHit = contract.Hit,
                 Pair = contract.Pair,
-                WatchPrice = contract.Price
+                Price = contract.Price
             };
 
             return entity;
