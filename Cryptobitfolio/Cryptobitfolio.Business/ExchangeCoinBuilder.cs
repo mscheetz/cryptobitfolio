@@ -107,7 +107,7 @@ namespace Cryptobitfolio.Business
         public async Task<IEnumerable<ExchangeCoin>> GetLatest(string symbol)
         {
             var balances = await this._hubBldr.GetBalances(symbol);
-            //var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
+
             var exCoins = await this.Get(symbol);
 
             return await OnGetLatest(balances.ToList(), exCoins.ToList());
@@ -116,7 +116,7 @@ namespace Cryptobitfolio.Business
         public async Task<IEnumerable<ExchangeCoin>> GetLatest(List<string> symbols)
         {
             var balances = await this._hubBldr.GetBalances(symbols);
-            //var exchangeBalance = BalanceDictionaryToExchangeCoins(balances);
+
             var exCoins = await this.Get(symbols);
 
             return await OnGetLatest(balances.ToList(), exCoins.ToList());
@@ -125,7 +125,7 @@ namespace Cryptobitfolio.Business
         public async Task<IEnumerable<ExchangeCoin>> GetLatest(Exchange exchange)
         {
             var balances = await this._hubBldr.GetExchangeBalances(exchange);
-            //var exchangeBalance = BalanceCollectionToExchangeCoins(balances, exchange);
+
             var exCoins = await this.Get(exchange);
 
             return await OnGetLatest(balances.ToList(), exCoins.ToList());
@@ -191,8 +191,8 @@ namespace Cryptobitfolio.Business
             var coinBuys = await _cbBldr.GetLatest(exchangeCoin.Symbol, exchangeCoin.Quantity, exchangeCoin.Exchange);
             var orders = await _eoBldr.GetLatest(exchangeCoin.Symbol, exchangeCoin.Exchange);
 
-            exchangeCoin.OpenOrderList = orders.ToList();
-            exchangeCoin.CoinBuyList = coinBuys.ToList();
+            exchangeCoin.OpenOrderList = orders == null ? new List<Contracts.Trade.ExchangeOrder>() : orders.ToList();
+            exchangeCoin.CoinBuyList = coinBuys == null ? new List<CoinBuy>() : coinBuys.ToList();
 
             return exchangeCoin;
         }
@@ -242,7 +242,7 @@ namespace Cryptobitfolio.Business
             var entity = new Entities.Portfolio.ExchangeCoin
             {
                 Id = contract.ExchangeCoinId,
-                AverageBuy = contract.AverageBuy,
+                AverageBuy = contract.CoinBuyList == null ? 0 : contract.AverageBuy,
                 Exchange = contract.Exchange,
                 Quantity = contract.Quantity,
                 Symbol = contract.Symbol
