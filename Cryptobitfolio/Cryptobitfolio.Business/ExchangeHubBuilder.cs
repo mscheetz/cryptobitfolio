@@ -517,7 +517,7 @@ namespace Cryptobitfolio.Business
                 High = ticker.High,
                 Low = ticker.Low,
                 Pair = ticker.Pair,
-                Price = ticker.LastPrice,
+                Close = ticker.LastPrice,
                 Snapshot = DateTime.UtcNow
             };
 

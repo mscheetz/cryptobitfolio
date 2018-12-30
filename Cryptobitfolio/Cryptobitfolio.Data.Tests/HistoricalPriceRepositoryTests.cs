@@ -29,7 +29,7 @@ namespace Cryptobitfolio.Data.Tests
                     CurrencyId = 1,
                     Exchange = Business.Entities.Exchange.Binance,
                     Pair = "BTCUSDT",
-                    Price = 4210.00M,
+                    Close = 4210.00M,
                     Snapshot = DateTime.UtcNow.AddHours(-4),
                 });
             datas.Add(
@@ -39,7 +39,7 @@ namespace Cryptobitfolio.Data.Tests
                     CurrencyId = 1,
                     Exchange = Business.Entities.Exchange.Binance,
                     Pair = "BTCUSDT",
-                    Price = 4100.00M,
+                    Close = 4100.00M,
                     Snapshot = DateTime.UtcNow.AddHours(-3),
                 });
             datas.Add(
@@ -49,7 +49,7 @@ namespace Cryptobitfolio.Data.Tests
                     CurrencyId = 1,
                     Exchange = Business.Entities.Exchange.Binance,
                     Pair = "BTCUSDT",
-                    Price = 4050.00M,
+                    Close = 4050.00M,
                     Snapshot = DateTime.UtcNow.AddHours(-2),
                 });
             datas.Add(
@@ -59,7 +59,7 @@ namespace Cryptobitfolio.Data.Tests
                     CurrencyId = 1,
                     Exchange = Business.Entities.Exchange.Binance,
                     Pair = "BTCUSDT",
-                    Price = 3950.00M,
+                    Close = 3950.00M,
                     Snapshot = DateTime.UtcNow.AddHours(-1),
                 });
             datas.Add(
@@ -69,7 +69,7 @@ namespace Cryptobitfolio.Data.Tests
                     CurrencyId = 1,
                     Exchange = Business.Entities.Exchange.Binance,
                     Pair = "BTCUSDT",
-                    Price = 3850.00M,
+                    Close = 3850.00M,
                     Snapshot = DateTime.UtcNow,
                 });
 

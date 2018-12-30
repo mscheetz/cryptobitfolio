@@ -22,7 +22,7 @@ namespace Cryptobitfolio.Business.Entities.Trade
         public int CurrencyId { get; set; }
         public Exchange Exchange { get; set; }
         public string Pair { get; set; }
-        public decimal Price { get; set; }
+        public decimal Close { get; set; }
         public decimal High { get; set; }
         public decimal Low { get; set; }
         public DateTime Snapshot { get; set; }

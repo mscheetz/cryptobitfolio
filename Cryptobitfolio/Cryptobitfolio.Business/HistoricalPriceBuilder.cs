@@ -108,9 +108,10 @@ namespace Cryptobitfolio.Business
         {
             var contract = new HistoricalPrice
             {
+                HistoricalPriceId = entity.Id,
                 Exchange = entity.Exchange,
                 Pair = entity.Pair,
-                Price = entity.Price,
+                Close = entity.Close,
                 High = entity.High,
                 Low = entity.Low,
                 Snapshot = entity.Snapshot
@@ -136,9 +137,10 @@ namespace Cryptobitfolio.Business
         {
             var entity = new Entities.Trade.HistoricalPrice
             {
+                Id = contract.HistoricalPriceId,
                 Exchange = contract.Exchange,
                 Pair = contract.Pair,
-                Price = contract.Price,
+                Close = contract.Close,
                 High = contract.High,
                 Low = contract.Low,
                 Snapshot = contract.Snapshot
