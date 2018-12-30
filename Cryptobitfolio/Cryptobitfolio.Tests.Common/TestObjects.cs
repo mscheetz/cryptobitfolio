@@ -501,6 +501,8 @@ namespace Cryptobitfolio.Tests.Common
 
         public IEnumerable<Business.Contracts.Portfolio.Alerter> GetAlertContracts()
         {
+            var historicalPrices = GetHistoricalPriceContracts();
+
             var alerts = new List<Business.Contracts.Portfolio.Alerter>
             {
                 new Business.Contracts.Portfolio.Alerter
@@ -512,7 +514,8 @@ namespace Cryptobitfolio.Tests.Common
                     Exchange = Business.Entities.Exchange.Binance,
                     Hit = null,
                     Pair = "BTCUSDT",
-                    Price = 3215.98M
+                    Price = 3215.98M,
+                    HistoricalPrices = historicalPrices.Where(h => h.Pair.Equals("BTCUSDT")).ToArray()
                 },
                 new Business.Contracts.Portfolio.Alerter
                 {
@@ -523,7 +526,8 @@ namespace Cryptobitfolio.Tests.Common
                     Exchange = Business.Entities.Exchange.Binance,
                     Hit = DateTime.UtcNow.AddDays(-11),
                     Pair = "BTCUSDT",
-                    Price = 3356.78M
+                    Price = 3356.78M,
+                    HistoricalPrices = historicalPrices.Where(h => h.Pair.Equals("BTCUSDT")).ToArray()
                 }
             };
 
@@ -536,13 +540,13 @@ namespace Cryptobitfolio.Tests.Common
             var currencies = GetCurrencyContracts();
             var exchangeCoins = GetExchangeCoinContracts();
             var openOrders = GetExchangeOrderContracts();
+            var historicalPrices = GetHistoricalPriceContracts();
 
             var btc = new Business.Contracts.Portfolio.Coin(currencies.Where(c => c.CurrencyId == 1).FirstOrDefault());
             btc.ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("BTC")).ToList();
 
             var eth = new Business.Contracts.Portfolio.Coin(currencies.Where(c => c.CurrencyId == 2).FirstOrDefault());
             eth.ExchangeCoinList = exchangeCoins.Where(e => e.Symbol.Equals("ETH")).ToList();
-
 
             coins.Add(btc);
             coins.Add(eth);
@@ -593,7 +597,7 @@ namespace Cryptobitfolio.Tests.Common
                     Quantity = 0.5M,
                     Symbol = "BTC",
                     CoinBuyList = coinBuys.Where(c => c.Pair.StartsWith("BTC")).ToList(),
-                    OpenOrderList = orders.Where(o => o.Pair.StartsWith("BTC")).ToList(),
+                    OpenOrderList = orders.Where(o => o.Pair.StartsWith("BTC")).ToList(),                    
                 },
                 new Business.Contracts.Portfolio.ExchangeCoin
                 {
@@ -627,7 +631,7 @@ namespace Cryptobitfolio.Tests.Common
                     Quantity = 0.12M,
                     QuantityApplied = 0.12M,
                     Side = Business.Entities.Side.Buy,
-                    Status = Business.Entities.TradeStatus.Filled
+                    Status = Business.Entities.TradeStatus.Filled                    
                 },
                 new Business.Contracts.Portfolio.CoinBuy
                 {
@@ -717,6 +721,75 @@ namespace Cryptobitfolio.Tests.Common
             };
 
             return orders;
+        }
+
+        public IEnumerable<Business.Contracts.Trade.HistoricalPrice> GetHistoricalPriceContracts()
+        {
+            var prices = new List<Business.Contracts.Trade.HistoricalPrice>
+            {
+                new Business.Contracts.Trade.HistoricalPrice
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 3765.4M,
+                    HistoricalPriceId = 1,
+                    Low = 3749.4M,
+                    Pair = "BTCUSDT",
+                    Close = 3755.4M,
+                    Snapshot = DateTime.UtcNow.AddHours(-1)
+                },
+                new Business.Contracts.Trade.HistoricalPrice
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 3765.4M,
+                    HistoricalPriceId = 2,
+                    Low = 3749.4M,
+                    Pair = "BTCUSDT",
+                    Close = 3755.4M,
+                    Snapshot = DateTime.UtcNow.AddHours(-2)
+                },
+                new Business.Contracts.Trade.HistoricalPrice
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 4528.42M,
+                    HistoricalPriceId = 3,
+                    Low = 3823.34M,
+                    Pair = "BTCUSDT",
+                    Close = 3933.18M,
+                    Snapshot = DateTime.UtcNow.AddMonths(-1)
+                },
+                new Business.Contracts.Trade.HistoricalPrice
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 3263.9M,
+                    HistoricalPriceId = 4,
+                    Low = 3157.76M,
+                    Pair = "BTCUSDT",
+                    Close = 3216.14M,
+                    Snapshot = DateTime.UtcNow.AddDays(-14)
+                },
+                new Business.Contracts.Trade.HistoricalPrice
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 4200,
+                    HistoricalPriceId = 5,
+                    Low = 3929.88M,
+                    Pair = "BTCUSDT",
+                    Close = 4010.27M,
+                    Snapshot = DateTime.UtcNow.AddDays(-5)
+                },
+                new Business.Contracts.Trade.HistoricalPrice
+                {
+                    Exchange = Business.Entities.Exchange.Binance,
+                    High = 3818.04M,
+                    HistoricalPriceId = 6,
+                    Low = 3535,
+                    Pair = "BTCUSDT",
+                    Close = 3565.27M,
+                    Snapshot = DateTime.UtcNow.AddDays(-2)
+                }
+            };
+
+            return prices;
         }
 
         #endregion Contract Objects
@@ -810,7 +883,7 @@ namespace Cryptobitfolio.Tests.Common
             return coins;
         }
 
-        public IEnumerable<Business.Entities.Portfolio.ExchangeCoin> GetExchangeCoinEntites()
+        public IEnumerable<Business.Entities.Portfolio.ExchangeCoin> GetExchangeCoinEntities()
         {
 
             var coins = new List<Business.Entities.Portfolio.ExchangeCoin>
@@ -1043,7 +1116,7 @@ namespace Cryptobitfolio.Tests.Common
                     Id = 1,
                     Low = 3749.4M,
                     Pair = "BTCUSDT",
-                    Price = 3755.4M,
+                    Close = 3755.4M,
                     Snapshot = DateTime.UtcNow.AddHours(-1)
                 },
                 new Business.Entities.Trade.HistoricalPrice
@@ -1054,7 +1127,7 @@ namespace Cryptobitfolio.Tests.Common
                     Id = 2,
                     Low = 3749.4M,
                     Pair = "BTCUSDT",
-                    Price = 3755.4M,
+                    Close = 3755.4M,
                     Snapshot = DateTime.UtcNow.AddHours(-2)
                 },
                 new Business.Entities.Trade.HistoricalPrice
@@ -1065,7 +1138,7 @@ namespace Cryptobitfolio.Tests.Common
                     Id = 3,
                     Low = 3823.34M,
                     Pair = "BTCUSDT",
-                    Price = 3933.18M,
+                    Close = 3933.18M,
                     Snapshot = DateTime.UtcNow.AddMonths(-1)
                 },
                 new Business.Entities.Trade.HistoricalPrice
@@ -1076,7 +1149,7 @@ namespace Cryptobitfolio.Tests.Common
                     Id = 4,
                     Low = 3157.76M,
                     Pair = "BTCUSDT",
-                    Price = 3216.14M,
+                    Close = 3216.14M,
                     Snapshot = DateTime.UtcNow.AddDays(-14)
                 },
                 new Business.Entities.Trade.HistoricalPrice
@@ -1087,7 +1160,7 @@ namespace Cryptobitfolio.Tests.Common
                     Id = 5,
                     Low = 3929.88M,
                     Pair = "BTCUSDT",
-                    Price = 4010.27M,
+                    Close = 4010.27M,
                     Snapshot = DateTime.UtcNow.AddDays(-5)
                 },
                 new Business.Entities.Trade.HistoricalPrice
@@ -1098,7 +1171,7 @@ namespace Cryptobitfolio.Tests.Common
                     Id = 6,
                     Low = 3535,
                     Pair = "BTCUSDT",
-                    Price = 3565.27M,
+                    Close = 3565.27M,
                     Snapshot = DateTime.UtcNow.AddDays(-2)
                 }
             };
