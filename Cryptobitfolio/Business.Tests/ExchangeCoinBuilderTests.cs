@@ -193,8 +193,17 @@ namespace Business.Tests
             updatedEntity.Quantity = expectedQuantity;
             exCoinRepoMock.Setup(m => m.Update(It.IsAny<ExchangeCoin>()))
                 .Returns(Task.FromResult(updatedEntity));
+            var coinBuys = testObjs.GetCoinBuyContracts().Where(c => c.Pair.StartsWith(symbol));
+            var avgPrice = 0.0M;
+            var count = 0;
+            foreach(var cb in coinBuys)
+            {
+                avgPrice += cb.Price;
+                count++;
+            }
+            avgPrice = avgPrice / count;
             coinBuyBldrMock.Setup(m => m.GetLatest(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<Cryptobitfolio.Business.Entities.Exchange>()))
-                .Returns(Task.FromResult(It.IsAny<IEnumerable<Cryptobitfolio.Business.Contracts.Portfolio.CoinBuy>>()));
+                .Returns(Task.FromResult(coinBuys));
             exOrderBldrMock.Setup(m => m.GetLatest(It.IsAny<string>(), It.IsAny<Cryptobitfolio.Business.Entities.Exchange>()))
                 .Returns(Task.FromResult(It.IsAny<IEnumerable<Cryptobitfolio.Business.Contracts.Trade.ExchangeOrder>>()));
 
@@ -205,6 +214,7 @@ namespace Business.Tests
 
             // Assert
             Assert.Equal(expectedQuantity, result.First().Quantity);
+            Assert.Equal(avgPrice, result.First().AverageBuy);
         }
 
         [Fact]
@@ -228,8 +238,10 @@ namespace Business.Tests
             exCoinRepoMock.SetupSequence(m => m.Update(It.IsAny<ExchangeCoin>()))
                 .Returns(Task.FromResult(btcEntity))
                 .Returns(Task.FromResult(ethEntity));
-            coinBuyBldrMock.Setup(m => m.GetLatest(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<Cryptobitfolio.Business.Entities.Exchange>()))
-                .Returns(Task.FromResult(It.IsAny<IEnumerable<Cryptobitfolio.Business.Contracts.Portfolio.CoinBuy>>()));
+            var coinBuys = testObjs.GetCoinBuyContracts();
+            coinBuyBldrMock.SetupSequence(m => m.GetLatest(It.IsAny<string>(), It.IsAny<decimal>(), It.IsAny<Cryptobitfolio.Business.Entities.Exchange>()))
+                .Returns(Task.FromResult(coinBuys.Where(c => c.Pair.StartsWith("BTC"))))
+                .Returns(Task.FromResult(coinBuys.Where(c => c.Pair.StartsWith("ETH"))));
             exOrderBldrMock.Setup(m => m.GetLatest(It.IsAny<string>(), It.IsAny<Cryptobitfolio.Business.Entities.Exchange>()))
                 .Returns(Task.FromResult(It.IsAny<IEnumerable<Cryptobitfolio.Business.Contracts.Trade.ExchangeOrder>>()));
 
