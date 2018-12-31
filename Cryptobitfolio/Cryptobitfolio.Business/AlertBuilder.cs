@@ -60,13 +60,51 @@ namespace Cryptobitfolio.Business
         }
 
         /// <summary>
+        /// Get alerts for a trading pair
+        /// </summary>
+        /// <param name="pair">Trading pair</param>
+        /// <returns>Collection of Alerters</returns>
+        public async Task<IEnumerable<Alerter>> GetByPair(string pair)
+        {
+            var entities = await _alertRepo.Get(a => a.Pair.Equals(pair));
+
+            return EntityCollectionToContracts(entities);
+        }
+
+        /// <summary>
+        /// Get alerts for a trading pair
+        /// </summary>
+        /// <param name="pair">Trading pair</param>
+        /// <param name="exchange">Exchange to filter on</param>
+        /// <returns>Collection of Alerters</returns>
+        public async Task<IEnumerable<Alerter>> GetByPair(string pair, Entities.Exchange exchange)
+        {
+            var entities = await _alertRepo.Get(a => a.Pair.Equals(pair) && a.Exchange == exchange);
+
+            return EntityCollectionToContracts(entities);
+        }
+
+        /// <summary>
         /// Get alerts for a coin
         /// </summary>
-        /// <param name="Symbol">Symbol of coin</param>
+        /// <param name="symbol">Symbol of coin</param>
         /// <returns>Collection of Alerters</returns>
-        public async Task<IEnumerable<Alerter>> Get(string Symbol)
+        public async Task<IEnumerable<Alerter>> GetBySymbol(string symbol)
         {
-            var entities = await _alertRepo.Get(a => a.Pair.StartsWith(Symbol));
+            var entities = await _alertRepo.Get(a => a.Pair.StartsWith(symbol));
+
+            return EntityCollectionToContracts(entities);
+        }
+
+        /// <summary>
+        /// Get alerts for a coin
+        /// </summary>
+        /// <param name="symbol">Symbol of coin</param>
+        /// <param name="exchange">Exchange to filter on</param>
+        /// <returns>Collection of Alerters</returns>
+        public async Task<IEnumerable<Alerter>> GetBySymbol(string symbol, Entities.Exchange exchange)
+        {
+            var entities = await _alertRepo.Get(a => a.Pair.StartsWith(symbol) && a.Exchange == exchange);
 
             return EntityCollectionToContracts(entities);
         }
@@ -97,13 +135,24 @@ namespace Cryptobitfolio.Business
             return result;
         }
 
+        /// <summary>
+        /// Get latest status of alerts
+        /// </summary>
+        /// <returns>Collection of Alerters</returns>
         public async Task<IEnumerable<Alerter>> GetLatest()
         {
             var alerts = await this.Get();
             var alertList = alerts.ToList();
-            var pairs = alerts.ToList().Where(a => a.Hit == null).Select(a => a.Pair).ToList();
+            var exchangePairs = new Dictionary<Entities.Exchange, List<string>>();
+            var exchanges = alertList.Select(a => a.Exchange).Distinct();
+            foreach(var exchange in exchanges)
+            {
+                var pairs = alerts.ToList().Where(a => a.Hit == null && a.Exchange == exchange)
+                    .Select(a => a.Pair).ToList();
+                exchangePairs.Add(exchange, pairs);
+            }
 
-            var hpList = await _hpBldr.GetLatest(pairs);
+            var hpList = await _hpBldr.GetLatest(exchangePairs);
             var hitList = new List<Alerter>();
             var hitTime = DateTime.UtcNow;
 
@@ -120,16 +169,13 @@ namespace Cryptobitfolio.Business
                 {
                     hit = true;
                 }
+                alert.Updated = DateTime.UtcNow;
                 if(hit)
                 {
                     alert.Hit = hitTime;
                     hitList.Add(alert);
                 }
-            }
-
-            for(var i = 0; i< hitList.Count; i++)
-            {
-                hitList[i] = await this.Update(hitList[i]);
+                await this.Update(alert);
             }
 
             return hitList;

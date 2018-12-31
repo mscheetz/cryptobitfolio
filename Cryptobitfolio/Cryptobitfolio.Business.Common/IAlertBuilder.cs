@@ -45,12 +45,39 @@ namespace Cryptobitfolio.Business.Common
         Task<IEnumerable<Alerter>> Get();
 
         /// <summary>
+        /// Get alerts for a trading pair
+        /// </summary>
+        /// <param name="pair">Trading pair</param>
+        /// <returns>Collection of Alerters</returns>
+        Task<IEnumerable<Alerter>> GetByPair(string pair);
+
+        /// <summary>
+        /// Get alerts for a trading pair
+        /// </summary>
+        /// <param name="pair">Trading pair</param>
+        /// <param name="exchange">Exchange to filter on</param>
+        /// <returns>Collection of Alerters</returns>
+        Task<IEnumerable<Alerter>> GetByPair(string pair, Entities.Exchange exchange);
+
+        /// <summary>
         /// Get alerts for a coin
         /// </summary>
         /// <param name="Symbol">Symbol of coin</param>
         /// <returns>Collection of Alerters</returns>
-        Task<IEnumerable<Alerter>> Get(string Symbol);
+        Task<IEnumerable<Alerter>> GetBySymbol(string Symbol);
 
+        /// <summary>
+        /// Get alerts for a coin
+        /// </summary>
+        /// <param name="symbol">Symbol of coin</param>
+        /// <param name="exchange">Exchange to filter on</param>
+        /// <returns>Collection of Alerters</returns>
+        Task<IEnumerable<Alerter>> GetBySymbol(string symbol, Entities.Exchange exchange);
+
+        /// <summary>
+        /// Get latest status of alerts
+        /// </summary>
+        /// <returns>Collection of Alerters</returns>
         Task<IEnumerable<Alerter>> GetLatest();
     }
 }
