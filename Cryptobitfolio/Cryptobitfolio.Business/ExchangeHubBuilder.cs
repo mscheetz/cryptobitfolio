@@ -7,6 +7,8 @@
 
 namespace Cryptobitfolio.Business
 {
+    #region Usings
+
     using Cryptobitfolio.Business.Common;
     using Cryptobitfolio.Business.Contracts.Portfolio;
     using Cryptobitfolio.Business.Contracts.Trade;
@@ -14,8 +16,6 @@ namespace Cryptobitfolio.Business
     using Cryptobitfolio.Data.Interfaces;
     using Cryptobitfolio.Data.Repositories;
     using ExchangeHub.Contracts;
-    #region Usings
-
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -266,6 +266,27 @@ namespace Cryptobitfolio.Business
 
                 hpList.AddRange(TickerCollectionToHistoricalPrices(tickers, IHelper.StringToExchange(exchange)));
             }
+
+            return hpList;
+        }
+
+        public async Task<IEnumerable<HistoricalPrice>> GetStats(List<string> pairs, Exchange exchange)
+        {
+            var hpList = new List<HistoricalPrice>();
+
+            var hub = _exchangeHubs.Where(e => e.GetExchange().Equals(exchange.ToString())).FirstOrDefault();
+
+            var tickers = new List<Ticker>();
+
+            foreach (var pair in pairs)
+            {
+                var ticker = await hub.GetStats(pair);
+
+                tickers.Add(ticker);
+            }
+
+            hpList.AddRange(TickerCollectionToHistoricalPrices(tickers, exchange));
+
 
             return hpList;
         }

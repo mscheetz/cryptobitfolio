@@ -44,6 +44,8 @@ namespace Cryptobitfolio.Business.Common
 
         Task<IEnumerable<HistoricalPrice>> GetStats(List<string> pairs);
 
+        Task<IEnumerable<HistoricalPrice>> GetStats(List<string> pairs, Exchange exchange);
+
         Task<IEnumerable<ExchangeCoin>> GetExchangeBalances();
 
         Task<IEnumerable<ExchangeCoin>> GetExchangeBalances(Exchange exchange);
