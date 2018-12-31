@@ -1,19 +1,30 @@
-﻿using Cryptobitfolio.Business;
-using Cryptobitfolio.Business.Common;
-using Cryptobitfolio.Business.Entities.Portfolio;
-using Cryptobitfolio.Data.Interfaces.Database;
-using Cryptobitfolio.Tests.Common;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿// -----------------------------------------------------------------------------
+// <copyright file="ExchangeCoinBuilderTests" company="Matt Scheetz">
+//     Copyright (c) Matt Scheetz All Rights Reserved
+// </copyright>
+// <author name="Matt Scheetz" date="12/30/2018 8:27:09 PM" />
+// -----------------------------------------------------------------------------
 
 namespace Business.Tests
 {
+    #region Usings
+
+    using Cryptobitfolio.Business;
+    using Cryptobitfolio.Business.Common;
+    using Cryptobitfolio.Business.Entities.Portfolio;
+    using Cryptobitfolio.Data.Interfaces.Database;
+    using Cryptobitfolio.Tests.Common;
+    using Moq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Xunit;
+
+    #endregion Usings
+    
     public class ExchangeCoinBuilderTests : IDisposable
     {
         private TestObjects testObjs;
@@ -40,6 +51,8 @@ namespace Business.Tests
         public void Dispose()
         {
         }
+
+        #region Tests
 
         [Fact]
         public void AddTest()
@@ -254,5 +267,7 @@ namespace Business.Tests
             Assert.Equal(expectedQuantity1, result[0].Quantity);
             Assert.Equal(expectedQuantity2, result[1].Quantity);
         }
+
+        #endregion Tests
     }
 }
