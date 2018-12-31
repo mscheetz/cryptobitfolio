@@ -42,6 +42,14 @@ namespace Cryptobitfolio.Business
             return EntityToContract(entity);
         }
 
+        public async Task<IEnumerable<HistoricalPrice>> Add(IEnumerable<HistoricalPrice> contracts)
+        {
+            var entities = ContractsToEntities(contracts);
+            entities = await _hpRepo.AddAll(entities);
+
+            return EntitiesToContracts(entities);
+        }
+
         public async Task<bool> Delete(HistoricalPrice contract)
         {
             var entity = ContractToEntity(contract);
@@ -86,6 +94,20 @@ namespace Cryptobitfolio.Business
             {
                 hpList[i] = await this.Add(hpList[i]);
             }
+
+            return hpList;
+        }
+
+        public async Task<IEnumerable<HistoricalPrice>> GetLatest(Dictionary<Entities.Exchange, List<string>> exchangePairs)
+        {
+            var hps = new List<HistoricalPrice>();
+            foreach(var entry in exchangePairs)
+            {
+                var exchangeHps = await _hubBldr.GetStats(entry.Value, entry.Key);
+                hps.AddRange(exchangeHps);
+            }
+
+            var hpList = await this.Add(hps);
 
             return hpList;
         }

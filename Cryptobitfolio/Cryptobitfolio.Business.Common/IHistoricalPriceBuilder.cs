@@ -21,6 +21,8 @@ namespace Cryptobitfolio.Business.Common
     {
         Task<HistoricalPrice> Add(HistoricalPrice contract);
 
+        Task<IEnumerable<HistoricalPrice>> Add(IEnumerable<HistoricalPrice> contracts);
+
         Task<bool> Delete(HistoricalPrice contract);
 
         Task<HistoricalPrice> Update(HistoricalPrice contract);
@@ -30,5 +32,7 @@ namespace Cryptobitfolio.Business.Common
         Task<IEnumerable<HistoricalPrice>> Get(string pair);
 
         Task<IEnumerable<HistoricalPrice>> GetLatest(List<string> pairs);
+
+        Task<IEnumerable<HistoricalPrice>> GetLatest(Dictionary<Entities.Exchange, List<string>> exchangePairs);
     }
 }
