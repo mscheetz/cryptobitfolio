@@ -26,6 +26,7 @@ namespace Cryptobitfolio.Business.Contracts.Portfolio
         public decimal Price { get; set; }
         public bool Enabled { get; set; }
         public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public DateTime? Hit { get; set; }
         public HistoricalPrice[] HistoricalPrices { get; set; }
 

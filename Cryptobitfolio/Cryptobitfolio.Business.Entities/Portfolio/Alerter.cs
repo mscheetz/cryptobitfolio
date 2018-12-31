@@ -24,6 +24,7 @@ namespace Cryptobitfolio.Business.Entities.Portfolio
         public decimal Price { get; set; }
         public bool Enabled { get; set; }
         public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public DateTime? Hit { get; set; }
 
         #endregion Properties
